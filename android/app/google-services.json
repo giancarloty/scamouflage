@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "749030735443",
+    "project_id": "scamouflage-24n1126",
+    "storage_bucket": "scamouflage-24n1126.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:749030735443:android:bd54321979e8960c1150a6",
+        "android_client_info": {
+          "package_name": "com.example.scamouflage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "749030735443-0uvjsmq94ld9p4migespjtejd03v24hk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAC632DpDvsLPvz2mQF6msbizAjvtO1H4I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "749030735443-0uvjsmq94ld9p4migespjtejd03v24hk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
