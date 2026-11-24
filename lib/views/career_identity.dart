@@ -4,6 +4,7 @@ import '../controllers/engine.dart';
 import '../services/game_audio.dart';
 import '../models/player_progression.dart';
 import 'theme.dart';
+import 'account_screens.dart';
 
 /// Local-only cosmetics. Accounts and public scores are visible future-feature
 /// previews, not working authentication or cloud storage.
@@ -99,7 +100,7 @@ class CareerIdentityScreen extends StatelessWidget {
                   accent: _framePalette[frame.id], context: context,),
             ]),
             const SizedBox(height: 24),
-            _futureFeatures(),
+            const AccountPanel(),
           ]),
         )),
       ),
@@ -275,67 +276,4 @@ class CareerIdentityScreen extends StatelessWidget {
       ),
     ));
   }
-
-  Widget _futureFeatures() => Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(17),
-    decoration: BoxDecoration(
-      color: deskBlue.withValues(alpha: .80),
-      border: Border.all(color: deskLight, width: 1.5),
-      borderRadius: BorderRadius.circular(20),
-    ),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [
-        const Icon(Icons.cloud_off_outlined, color: parchment),
-        const SizedBox(width: 9),
-        Expanded(child: Text('ONLINE FEATURES',
-          style: titleText(20, color: paperWhite))),
-        Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-          decoration: BoxDecoration(color: deskLight,
-            borderRadius: BorderRadius.circular(8)),
-          child: Text('COMING SOON', style: typewriter(10, color: paperWhite))),
-      ]),
-      const SizedBox(height: 8),
-      Text('Preview only — sign-in, usernames, cloud saving and rankings are not active.',
-        style: captionText(13, color: parchment)),
-      const SizedBox(height: 15),
-      const TextField(
-        enabled: false,
-        decoration: InputDecoration(
-          prefixIcon: Icon(Icons.alternate_email_rounded),
-          labelText: 'Username (future account)',
-          border: OutlineInputBorder(),
-          isDense: true,
-        )),
-      const SizedBox(height: 9),
-      const TextField(
-        enabled: false,
-        decoration: InputDecoration(
-          prefixIcon: Icon(Icons.mail_outline_rounded),
-          labelText: 'Email address (future sign-in)',
-          border: OutlineInputBorder(),
-          isDense: true,
-        )),
-      const SizedBox(height: 9),
-      SizedBox(width: double.infinity, child: FilledButton.icon(
-        onPressed: null,
-        icon: const Icon(Icons.login_rounded),
-        label: const Text('CREATE ACCOUNT / SIGN IN • SOON'),
-      )),
-      const Divider(color: deskLight, height: 25),
-      Row(children: [
-        const Icon(Icons.leaderboard_outlined, color: parchment),
-        const SizedBox(width: 9),
-        Expanded(child: Text('GLOBAL LEADERBOARDS',
-          style: captionText(16, color: paperWhite))),
-        const Icon(Icons.lock_outline_rounded, color: parchment),
-      ]),
-      const SizedBox(height: 5),
-      Text('Rankings will require optional accounts, a secure backend, and fair-play protections.',
-        style: captionText(12, color: parchment)),
-      const SizedBox(height: 9),
-      Text('For now, progress and cosmetics are saved only on this device.',
-        style: captionText(12, color: mustard)),
-    ]),
-  );
 }

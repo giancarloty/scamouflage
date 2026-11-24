@@ -148,6 +148,140 @@ class GameEngine extends ChangeNotifier {
   }
   bool get promoted => grade != 'C';
 
+  /// Hook attached by CloudSaveService to debounce background cloud syncs.
+  VoidCallback? onSaved;
+
+  /// Lifetime arcade stats synced with the player's cloud save.
+  final Map<String, int> stats = {
+    'runs': 0,
+    'rounds': 0,
+    'correct': 0,
+    'bestStreak': 0,
+    'bestRunScore': 0,
+  };
+
+  void recordRun({
+    required int rounds,
+    required int correct,
+    required int bestStreak,
+    required int score,
+  }) {
+    if (rounds <= 0) return;
+    stats['runs'] = (stats['runs'] ?? 0) + 1;
+    stats['rounds'] = (stats['rounds'] ?? 0) + rounds;
+    stats['correct'] = (stats['correct'] ?? 0) + correct;
+    stats['bestStreak'] = max(stats['bestStreak'] ?? 0, bestStreak);
+    stats['bestRunScore'] = max(stats['bestRunScore'] ?? 0, score);
+    notifyListeners();
+    _save();
+  }
+
+  Map<String, dynamic> toCloud() => {
+        'careerXp': careerXp,
+        'completedShifts': completedShifts,
+        'unlockedShift': unlockedShift,
+        'safety': safety,
+        'fairness': fairness,
+        'hintsUsed': hintsUsed,
+        'equipped': {
+          'title': equippedTitleId,
+          'badge': equippedBadgeId,
+          'frame': equippedFrameId,
+          'mascotName': equippedMascotNameId,
+          'mascotColor': equippedMascotColorId,
+        },
+        'flags': {
+          'tutorialFinished': tutorialFinished,
+          'arcadeIntroFinished': arcadeIntroFinished,
+          'mascotIntroduced': mascotIntroduced,
+        },
+        'stats': Map<String, int>.from(stats),
+      };
+
+  /// Cosmetics unlock by XP. When the account's XP is lower than what this
+  /// device had (for example the server corrected an invalid value, or the
+  /// device switched accounts), fall back to the default for any equipped
+  /// item that is no longer unlocked.
+  void _resetLockedCosmetics() {
+    bool locked(int? unlockXp) => (unlockXp ?? 999999) > careerXp;
+    if (locked(CareerProgression.rankById(equippedTitleId)?.xp)) {
+      equippedTitleId = careerRank.id;
+    }
+    if (locked(CareerProgression.badgeById(equippedBadgeId)?.xp)) {
+      equippedBadgeId = CareerProgression.badges.first.id;
+    }
+    if (locked(CareerProgression.frameById(equippedFrameId)?.xp)) {
+      equippedFrameId = CareerProgression.frames.first.id;
+    }
+    if (locked(CareerProgression.mascotNameById(equippedMascotNameId)?.xp)) {
+      equippedMascotNameId = CareerProgression.mascotNames.first.id;
+    }
+    if (locked(CareerProgression.mascotColorById(equippedMascotColorId)?.xp)) {
+      equippedMascotColorId = CareerProgression.mascotColors.first.id;
+    }
+  }
+
+  Future<void> applyCloud(Map<String, dynamic> data) async {
+    int readInt(dynamic v, int fallback) => v is num ? v.toInt() : fallback;
+
+    careerXp = max(0, readInt(data['careerXp'], careerXp));
+    completedShifts = max(0, readInt(data['completedShifts'], completedShifts));
+    unlockedShift = readInt(data['unlockedShift'], unlockedShift).clamp(1, 7).toInt();
+    safety = readInt(data['safety'], safety).clamp(0, 100).toInt();
+    fairness = readInt(data['fairness'], fairness).clamp(0, 100).toInt();
+    hintsUsed = max(0, readInt(data['hintsUsed'], hintsUsed));
+
+    final eq = data['equipped'];
+    if (eq is Map) {
+      final title = eq['title']?.toString();
+      if (title != null && (CareerProgression.rankById(title)?.xp ?? 999999) <= careerXp) {
+        equippedTitleId = title;
+      }
+      final badge = eq['badge']?.toString();
+      if (badge != null && (CareerProgression.badgeById(badge)?.xp ?? 999999) <= careerXp) {
+        equippedBadgeId = badge;
+      }
+      final frame = eq['frame']?.toString();
+      if (frame != null && (CareerProgression.frameById(frame)?.xp ?? 999999) <= careerXp) {
+        equippedFrameId = frame;
+      }
+      final mName = eq['mascotName']?.toString();
+      if (mName != null && (CareerProgression.mascotNameById(mName)?.xp ?? 999999) <= careerXp) {
+        equippedMascotNameId = mName;
+      }
+      final mColor = eq['mascotColor']?.toString();
+      if (mColor != null && (CareerProgression.mascotColorById(mColor)?.xp ?? 999999) <= careerXp) {
+        equippedMascotColorId = mColor;
+      }
+    }
+
+    _resetLockedCosmetics();
+
+    final fl = data['flags'];
+    if (fl is Map) {
+      if (fl['tutorialFinished'] is bool) {
+        tutorialFinished = fl['tutorialFinished'] as bool;
+      }
+      if (fl['arcadeIntroFinished'] is bool) {
+        arcadeIntroFinished = fl['arcadeIntroFinished'] as bool;
+      }
+      if (fl['mascotIntroduced'] is bool) {
+        mascotIntroduced = fl['mascotIntroduced'] as bool;
+      }
+    }
+
+    final st = data['stats'];
+    if (st is Map) {
+      for (final key in stats.keys.toList()) {
+        final v = st[key];
+        if (v is num) stats[key] = max(0, v.toInt());
+      }
+    }
+
+    notifyListeners();
+    await _save(notifyCloud: false);
+  }
+
   Future<void> load() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -182,12 +316,22 @@ class GameEngine extends ChangeNotifier {
         final decoded = jsonDecode(raw);
         if (decoded is Map<String,dynamic>) callbacks.add(decoded);
       }
+      final rawStats = prefs.getString('stats_v1');
+      if (rawStats != null) {
+        final decoded = jsonDecode(rawStats);
+        if (decoded is Map) {
+          for (final key in stats.keys.toList()) {
+            final v = decoded[key];
+            if (v is num) stats[key] = v.toInt();
+          }
+        }
+      }
     } catch (_) { /* App works without storage on unsupported platforms. */ }
     ready = true;
     notifyListeners();
   }
 
-  Future<void> _save() async {
+  Future<void> _save({bool notifyCloud = true}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setInt('level_v4',unlockedShift);
@@ -208,6 +352,8 @@ class GameEngine extends ChangeNotifier {
       await prefs.setStringList('recent_v4',recent.take(80).toList());
       await prefs.setStringList('arcade_recent_v1',arcadeHistory);
       await prefs.setStringList('callbacks_v4',callbacks.map(jsonEncode).toList());
+      await prefs.setString('stats_v1', jsonEncode(stats));
+      if (notifyCloud) onSaved?.call();
     } catch (_) { }
   }
   void _haptic() { if (haptics) HapticFeedback.selectionClick(); }

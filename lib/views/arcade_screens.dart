@@ -11,6 +11,7 @@ import '../services/game_audio.dart';
 import 'mascot.dart';
 import '../models/player_progression.dart';
 import 'theme.dart';
+import '../services/leaderboard_service.dart';
 
 /// The Arcade: seven minigames, each with its own mechanic. All people,
 /// brands and links are fictional. See arcade_modes_a/b.dart for the games.
@@ -33,6 +34,13 @@ class _ArcadeHubState extends State<ArcadeHub> {
   bool introJustCompleted = false;
   bool hintOn = false;
   String? newestCareerReward;
+
+  /// One-time server ticket for the current ranked run. It is requested when
+  /// the run starts and redeemed by [_submitScore] when the run ends.
+  Future<String?>? runTicket;
+
+  /// The last session already reported, so a run is never counted twice.
+  ArcadeSession? _reportedSession;
 
   static const modeColors = [mustard, blue, mint, coral, pink, parchment,
     Color(0xFFBCAAFF)];
@@ -311,6 +319,11 @@ class _ArcadeHubState extends State<ArcadeHub> {
       );
       hintOn = false;
     });
+    // Ranked runs get a one-time server ticket; the tutorial day is unranked.
+    runTicket = firstDay
+        ? null
+        : LeaderboardService.instance.startRun(
+            mode: selected, difficulty: difficulty);
     final started = session;
     if (started != null) {
       widget.onPlayingChanged?.call(true);
@@ -331,11 +344,37 @@ class _ArcadeHubState extends State<ArcadeHub> {
     setState(() => hintOn = true);
   }
 
+  void _submitScore(ArcadeSession s) {
+    if (identical(_reportedSession, s)) return;
+    _reportedSession = s;
+
+    // Lifetime stats are part of the synced player profile.
+    widget.game.recordRun(
+      rounds: s.round,
+      correct: s.successful,
+      bestStreak: s.bestStreak,
+      score: s.score,
+    );
+
+    // The tutorial day never reaches the leaderboard.
+    if (s.firstDay) return;
+    final ticket = runTicket ?? Future<String?>.value(null);
+    runTicket = null;
+    LeaderboardService.instance.finishRun(
+      ticket: ticket,
+      score: s.score,
+      rounds: s.round,
+      correct: s.successful,
+      bestStreak: s.bestStreak,
+    );
+  }
+
   void _submit(List<int> answer, bool usedDecisive) {
     final s = session;
     if (s == null || s.waitingForNext) return;
     final xpBefore = widget.game.careerXp;
     setState(() => s.submit(answer, usedDecisive: usedDecisive));
+    if (s.finished) _submitScore(s);
     final xpAfter = widget.game.careerXp;
     final unlocked = ArcadeMode.values.any((m) =>
         m.unlockXp > xpBefore && m.unlockXp <= xpAfter);
@@ -397,6 +436,8 @@ class _ArcadeHubState extends State<ArcadeHub> {
       ],
     ));
     if (!mounted || shouldExit != true) return;
+    final leaving = session;
+    if (leaving != null && !leaving.finished) _submitScore(leaving);
     setState(() => session = null);
     widget.onPlayingChanged?.call(false);
     GameAudio.instance.enter(MusicScene.menu);
