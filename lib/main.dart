@@ -6,7 +6,7 @@ import 'controllers/engine.dart';
 import 'services/game_audio.dart';
 import 'views/screens.dart';
 import 'views/theme.dart';
-
+// This is the main entry point for the Scamouflage app. It initializes the game engine, sets up the app's theme and orientation, and runs the app.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
