@@ -23,7 +23,7 @@ class BackendClient {
   /// or edit the defaultValue below.
   static const String _rawBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://YOUR-PROJECT.vercel.app',
+    defaultValue: 'https://scamouflage.vercel.app',
   );
 
   static String get baseUrl => _rawBaseUrl.endsWith('/')
