@@ -1,0 +1,26 @@
+name: scamouflage
+publish_to: 'none'
+description: Scamouflage Trust or Bust - arcade digital literacy simulation for Filipino teens.
+version: 13.0.0+5
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+  flutter: '>=3.32.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_fonts: ^6.2.1
+  shared_preferences: ^2.3.2
+  audioplayers: ^6.8.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/audio/music/
+    - assets/audio/sfx/
