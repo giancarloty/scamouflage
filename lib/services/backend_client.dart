@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
+typedef JsonMap = Map<String, dynamic>;
+
 class BackendException implements Exception {
   final int statusCode;
   final String message;
@@ -33,9 +35,9 @@ class BackendClient {
   /// False until a real backend URL has been configured.
   static bool get isConfigured => !baseUrl.contains('YOUR-PROJECT');
 
-  Future<Map<String, dynamic>> post(
+  Future<JsonMap> post(
     String path,
-    Map<String, dynamic> body, {
+    JsonMap body, {
     Duration timeout = const Duration(seconds: 25),
   }) async {
     if (!isConfigured) {
@@ -61,10 +63,35 @@ class BackendClient {
     return decoded;
   }
 
+  /// Unauthenticated POST (used for resolving username -> email on login).
+  Future<JsonMap> postPublic(
+    String path,
+    JsonMap body, {
+    Duration timeout = const Duration(seconds: 25),
+  }) async {
+    if (!isConfigured) {
+      throw const BackendException(0, 'API_BASE_URL is not configured.');
+    }
+    final res = await http
+        .post(
+          Uri.parse('$baseUrl$path'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(body),
+        )
+        .timeout(timeout);
+    final decoded = _decode(res.body);
+    if (res.statusCode < 200 || res.statusCode >= 300) {
+      final msg =
+          (decoded['error'] ?? 'Request failed (${res.statusCode})').toString();
+      throw BackendException(res.statusCode, msg);
+    }
+    return decoded;
+  }
+
   Future<http.Response> _send(
     User user,
     String path,
-    Map<String, dynamic> body,
+    JsonMap body,
     Duration timeout, {
     required bool forceRefresh,
   }) async {
@@ -86,7 +113,7 @@ class BackendClient {
 
   /// Tolerates empty bodies and non-JSON error pages (for example an HTML 502
   /// from the host) instead of crashing with a FormatException.
-  Map<String, dynamic> _decode(String raw) {
+  JsonMap _decode(String raw) {
     if (raw.isEmpty) return <String, dynamic>{};
     try {
       final parsed = jsonDecode(raw);

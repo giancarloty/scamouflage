@@ -223,6 +223,121 @@ app.post(['/api/syncProfile', '/syncProfile'], requireUser, async (req, res) => 
   }
 });
 
+const USERNAME_RE = /^[A-Za-z0-9_]{3,16}$/;
+
+/**
+ * Resolves a username or email into an email address for Firebase Auth sign-in.
+ */
+app.post(['/api/resolveLogin', '/resolveLogin'], async (req, res) => {
+  try {
+    const raw = String(req.body?.identifier || '').trim();
+    if (!raw) return res.status(400).json({ error: 'Enter your email or username.' });
+    if (raw.includes('@')) return res.json({ email: raw });
+
+    if (!USERNAME_RE.test(raw)) {
+      return res.status(404).json({ error: 'Wrong username or password.' });
+    }
+    const snap = await db.collection('usernames').doc(raw.toLowerCase()).get();
+    if (!snap.exists) {
+      return res.status(404).json({ error: 'Wrong username or password.' });
+    }
+    const userRecord = await auth.getUser(snap.get('uid'));
+    if (!userRecord.email) {
+      return res.status(400).json({ error: 'This account does not have an email login.' });
+    }
+    return res.json({ email: userRecord.email });
+  } catch (err) {
+    return res.status(500).json({ error: 'Could not look up account.' });
+  }
+});
+
+/**
+ * Changes the signed-in user's username while keeping all profile & XP data.
+ */
+app.post(['/api/changeUsername', '/changeUsername'], requireUser, async (req, res) => {
+  try {
+    const uid = req.uid;
+    const newName = String(req.body?.newUsername || '').trim();
+    if (!USERNAME_RE.test(newName)) {
+      return res.status(400).json({
+        error: 'Username must be 3–16 characters: letters, numbers or underscore.',
+      });
+    }
+    const newLower = newName.toLowerCase();
+    const userRef = db.collection('users').doc(uid);
+    const newNameRef = db.collection('usernames').doc(newLower);
+
+    await db.runTransaction(async (tx) => {
+      const userSnap = await tx.get(userRef);
+      const oldLower = userSnap.exists ? userSnap.get('usernameLower') : null;
+
+      if (oldLower !== newLower) {
+        const taken = await tx.get(newNameRef);
+        if (taken.exists && taken.get('uid') !== uid) {
+          const err = new Error('That username is already taken.');
+          err.status = 409;
+          throw err;
+        }
+        if (oldLower) tx.delete(db.collection('usernames').doc(oldLower));
+        tx.set(newNameRef, { uid, createdAt: FieldValue.serverTimestamp() });
+      }
+
+      tx.set(
+        userRef,
+        { uid, username: newName, usernameLower: newLower, updatedAt: FieldValue.serverTimestamp() },
+        { merge: true },
+      );
+    });
+
+    // Best-effort update of existing leaderboard entries
+    try {
+      const entries = await db.collectionGroup('entries').where('uid', '==', uid).get();
+      if (!entries.empty) {
+        const batch = db.batch();
+        entries.docs.forEach((doc) => batch.update(doc.ref, { username: newName }));
+        await batch.commit();
+      }
+    } catch (_) {}
+
+    return res.json({ username: newName });
+  } catch (err) {
+    return res.status(err.status || 500).json({ error: err.message || 'Server error.' });
+  }
+});
+
+/**
+ * Permanently deletes the signed-in user's Firestore records and Auth account.
+ */
+app.post(['/api/deleteAccount', '/deleteAccount'], requireUser, async (req, res) => {
+  try {
+    const uid = req.uid;
+    const userRef = db.collection('users').doc(uid);
+    const userSnap = await userRef.get();
+    const oldLower = userSnap.exists ? userSnap.get('usernameLower') : null;
+
+    const batch = db.batch();
+    if (oldLower) batch.delete(db.collection('usernames').doc(oldLower));
+    batch.delete(userRef);
+    batch.delete(db.collection('players').doc(uid));
+    batch.delete(db.collection('rate').doc(uid));
+    await batch.commit();
+
+    try {
+      const entries = await db.collectionGroup('entries').where('uid', '==', uid).get();
+      if (!entries.empty) {
+        const lbBatch = db.batch();
+        entries.docs.forEach((doc) => lbBatch.delete(doc.ref));
+        await lbBatch.commit();
+      }
+    } catch (_) {}
+
+    await auth.deleteUser(uid);
+    return res.json({ deleted: true });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Could not delete account.' });
+  }
+});
+
 if (require.main === module) {
   const port = process.env.PORT || 3000;
   app.listen(port, () => {

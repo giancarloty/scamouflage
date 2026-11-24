@@ -1,3 +1,4 @@
+import '../services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'mascot.dart';
 import '../controllers/engine.dart';
@@ -37,14 +38,37 @@ class CareerIdentityScreen extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 560),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              IconButton(
-                tooltip: 'Back to the game',
-                onPressed: onBack ?? () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back_rounded, color: paperWhite),
-              ),
-              Expanded(child: Text('MY INVESTIGATOR',
-                style: titleText(23, color: mustard))),
-            ]),
+           IconButton(
+             tooltip: 'Back to the game',
+             onPressed: onBack ?? () => Navigator.pop(context),
+             icon: const Icon(Icons.arrow_back_rounded, color: paperWhite),
+           ),
+           Expanded(child: Text('MY INVESTIGATOR',
+             style: titleText(23, color: mustard))),
+           ListenableBuilder(
+             listenable: AuthService.instance,
+             builder: (context, _) {
+               final name = AuthService.instance.username;
+               return FilledButton.tonalIcon(
+                 onPressed: () => Navigator.of(context).push(
+                   MaterialPageRoute<void>(
+                     builder: (_) => const AccountScreen(),
+                   ),
+                 ),
+                 icon: Icon(
+                   name != null
+                       ? Icons.verified_user_outlined
+                       : Icons.login_rounded,
+                   size: 18,
+                 ),
+                 label: Text(
+                   name != null ? '@$name' : 'SIGN IN',
+                   overflow: TextOverflow.ellipsis,
+                 ),
+               );
+             },
+           ),
+         ]),
             const SizedBox(height: 10),
             _identityCard(),
             const SizedBox(height: 22),
@@ -99,8 +123,6 @@ class CareerIdentityScreen extends StatelessWidget {
                   () => _equip(() => game.equipFrame(frame.id)),
                   accent: _framePalette[frame.id], context: context,),
             ]),
-            const SizedBox(height: 24),
-            const AccountPanel(),
           ]),
         )),
       ),

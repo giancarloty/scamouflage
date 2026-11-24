@@ -1,8 +1,10 @@
+import 'cloud_save_service.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'backend_client.dart';
 
 /// A message that is safe to show directly to the player.
 class AuthException implements Exception {
@@ -15,10 +17,6 @@ class AuthException implements Exception {
 /// Optional online accounts. The game never requires this: if Firebase is
 /// missing or the player is offline, [available] / [signedIn] are simply
 /// false and everything keeps working from local storage.
-///
-/// Firestore layout used here:
-///   users/{uid}              -> { uid, username, usernameLower, createdAt }
-///   usernames/{usernameLower} -> { uid, createdAt }   (makes names unique)
 class AuthService extends ChangeNotifier {
   AuthService._();
   static final AuthService instance = AuthService._();
@@ -32,6 +30,7 @@ class AuthService extends ChangeNotifier {
   bool profileError = false; // reading users/{uid} failed (offline, etc.)
   User? user;
   String? username;
+  bool justRegistered = false; // Tells CloudSaveService to merge guest progress
 
   bool _registering = false;
   StreamSubscription<User?>? _sub;
@@ -140,29 +139,36 @@ class AuthService extends ChangeNotifier {
           email: email.trim(), password: password);
       try {
         await _claim(cred.user!, name);
+        justRegistered = true;
       } catch (_) {
-        // Roll back so the e-mail is free again and the player can retry.
         await cred.user?.delete();
         rethrow;
       }
     }, registering: true);
   }
 
-  Future<void> signIn({required String email, required String password}) =>
+  /// Accepts either an email address or a username, plus password.
+  Future<void> signIn({
+    required String identifier,
+    required String password,
+  }) =>
       _run(() async {
-        await _auth.signInWithEmailAndPassword(
-            email: email.trim(), password: password);
-      });
-
-  /// Google sign-in. New Google players still have to pick a username
-  /// ([needsUsername] becomes true) before they can appear on leaderboards.
-  Future<void> signInWithGoogle() => _run(() async {
-        final provider = GoogleAuthProvider();
-        if (kIsWeb) {
-          await _auth.signInWithPopup(provider);
-        } else {
-          await _auth.signInWithProvider(provider);
+        justRegistered = false;
+        var email = identifier.trim();
+        if (!email.contains('@')) {
+          try {
+            final res = await BackendClient.instance
+                .postPublic('/api/resolveLogin', {'identifier': email});
+            email = (res['email'] ?? '').toString().trim();
+            if (email.isEmpty) {
+              throw const AuthException('Wrong username or password.');
+            }
+          } on BackendException catch (e) {
+            throw AuthException(e.message);
+          }
         }
+        await _auth.signInWithEmailAndPassword(
+            email: email, password: password);
       });
 
   /// For players who signed in with Google and have no username yet.
@@ -178,8 +184,39 @@ class AuthService extends ChangeNotifier {
     });
   }
 
+  /// Changes the current user's username while keeping all XP and cosmetics.
+  Future<void> changeUsername(String raw) async {
+    final name = _checkedUsername(raw);
+    if (user == null) throw const AuthException('Please sign in first.');
+    await _run(() async {
+      try {
+        final res = await BackendClient.instance
+            .post('/api/changeUsername', {'newUsername': name});
+        username = (res['username'] ?? name).toString();
+      } on BackendException catch (e) {
+        throw AuthException(e.message);
+      }
+    });
+  }
+
+  /// Permanently deletes the account and signs out.
+  Future<void> deleteAccount() async {
+    if (user == null) throw const AuthException('Please sign in first.');
+    await _run(() async {
+      try {
+        await BackendClient.instance.post('/api/deleteAccount', {});
+      } on BackendException catch (e) {
+        throw AuthException(e.message);
+      }
+      justRegistered = false;
+      await _auth.signOut();
+    });
+  }
+
   Future<void> signOut() async {
     if (!available) return;
+    await CloudSaveService.instance.flushBeforeSignOut();
+    justRegistered = false;
     await _auth.signOut();
   }
 

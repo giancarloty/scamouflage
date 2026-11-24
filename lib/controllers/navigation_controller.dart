@@ -1,12 +1,16 @@
 /// Application navigation rules. This controller does not build widgets.
 /// UI widgets ask it whether a transition is allowed and then rebuild.
-enum GameView { home, arcade, career, profile, desk, summary }
+enum GameView { home, arcade, career, leaderboard, profile, desk, summary }
 
 class NavigationController {
   GameView current = GameView.home;
 
   static const menuTabs = <GameView>{
-    GameView.home, GameView.arcade, GameView.career, GameView.profile,
+    GameView.home,
+    GameView.arcade,
+    GameView.career,
+    GameView.leaderboard,
+    GameView.profile,
   };
 
   /// The bottom tabs must never interrupt an active Arcade challenge.
