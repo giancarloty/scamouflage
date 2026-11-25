@@ -36,6 +36,7 @@ const _benign = <String, List<String>>{
   'courier': ['Tracking tip: use the app, not links from texts.', 'Holiday delivery schedule posted.', 'Hubs are closed this Sunday.'],
   'sports': ['Game day Sabado, 3PM!', 'Practice moved to 5PM.', 'Ticket info is on the school page.'],
   'news': ['Weather update, 5PM bulletin.', 'City council session recap.', 'Correction: earlier post misspelled a name.'],
+  'person': ['Happy birthday sa ate ko! 🎂', 'Miss ko na ang barkada', 'Exam week na naman 😭'],
 };
 
 const _scams = <String>[
@@ -56,7 +57,8 @@ class _Spec {
 const _stories = <String>[
   'lookalike', 'hijacked', 'rebrand', 'fan_label', 'parody_label',
   'parody_hidden', 'same_name', 'fake_support', 'two_branches', 'renamed',
-  'paid_badge', 'supporters',
+  'paid_badge', 'supporters', 'fake_reseller', 'real_reseller', 
+  'cloned_friend', 'archive_page',
 ];
 
 int impostorScenarioCount() => _stories.length;
@@ -64,7 +66,7 @@ String impostorScenarioId(int i) => _stories[i];
 
 /// Stories where exactly one account must be flagged.
 const _flaggedStories = {'lookalike', 'hijacked', 'parody_hidden',
-  'fake_support', 'renamed', 'paid_badge'};
+  'fake_support', 'renamed', 'paid_badge', 'fake_reseller', 'cloned_friend'};
 bool impostorScenarioFlagged(int i) => _flaggedStories.contains(_stories[i]);
 
 String _lookalike(Gen g, String base) {
@@ -81,6 +83,9 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
   List<_Org> fit(List<String> kinds) =>
       _orgs.where((o) => kinds.contains(o.kind)).toList();
   final org = switch (story) {
+    'fake_reseller' || 'real_reseller' => g.pick(fit(['shop'])),
+    'archive_page' => g.pick(fit(['news'])),
+    'cloned_friend' => const _Org('Joy Villanueva', 'joyvillanueva', 'person'),
     'parody_label' || 'parody_hidden' || 'supporters' =>
       g.pick(fit(['politician'])),
     'fan_label' || 'paid_badge' => g.pick(fit(['group'])),
@@ -258,6 +263,62 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         badged, real(), 0,
         "A paid badge isn't proof. This account isn't listed by the agency, and it asks for money for a raffle slot. The real page has no badge.",
         'Is a badge the same thing as being listed in the directory?');
+    })(),
+    'fake_reseller' => (() {
+      final fake = ProfileView(
+        name: '${org.name} Authorized Dealer', handle: '@${org.base}_dealer_ph',
+        bio: 'Authorized dealer! Wholesale prices, pay first before shipping.',
+        link: 'no link', ageDays: g.between(10, 200), followers: followers(),
+        recent: ['Slots open! Send P500 deposit to reserve.', 'Walang refund, final sale.']);
+      return _Spec(
+        ['${org.name} website lists its authorized dealers by name. @${org.base}_dealer_ph is not on the list.'],
+        real(), fake, 1,
+        "Claiming to be an authorized dealer is claiming authority. The brand's own dealer list doesn't include this page, and it asks for money up front.",
+        "Is the page on the brand's own dealer list?");
+    })(),
+    'real_reseller' => (() {
+      final partner = ProfileView(
+        name: '${org.name} Partner Store (Cavite)', handle: '@${org.base}_cavite',
+        bio: 'Authorized reseller of ${org.name}. See the dealer list on their website.',
+        link: '$dom.example/dealers', ageDays: g.between(90, 1500), followers: followers(),
+        recent: ['New stocks arrived, order in the ${org.name} app!', 'Pickup hours: Mon-Sat.']);
+      return _Spec(
+        ['${org.name} website lists @${org.base} as its main page and @${org.base}_cavite as an authorized partner store.'],
+        real(), partner, -1,
+        "A reseller can be real when the brand's own site lists it. This partner page points to the dealer list and asks for nothing outside the brand's usual checkout.",
+        "Does the brand's own directory list the partner?");
+    })(),
+    'cloned_friend' => (() {
+      final friend = ProfileView(
+        name: 'Joy Villanueva', handle: '@joy.villanueva',
+        bio: 'BS Nursing • Quezon City', link: 'no link',
+        ageDays: g.between(500, 2500), followers: g.between(150, 900),
+        recent: [g.pick(benign), 'Reminder: exam sa Lunes!']);
+      final clone = ProfileView(
+        name: 'Joy Villanueva', handle: '@joy.villanueva.2',
+        bio: 'New account! Add me po 😊', link: 'no link',
+        ageDays: newAge(), followers: g.between(20, 120),
+        recent: ['Emergency! Pa-send muna ng P$amt sa wallet ko, ibabalik ko bukas.',
+          'Huwag mo munang tawagan ako, ang ingay dito.']);
+      return _Spec(
+        ['Your contacts: Joy Villanueva is saved as @joy.villanueva (your friend for 3 years).'],
+        friend, clone, 1,
+        "Copying a name and photo is easy. The account that just appeared and immediately asks for money isn't your friend. The one in your contacts is.",
+        'Which account is the one you already have in your contacts?');
+    })(),
+    'archive_page' => (() {
+      final archive = ProfileView(
+        name: '${org.name} Archive', handle: '@${org.base}_archive',
+        bio: 'Fan-run archive of old ${org.name} posts. Not affiliated.',
+        label: 'Archive account', link: 'no link',
+        ageDays: g.between(200, 2000), followers: g.between(500, 15000),
+        recent: ['Throwback: our favorite old weather bulletin.',
+          'Archive note: this is an old post, not today\'s news.']);
+      return _Spec(
+        ['${org.name} lists @${org.base} as its only official account.'],
+        real(), archive, -1,
+        "An archive page that says it is unofficial isn't pretending to be the outlet, even when it shares the outlet's old posts.",
+        'Does the account claim to be the outlet itself?');
     })(),
     _ => (() {
       final fans = ProfileView(

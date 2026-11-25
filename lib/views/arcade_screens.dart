@@ -285,7 +285,7 @@ class _ArcadeHubState extends State<ArcadeHub> {
     Row(children: ArcadeDifficulty.values.map((level) {
       final active = difficulty == level;
       return Expanded(child: Padding(
-        padding: const EdgeInsets.only(right: 7),
+        padding: const EdgeInsets.only(right: 5),
         child: GameButton(level.title, compact: true,
           color: active ? mustard : blue, outlined: !active,
           icon: active ? Icons.check_rounded : Icons.adjust_rounded,

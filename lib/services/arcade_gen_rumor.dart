@@ -46,6 +46,27 @@ const _escalations = <String, List<String>>{
     "Sarado na ang buong NCR at probinsya, lahat ng tulay bagsak na!",
     "Bagsak ang tulay at sarado ang bansa, magtago na!",
   ],
+  'water': [
+    "Walang tubig sa ilang bahay sa Brgy. {town} mula 8PM hanggang 4AM para sa pag-aayos ng tubo.",
+    "Mawawalan ng tubig sa buong Brgy. {town} bukas ng gabi, mag-ipon na.",
+    "Walang tubig sa buong {town} ng tatlong araw! Mag-ipon na ngayon!",
+    "Wala nang tubig ang buong lungsod, kontaminado raw ang supply!",
+    "Nilalason daw ang tubig ng buong probinsya, huwag uminom!",
+  ],
+  'power': [
+    "May brownout sa Brgy. {town} bukas, 9AM hanggang 3PM, para sa maintenance ng linya.",
+    "Brownout sa buong Brgy. {town} bukas ng buong araw.",
+    "Tatlong araw na brownout sa {town}, wala raw kuryente hanggang Linggo!",
+    "Blackout na sa buong lungsod, sabotahe raw ito!",
+    "Wala nang kuryente sa buong bansa, itinatago ng gobyerno ang totoo!",
+  ],
+  'exam': [
+    "Ang quiz sa Math sa {town} High ay inilipat sa Huwebes dahil sa suspensyon.",
+    "Lahat ng exam sa {town} High ay inilipat sa susunod na linggo.",
+    "Kanselado na ang lahat ng exam sa buong {town} hanggang next month!",
+    "Walang pasok ang buong lungsod hanggang next month, kanselado na ang school year!",
+    "Tapos na ang school year sa buong bansa, wala nang exam at walang diploma!",
+  ],
 };
 
 const _eyewitness = [
@@ -136,7 +157,8 @@ ArcadeCase _spot(Gen g, ArcadeDifficulty d) {
   final fee = g.pick(fees);
   final phone = '0917 ${g.between(100, 999)} ${g.between(1000, 9999)}';
   final event = g.pick(['Libreng medical mission', 'Libreng bakuna',
-    'Scholarship briefing', 'Job fair', 'Blood donation drive']);
+    'Scholarship briefing', 'Job fair', 'Blood donation drive',
+    'Libreng eye check-up', 'Tree planting', 'Livelihood training']);
   final attrs = ['day', 'time', 'venue', 'fee', 'phone'];
   final changed = g.pick(attrs);
   String render(String Function(String a, String real) tweak) {
@@ -204,6 +226,9 @@ ArcadeCase _outdated(Gen g, ArcadeDifficulty d) {
     ('Promo end', 'Libreng sakay promo hanggang'),
     ('Registration', 'Registration para sa scholarship hanggang'),
     ('Payout', 'Payout para sa registered seniors sa'),
+    ('Voucher promo', 'Libreng voucher promo hanggang'),
+    ('Vaccination', 'Libreng bakuna sa Health Center hanggang'),
+    ('Bazaar', 'Bazaar sale sa {school} hanggang'),
   ]);
   final school = g.pick(Pools.schools);
   String line(int deadlineOffset) =>
@@ -250,6 +275,10 @@ ArcadeCase _independent(Gen g, ArcadeDifficulty d) {
     'Bagong bayad sa e-wallet para sa ayuda',
     'Sarado ang tulay sa Brgy. {town} sa Sabado',
     'Nag-apruba ang konseho ng ordinansa sa single-use plastic',
+    'Libreng bakuna sa Health Center sa Martes',
+    'Inilipat sa Huwebes ang pagsusulit sa {town}',
+    'Walang pasok sa Lunes sa lahat ng antas',
+    'Bukas na ulit ang tulay sa Brgy. {town}',
   ]);
   final town = g.pick(Pools.towns);
   final c = fillSlots(claim, {'town': town});
@@ -302,6 +331,12 @@ const _quotes = <_Quote>[
   _Quote('Engineer', "Ang proyekto ay 80% tapos na at matatapos sa Enero.", "Ang proyekto ay [[100%]] tapos na at matatapos sa Enero."),
   _Quote('Kapitan', "Humihingi ako ng paumanhin sa mga naabala.", "[[Wala akong pakialam]] sa mga naabala."),
   _Quote('Nurse', "Isa lang ang nasaktan at ligtas na siya ngayon.", "[[Sampu]] ang nasaktan at ligtas na siya ngayon."),
+  _Quote('Utility spokesperson', "Ang brownout ay tatagal ng anim na oras mula 9AM hanggang 3PM.", "Ang brownout ay tatagal ng [[tatlong araw]] mula 9AM hanggang 3PM."),
+  _Quote('Registrar', "Ang enrollment ay hanggang Biyernes lamang.", "Ang enrollment ay [[hanggang katapusan ng buwan]] lamang."),
+  _Quote('Barangay captain', "Walang kumpirmadong kaso ng dengue sa aming barangay ngayong linggo.", "[[May sampung]] kumpirmadong kaso ng dengue sa aming barangay ngayong linggo."),
+  _Quote('Teacher', "Mag-submit ng proyekto bago ang Biyernes, walang late penalty hanggang Sabado.", "Mag-submit ng proyekto bago ang Biyernes, [[bagsak agad kapag late.]]"),
+  _Quote('Forecaster', "Posibleng lumakas ang bagyo pero hindi pa tiyak ang landas nito.", "[[Tiyak na tatama ang bagyo]] pero hindi pa tiyak ang landas nito."),
+  _Quote('Social worker', "Mamimigay kami ng ayuda sa mga nakarehistro lamang, walang bayad.", "Mamimigay kami ng ayuda sa [[lahat, magbayad lang ng ₱200 sa registration.]]"),
 ];
 
 ArcadeCase _word(Gen g, ArcadeDifficulty d) {

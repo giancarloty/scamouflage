@@ -9,7 +9,7 @@ class ConceptStat {
   double get missRate => seen == 0 ? 0 : missed / seen;
 }
 
-/// Pure summary of a finished run. 
+/// Pure summary of a finished run.
 class RunStats {
   final List<RoundRecord> log;
   const RunStats(this.log);
@@ -48,25 +48,78 @@ class RunStats {
   /// Rounds the player got wrong, in the order they happened.
   List<RoundRecord> get misses => log.where((r) => !r.correct).toList();
 
-  /// One sentence about the kind of mistake made most, or null if none.
+  /// Actionable feedback for the most common mistake pattern, or null if clean.
   String? get errorPattern {
-    final trusted = count(ErrorKind.trustedBad);
-    final flagged = count(ErrorKind.flaggedGood);
-    final timeouts = count(ErrorKind.timeout);
-    if (trusted == 0 && flagged == 0 && timeouts == 0) return null;
-    if (timeouts > trusted && timeouts > flagged) {
-      return 'You ran out of time on $timeouts email${timeouts == 1 ? '' : 's'}. '
-          'Look for the one decisive clue first.';
+    final mistakes = misses;
+    if (mistakes.isEmpty) return null;
+
+    final patterns = [
+      ErrorKind.trustedBad,
+      ErrorKind.flaggedGood,
+      ErrorKind.timeout,
+      ErrorKind.other,
+    ];
+    final highestCount = patterns.map(count).reduce((a, b) => a > b ? a : b);
+    final leadingPatterns = patterns
+        .where((kind) => count(kind) == highestCount)
+        .toList();
+
+    if (leadingPatterns.length == 1) {
+      final kind = leadingPatterns.single;
+      switch (kind) {
+        case ErrorKind.trustedBad:
+          final total = count(kind);
+          return 'You trusted deceptive content $total time${total == 1 ? '' : 's'}. '
+              'Check the decisive evidence before trusting a claim.';
+        case ErrorKind.flaggedGood:
+          final total = count(kind);
+          return 'You rejected legitimate content $total time${total == 1 ? '' : 's'}. '
+              'Check for satire, honest opinions and missing context before rejecting it.';
+        case ErrorKind.timeout:
+          final total = count(kind);
+          return 'You timed out on an inbox item in $total round${total == 1 ? '' : 's'}. '
+              'Check the sender and request first, then decide.';
+        case ErrorKind.other:
+          return _modeFeedback(mistakes);
+        case ErrorKind.none:
+          break;
+      }
     }
-    if (trusted > flagged) {
-      return 'You kept $trusted deceptive post${trusted == 1 ? '' : 's'}. '
-          'Check the decisive evidence before you keep something.';
+
+    if (leadingPatterns.contains(ErrorKind.trustedBad) &&
+        leadingPatterns.contains(ErrorKind.flaggedGood)) {
+      return 'You made mistakes in both directions: trusting deceptive content '
+          'and removing legitimate ones. Check the evidence before deciding.';
     }
-    if (flagged > trusted) {
-      return 'You removed $flagged legitimate post${flagged == 1 ? '' : 's'}. '
-          'Criticism, satire and honest opinions can be allowed.';
+    return 'Your mistakes are spread across a few patterns. '
+        '${_modeFeedback(mistakes)}';
+  }
+
+  String _modeFeedback(List<RoundRecord> mistakes) {
+    final missesByMode = <ArcadeMode, int>{};
+    for (final record in mistakes) {
+      missesByMode.update(record.mode, (count) => count + 1, ifAbsent: () => 1);
     }
-    return 'You made mistakes in both directions: keeping deceptive posts and '
-        'removing legitimate ones. Slow down and check the source.';
+    final toughestMode = missesByMode.entries.reduce(
+      (a, b) => a.value >= b.value ? a : b,
+    );
+    final mode = toughestMode.key;
+    final total = toughestMode.value;
+    final guidance = switch (mode) {
+      ArcadeMode.trust =>
+        'Check the decisive evidence before choosing to keep or remove a post.',
+      ArcadeMode.impostor =>
+        'Compare both handles with the directory instead of relying on profile names.',
+      ArcadeMode.scamSlam =>
+        'Choose a reply that protects the account and verifies through an official channel.',
+      ArcadeMode.rumor =>
+        'Check the original source, timeline and wording before solving the puzzle.',
+      ArcadeMode.inbox => 'Check each sender, link and request before swiping.',
+      ArcadeMode.comments =>
+        'Flag rule-breaking behavior, not disagreement or honest criticism.',
+      ArcadeMode.clip =>
+        'Compare the full context with the viral cut before deciding.',
+    };
+    return 'Most misses were in ${mode.title} ($total). $guidance';
   }
 }

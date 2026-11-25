@@ -5,10 +5,10 @@ import '../models/arcade_models.dart';
 /// back to the post's own value. Each variant must keep at least one
 /// decisive check, and must not change the truth.
 class _Variant {
-  final String? q, photo, date, source;
-  final Relevance? rPhoto, rDate, rSource;
-  const _Variant({this.q, this.photo, this.date, this.source,
-      this.rPhoto, this.rDate, this.rSource});
+  final String? q, photo, date, source, account;
+  final Relevance? rPhoto, rDate, rSource, rAccount;
+  const _Variant({this.q, this.photo, this.date, this.source, this.account,
+      this.rPhoto, this.rDate, this.rSource, this.rAccount});
 }
 
 /// Post Autopsy. Each scenario fixes the truth first, then writes five
@@ -51,6 +51,17 @@ const _posts = <_Post>[
     source: "City Hall's own page posted the same advisory: all levels suspended tomorrow.",
     replies: "Students say their school group chats got the same notice.",
     concepts: [Concept.officialSource],
+    variants: [
+      _Variant(
+        q: 'Is this the page City Hall itself lists for advisories?',
+        account: "Page is linked from City Hall's official website as its advisory account. Active for 8 years.",
+        rAccount: Relevance.decisive, rSource: Relevance.support,
+      ),
+      _Variant(
+        q: 'Do City Hall and the disaster office both list it?',
+        source: "City Hall's page and the city disaster office both list the same advisory number and time.",
+      ),
+    ],
     ruleOfThumb: "Check the official page for advisories. A real advisory is not misinformation.",
     rDate: Relevance.support,
     lesson: "Even a small or brand-new page can share a real advisory. The City Hall's own page matched it."),
@@ -287,6 +298,18 @@ const _posts = <_Post>[
     source: "City Hall posted: \"We have no such program. Don't click links.\"",
     replies: "Some ask for the link, others say they never received anything.",
     concepts: [Concept.urgencyPressure, Concept.linkMismatch],
+    variants: [
+      _Variant(
+        q: 'Is this the page the city website lists?',
+        account: "Page created 3 days ago. Its name copies the city's, but its handle isn't the one listed on the city website.",
+        rAccount: Relevance.decisive, rSource: Relevance.support,
+      ),
+      _Variant(
+        q: 'Has this exact wording been posted before?',
+        date: "The same 'midnight deadline' wording has appeared on other pages every week since {y1}, each with a new link.",
+        rDate: Relevance.decisive, rSource: Relevance.support,
+      ),
+    ],
     ruleOfThumb: "Free cash with a deadline and a link is pressure. Check the agency's own page, not the post's link.",
     rPhoto: Relevance.support,
     lesson: "Free cash with a link and a deadline is a classic scam pattern. Check the official page, not the post's own link."),
@@ -352,6 +375,13 @@ const _posts = <_Post>[
     source: "The city's inspection report shows the Brgy. {town} wall as finished, with dated photos.",
     replies: "Residents say the wall exists, but the old drainage still floods.",
     concepts: [Concept.missingContext],
+    variants: [
+      _Variant(rSource: Relevance.support),
+      _Variant(
+        q: "What does the city's inspection report show for Brgy. {town}?",
+        rPhoto: Relevance.support,
+      ),
+    ],
     ruleOfThumb: "A real photo from the wrong place is not proof. Check where it was taken.",
     rPhoto: Relevance.decisive, rSource: Relevance.decisive, rReplies: Relevance.support,
     lesson: "Corruption is a real issue and worth asking about. But a photo of the wrong place is not proof. Accountability needs accurate evidence."),
@@ -474,6 +504,57 @@ const _posts = <_Post>[
     ruleOfThumb: "Real security notices tell you to protect your codes. They never ask you to send one.",
     rSource: Relevance.decisive,
     lesson: "A reminder not to share your OTP protects users. It asks for nothing and matches the wallet's own help page."),
+_Post('fake_charity', true, 'Government', 'Donation drive poster', [
+    "TULONG PARA SA MGA BIKTIMA NG BAGYO sa Brgy. {town}! I-send ang donasyon sa personal {wallet} ni Ate Cora: 0917 555 0142. Walang resibo pero aabot talaga!",
+    "Magdonate para sa mga nasalanta ng baha sa {city}. Ipadala sa {wallet} ng admin namin at ibibigay agad sa mga pamilya.",
+  ],
+    q: 'Does the barangay list this donation drive?',
+    photo: "The flooded-street photo was taken in another city in {y1}, not in {town}.",
+    date: "Posted within hours of the typhoon by a page created the same day.",
+    source: "The barangay's page lists its official drop-off at the barangay hall and says it doesn't accept wallet transfers to individuals.",
+    replies: "Several commenters ask for a receipt; the page keeps deleting those comments.",
+    concepts: [Concept.payToReceive, Concept.officialSource],
+    ruleOfThumb: "Give through the official drop-off or a listed group, never to a stranger's personal wallet.",
+    rPhoto: Relevance.support,
+    lesson: "Disaster donation drives attract scams. A real drive is listed by the barangay or a registered group and gives receipts."),
+  _Post('clinic_vaccine_real', false, 'Health', 'Vaccine schedule poster', [
+    "Libreng bakuna sa Health Center ng Brgy. {town} ngayong Martes, 8AM-12NN. Dalhin ang vaccination card. Walang bayad.",
+    "Paalala: libreng flu vaccine para sa mga senior sa Health Center ng Brgy. {town} sa Martes. Walang registration fee.",
+  ],
+    q: 'Does the city health office list the same schedule?',
+    photo: "The poster uses the health center's usual template and the same address as its page.",
+    date: "Posted three days before the vaccination day.",
+    source: "The city health office's page lists the same schedule, time and the 'free' note.",
+    replies: "Residents ask about requirements and the health center answers with the same details.",
+    concepts: [Concept.payToReceive],
+    ruleOfThumb: "A free service is believable when the official health office lists it and nothing asks for payment.",
+    lesson: "Not every health post is a scam. The city health office listed the same free schedule, and nothing asked for money or codes."),
+  _Post('voucher_link', true, 'Shopping', 'Voucher graphic', [
+    "{store} ANNIVERSARY! Libreng ₱{amt} voucher para sa unang 500. I-click ang anniv-voucher-ph.example at ilagay ang mobile number at OTP.",
+    "Namimigay ang {store} ng ₱{amt} voucher ngayon lang! Mag-register sa anniv-voucher-ph.example bago maubos.",
+  ],
+    q: "Is that link the store's own site?",
+    photo: "The voucher graphic uses {store}'s logo, but the same graphic appears on other pages with different store names.",
+    date: "Posted late at night with a 'first 500' countdown.",
+    source: "{store}'s official page says its promos are only in its app and on its own site. The link in this post isn't either.",
+    replies: "Some commenters say the site asked for an OTP and then charged their wallet.",
+    concepts: [Concept.linkMismatch, Concept.otpRequest],
+    ruleOfThumb: "A promo link that isn't the store's own site is a trap. Never type an OTP to claim a prize.",
+    rPhoto: Relevance.support,
+    lesson: "A voucher link that isn't on the store's own site is a classic trap. Real promos never ask for your OTP."),
+  _Post('full_statement_real', false, 'Government', 'Quote card', [
+    "Sabi ni {who}: 'Hindi pa final ang budget.' Ito ang buong statement mula sa opisyal na page, basahin hanggang dulo: cityhall.example/statements",
+    "Quote card mula sa budget hearing ni {who}. Nasa opisyal na page ng city council ang buong video at transcript.",
+  ],
+    q: 'Does the full statement say the same thing?',
+    photo: "The quote card uses the council's template and shows the date and name of the hearing.",
+    date: "Posted the same day as the hearing.",
+    source: "The council's official transcript contains the quote, with the sentences before and after it, and the meaning is the same.",
+    replies: "A few ask for the full video; others link the transcript.",
+    concepts: [Concept.missingContext],
+    ruleOfThumb: "A short quote is fine when the full statement says the same thing. Check what comes before and after it.",
+    rPhoto: Relevance.support,
+    lesson: "Short quotes aren't automatically misleading. This one matched the full transcript, so nothing that changes the meaning was left out."),
 ];
 
 const _accounts = <String>[
@@ -557,7 +638,7 @@ ArcadeCase buildTrust(Gen g, ArcadeDifficulty d, int index) {
   final tools = <Finding>[
     Finding('photo', p.photoLabel, '🖼️',
         fillSlots(v?.photo ?? p.photo, slots), v?.rPhoto ?? p.rPhoto),
-    Finding('account', 'ACCOUNT', '👤', p.account ?? g.pick(_accounts), p.rAccount),
+    Finding('account', 'ACCOUNT', '👤', v?.account ?? p.account ?? g.pick(_accounts), v?.rAccount ?? p.rAccount),
     Finding('date', 'DATE CHECK', '🕒',
         fillSlots(v?.date ?? p.date, slots), v?.rDate ?? p.rDate),
     Finding('source', 'ORIGINAL SOURCE', '🔎',
