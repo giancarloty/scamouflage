@@ -105,12 +105,12 @@ class _TrustViewState extends State<TrustView> with _Inspect<TrustView> {
         Expanded(child: ArcadeButton('KEEP', color: keepColor,
           icon: Icons.check_circle_rounded, glow: widget.tutorial && !gate,
           onTap: gate ? null
-              : () => widget.onSubmit([0], usedDecisive))),
+              : () => widget.onSubmit([0], usedDecisive, opened: opened))),
         const SizedBox(width: 10),
         Expanded(child: ArcadeButton('REMOVE', color: removeColor,
           icon: Icons.block_rounded, glow: widget.tutorial && !gate,
           onTap: gate ? null
-              : () => widget.onSubmit([1], usedDecisive))),
+              : () => widget.onSubmit([1], usedDecisive, opened: opened))),
       ]),
     );
   }
@@ -485,11 +485,11 @@ class _ClipViewState extends State<ClipView> with _Inspect<ClipView> {
       actions: Row(children: [
         Expanded(child: ArcadeButton('KEEP', color: keepColor,
           icon: Icons.check_circle_rounded,
-          onTap: () => widget.onSubmit([0], usedDecisive))),
+          onTap: () => widget.onSubmit([0], usedDecisive, opened: opened))),
         const SizedBox(width: 10),
         Expanded(child: ArcadeButton('REMOVE', color: removeColor,
           icon: Icons.block_rounded,
-          onTap: () => widget.onSubmit([1], usedDecisive))),
+          onTap: () => widget.onSubmit([1], usedDecisive, opened: opened))),
       ]),
     );
   }

@@ -16,11 +16,27 @@ import '../models/arcade_models.dart';
 class ArcadeGenerator {
   final Random random;
   final Gen gen;
+  final Map<ArcadeMode, List<bool>> _recentBad = {};
   ArcadeGenerator(int seed)
       : random = Random(seed),
         gen = Gen(Random(seed ^ 0x5bd1e995));
 
   T pick<T>(List<T> choices) => choices[random.nextInt(choices.length)];
+
+  /// Pulls the mix back toward even after a streak. After two in a row the
+  /// next verdict is likely, not certain, to flip; after three it always flips.
+  double _badShareFor(ArcadeMode mode) {
+    final base = mode == ArcadeMode.impostor ? .55 : .5;
+    final r = _recentBad[mode] ?? const <bool>[];
+    if (r.length >= 3 && r[r.length - 1] == r[r.length - 2] &&
+        r[r.length - 2] == r[r.length - 3]) {
+      return r.last ? 0.0 : 1.0;
+    }
+    if (r.length >= 2 && r[r.length - 1] == r[r.length - 2]) {
+      return r.last ? .25 : .75;
+    }
+    return base;
+  }
 
   /// How many distinct scenarios a mode has (before per-case variation).
   static int scenarioCount(ArcadeMode mode) => switch (mode) {
@@ -115,9 +131,24 @@ class ArcadeGenerator {
     ArcadeMode.clip => buildClip(gen, d, i),
   };
 
+  ArcadeCase generate(ArcadeMode mode, ArcadeDifficulty difficulty,
+      {Set<String> exclude = const {},
+      Set<String> excludeFamilies = const {},
+      bool tutorial = false}) {
+    final c = _generateCase(mode, difficulty,
+        exclude: exclude, excludeFamilies: excludeFamilies, tutorial: tutorial);
+    // Only modes with a real good/bad split (Trust, Impostor, Chat, Clip).
+    if (!tutorial && scenarioIsBad(mode, 0) != null) {
+      final list = _recentBad.putIfAbsent(mode, () => <bool>[]);
+      list.add(c.deceptive);
+      if (list.length > 3) list.removeAt(0);
+    }
+    return c;
+  }
+
   /// Avoid recent *scenario families* first, then exact signatures.
   /// We only fall back to a repeat when the available pool is exhausted.
-  ArcadeCase generate(ArcadeMode mode, ArcadeDifficulty difficulty,
+  ArcadeCase _generateCase(ArcadeMode mode, ArcadeDifficulty difficulty,
       {Set<String> exclude = const {},
       Set<String> excludeFamilies = const {},
       bool tutorial = false}) {
@@ -125,11 +156,8 @@ class ArcadeGenerator {
       return _build(mode, ArcadeDifficulty.easy, _tutorialIndex(mode),
           tutorial: true);
     }
-    final badShare = switch (mode) {
-      ArcadeMode.scamSlam => .5,
-      ArcadeMode.impostor => .55,
-      _ => .5,
-    };
+    final badShare = _badShareFor(mode);
+    
     // A fixed-template mode can exhaust its entire available pool. Try
     // alternate templates rather than randomly rolling the same one 16 times.
     final tried = <int>{};

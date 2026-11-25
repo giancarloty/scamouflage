@@ -49,6 +49,19 @@ const _legit = <_E>[
   _E('pw_changed', false, '{wallet}', 'security@{walletDom}.example', 'You changed your password',
     "You changed your {wallet} password a minute ago. If this wasn't you, open the app and use Help. We won't ask for your password by email.",
     "You just did this, it has no link, and it tells you to use the app if you didn't."),
+  _E('library_due', false, 'Library', 'library@{schoolDom}.example', 'Book due on Friday',
+    "Hi {name}, your borrowed book is due this Friday. You can renew it in the library portal you already use. On-time renewal has no fee.",
+    "It comes from the school's own domain, matches a book you borrowed, and only points to the portal you already use."),
+  _E('order_shipped', false, '{store}', 'orders@{storeDom}.example', 'Your order #{id} has shipped',
+    "Good news! Your order shipped today. Track it in the {store} app under Orders. We will never ask for payment by email.",
+    "It matches an order you made, comes from the store's domain, and sends you to the app instead of a link."),
+  _E('council_survey', false, 'Student Council', 'council@{schoolDom}.example', 'Survey: Foundation week ideas',
+    "Hi {name}! Gusto naming marinig ang ideas mo para sa foundation week. Sagutan ang maikling survey sa school portal bago Biyernes. Walang bayad o password na kailangan.",
+    "It comes from the school's own domain, the survey lives on the portal, and it asks for no password or money.",
+    linkLabel: 'Open the survey', link: '{schoolDom}.example/survey'),
+  _E('new_device', false, '{wallet}', 'security@{walletDom}.example', 'New device login',
+    "We noticed a login from a new phone. If this was you, no action is needed. If not, open the app and tap Help. We will never ask for your OTP.",
+    "You just logged in on a new phone, it has no link, and it sends you to the app."),
 ];
 
 const _spam = <_E>[
@@ -91,6 +104,22 @@ const _spam = <_E>[
     "Doc Ramon recommends this capsule for every illness. Only 20 left. Pay now with {wallet}.",
     "A doctor's name used on an unknown seller's email, with cure claims and urgency, is a scam.",
     linkLabel: 'Order now', link: 'herbal-cure-ph.example/order'),
+  _E('prize_survey', true, 'Customer Rewards', 'rewards@survey-prizes-ph.example', 'Answer 3 questions, win ₱{amt}',
+    "Take our quick survey and win ₱{amt} instantly. Enter your card number to receive your prize.",
+    "A survey that pays you if you enter your card number is a card-theft trick.",
+    linkLabel: 'Start survey', link: 'survey-prizes-ph.example/start'),
+  _E('boss_codes', true, 'Dean Reyes', 'dean.reyes@{schoolDom}-office.example', 'Urgent: confidential',
+    "I'm in a meeting and can't talk. Please buy ₱{amt} in {wallet} credits and send me the codes. Keep this confidential.",
+    "The sender's domain isn't the school's, and it asks for wallet codes with secrecy and urgency.",
+    reply: 'reyes.dean@mail-reply.example'),
+  _E('password_expire', true, 'IT Helpdesk', 'it-helpdesk@{schoolDom}-support.example', 'Your password expires today',
+    "Your school email password expires in 1 hour. Click below and type your current password to keep it.",
+    "The sender's domain isn't the school's, and a real helpdesk never asks you to type your current password.",
+    linkLabel: 'Keep my password', link: '{schoolDom}-support.example/keep'),
+  _E('inheritance', true, 'Legal Desk', 'claims@global-estates.example', 'You inherited ₱{amt}',
+    "A distant relative left you money. Reply with your full name, an ID photo and a ₱2,000 processing fee to release it.",
+    "Unexpected money that needs a fee and your ID is an advance-fee scam.",
+    reply: 'claims.desk@mail-reply.example'),
 ];
 
 int inboxScenarioCount() => _legit.length + _spam.length;

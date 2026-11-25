@@ -1,4 +1,4 @@
-  import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:scamouflage/models/arcade_models.dart';
 import 'package:scamouflage/services/auth_service.dart';
 import 'package:scamouflage/services/leaderboard_service.dart';

@@ -28,6 +28,15 @@ const _allowed = <_C>[
   _C(false, "Ang init ng ulo ng lahat dito, pero wala namang threat kaya hayaan na natin."),
   _C(false, "Nakakaasar yung ads sa gitna ng video, sobrang dami 😤"),
   _C(false, "Ayoko sa takbo ng palabas, pero mahal ko pa rin ang mga fans, mababait naman."),
+  _C(false, "Scam ata 'to: may nag-DM na kailangan daw ng OTP ko. Huwag kayong maniwala!",
+      context: 'Warning others about a scam message.'),
+  _C(false, "Sobrang walang katuturan ng desisyong 'to, hindi inisip ang mga estudyante."),
+  _C(false, "Hindi ako boboto kay {t} sa susunod. Ang daming pangako, kulang sa resulta."),
+  _C(false, "Unfollow na ako. Paulit-ulit na lang ang content, nakakasawa."),
+  _C(false, "Sana may refund o paliwanag man lang. Dalawang beses na akong na-charge!"),
+  _C(false, "Mali ang numero sa post, 5,000 hindi 50,000. Pa-edit po."),
+  _C(false, "Ang init ng ulo ko dito pero hindi ko naman sasaktan ang kahit sino, vent lang 😤"),
+  _C(false, "Kung may nakakita ng nawawalang ID ko sa Brgy. Sinag, paki-message po ako. Salamat!"),
 ];
 
 const _bad = <_C>[
@@ -51,6 +60,18 @@ const _bad = <_C>[
       reason: 'A scam trying to collect card details.'),
   _C(true, "Burahin mo na ang post mo o ipapakalat namin ang private photos mo.",
       reason: 'Blackmail: threatening to spread private photos.'),
+  _C(true, "Ibibigay ko ang password mo sa lahat kapag hindi ka nag-sorry ngayon.",
+      reason: "A threat to leak someone's account."),
+  _C(true, "Sino may pangalan at school ng nag-post nito? Hanapin natin siya at i-expose.",
+      reason: 'Trying to identify and expose someone for a pile-on (doxxing).'),
+  _C(true, "Mga mahihirap na estudyante, huwag na silang pasukin sa school natin. Wala silang karapatan dito.",
+      reason: 'Hate toward a whole group of people based on income.'),
+  _C(true, "Sumali sa group chat namin at mag-send ng ₱500 para sa 'VIP raffle'. Maraming nanalo na!",
+      reason: 'A scam asking for money to join a raffle.'),
+  _C(true, "Ipo-post ko ang screenshot ng private chat mo kapag hindi ka nag-apologize.",
+      reason: 'Blackmail: threatening to leak private messages.'),
+  _C(true, "Pumunta tayo sa bahay ni {t} at sirain ang gate. Sino sasama?",
+      reason: 'A call for violence or damage against a person.'),
 ];
 
 class _Topic {
@@ -67,6 +88,10 @@ const _topics = <_Topic>[
   _Topic('tickets', 'Sold out na ang tickets ng LUNARIS Manila concert', 'ang ticketing page'),
   _Topic('sc_election', 'Student council election: sino ang iboboto n\'yo?', 'si Mara'),
   _Topic('vlog', 'Viral na vlog ng sikat na food vlogger sa Manila', 'ang vlogger'),
+  _Topic('exam_policy', 'Bagong exam schedule sa Kalikasan College', 'ang registrar'),
+  _Topic('relief_goods', 'Update ng barangay sa relief goods matapos ang bagyo', 'ang kapitan'),
+  _Topic('milktea_shop', 'Bagong milk tea shop sa tapat ng school, review?', 'ang shop owner'),
+  _Topic('streamer_apology', 'Humingi ng tawad ang sikat na streamer sa isang kontrobersya', 'ang streamer'),
 ];
 
 int threadScenarioCount() => _topics.length;

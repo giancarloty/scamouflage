@@ -11,6 +11,28 @@ enum RumorTask { order, spotDiff, outdated, independent, wordEdit }
 /// XP bonuses, hints and generator validation.
 enum Relevance { decisive, support, decoy }
 
+enum Concept {
+  officialSource('Checking whether a source is official or credible'),
+  recycledMedia('Checking whether a photo or video is reused from an older event'),
+  editedScreenshot('Checking whether a screenshot has been edited or doctored'),
+  lookalikeHandle('Checking whether a social media handle is a lookalike or impersonation'),
+  urgencyPressure('Checking whether a post pressures the reader to act quickly'),
+  otpRequest('Checking whether anyone is asking for an OTP or login credentials'),
+  linkMismatch('Checking whether a link leads to the official source'),
+  payToReceive('Checking whether money or a fee is requested'),
+  satireLabel('Checking whether content is satire or parody, and honestly labeled'),
+  opinionVsHarassment('Checking whether a post is opinion or criticism, or harassment'),
+  missingContext('Checking for missing context or information that changes the meaning'),
+  aiGenerated('Checking whether content is AI-generated and honestly labeled'),
+  fakeQuote('Checking whether a quote is fabricated or misattributed'),
+  oldValid('Checking whether an older post is still valid or really outdated'),;
+  final String label;
+  const Concept(this.label);
+}
+
+/// What kind of mistake a wrong answer was. Used for the run summary.
+enum ErrorKind {none, trustedBad, flaggedGood, timeout, other}
+
 extension ArcadeModeInfo on ArcadeMode {
   String get title => switch (this) {
     ArcadeMode.trust => 'TRUST OR BUST',
@@ -193,6 +215,10 @@ class ArcadeCase {
   ///  indices; inbox: per email 0 = spam, 1 = keep.
   final List<int> correct;
 
+  /// Conceptual tags for the case, used for filtering and XP bonuses.
+  final List<Concept> concepts;
+  final String ruleOfThumb;
+
   // Post Autopsy / Clip Check
   final String imageTopic, imageCaption, reactions;
   final List<Finding> tools;
@@ -233,6 +259,7 @@ class ArcadeCase {
     this.choices = const [], this.followUps = const {},
     this.rumorTask, this.cards = const [], this.tokens = const [],
     this.emails = const [], this.comments = const [], this.beats = const [],
+    this.concepts = const [], this.ruleOfThumb = '',
   });
 
   /// Single-choice convenience.
@@ -265,6 +292,18 @@ class ArcadeCase {
       if (a[i] != correct[i]) return false;
     }
     return true;
+  }
+
+  /// Classifies an answer. Pure: reads only this case and [answer].
+  ErrorKind errorKind(List<int> answer) {
+    final right = isBatch ? matches(answer) == totalParts : isCorrect(answer);
+    if (right) return ErrorKind.none;
+    // Inbox Sprint records a timeout as 2 (swipes use 0 and 1).
+    if (mode == ArcadeMode.inbox && answer.contains(2)) return ErrorKind.timeout;
+    if (mode == ArcadeMode.trust || mode == ArcadeMode.clip) {
+      return deceptive ? ErrorKind.trustedBad : ErrorKind.flaggedGood;
+    }
+    return ErrorKind.other;
   }
 
   /// The tool ids that actually settle the question.

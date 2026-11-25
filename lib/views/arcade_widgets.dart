@@ -12,7 +12,8 @@ const choiceBlue = Color(0xFFA3D6F6);
 const chipFill = Color(0xFFE3ECF8);
 const chipOpenFill = Color(0xFFC6D9F1);
 
-typedef SubmitFn = void Function(List<int> answer, bool usedDecisive);
+typedef SubmitFn = void Function(List<int> answer, bool usedDecisive,
+    {List<String> opened});
 
 /// White "paper" card used for every case surface.
 class Paper extends StatelessWidget {
