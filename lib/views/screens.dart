@@ -1,3 +1,4 @@
+import 'account_screens.dart';
 import 'package:flutter/material.dart';
 import 'arcade_screens.dart';
 import 'case_media.dart';
@@ -255,6 +256,7 @@ class _GameScreensState extends State<GameScreens> {
                           game: g, onBack: () => _selectTab(GameView.home)),
                         GameView.desk => _desk(),
                         GameView.summary => _summary(),
+                        GameView.leaderboard => const LeaderboardScreen(embedded: true),
                       },
                     ),
                     if (view == GameView.desk && showingResult && g.pendingResult != null)
@@ -274,8 +276,10 @@ class _GameScreensState extends State<GameScreens> {
       (GameView.home, 'HOME', Icons.home_rounded),
       (GameView.arcade, 'ARCADE', Icons.sports_esports_rounded),
       (GameView.career, 'SHIFTS', Icons.work_history_rounded),
+      (GameView.leaderboard, 'RANKS', Icons.emoji_events_rounded),
       (GameView.profile, 'PROFILE', Icons.person_rounded),
     ];
+    
     return SafeArea(top: false, child: Container(
       decoration: const BoxDecoration(color: deskBlue,
         border: Border(top: BorderSide(color: deskLight, width: 1.5))),

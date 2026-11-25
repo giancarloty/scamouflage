@@ -282,6 +282,31 @@ class GameEngine extends ChangeNotifier {
     await _save(notifyCloud: false);
   }
 
+  /// Resets local progress on screen when signing out (does not touch cloud data).
+  Future<void> resetLocalProgress() async {
+    unlockedShift = 1;
+    careerXp = 0;
+    equippedTitleId = CareerProgression.ranks.first.id;
+    equippedBadgeId = CareerProgression.badges.first.id;
+    equippedFrameId = CareerProgression.frames.first.id;
+    equippedMascotNameId = CareerProgression.mascotNames.first.id;
+    equippedMascotColorId = CareerProgression.mascotColors.first.id;
+    hintsUsed = 0;
+    safety = 80;
+    fairness = 80;
+    completedShifts = 0;
+    tutorialFinished = false;
+    arcadeIntroFinished = false;
+    recent.clear();
+    arcadeHistory.clear();
+    callbacks.clear();
+    for (final key in stats.keys.toList()) {
+      stats[key] = 0;
+    }
+    notifyListeners();
+    await _save(notifyCloud: false);
+  }
+
   Future<void> load() async {
     try {
       final prefs = await SharedPreferences.getInstance();

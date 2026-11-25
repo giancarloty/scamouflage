@@ -36,25 +36,31 @@ class _AccountPanelState extends State<AccountPanel> {
     } on AuthException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
-      if (mounted) setState(() => _error = 'Something went wrong. Please try again.');
+      if (mounted) {
+        setState(() => _error = 'Something went wrong. Please try again.');
+      }
     }
   }
 
   Future<void> _submitForm() => _perform(() {
-        final email = _email.text.trim();
+        final identifier = _email.text.trim();
         final password = _password.text;
-        if (email.isEmpty || password.isEmpty) {
-          throw const AuthException('Enter your email and password.');
-        }
         if (_registerMode) {
+          if (_username.text.trim().isEmpty ||
+              identifier.isEmpty ||
+              password.isEmpty) {
+            throw const AuthException(
+                'Enter your username, email, and password.');
+          }
           return _auth.register(
-              email: email, password: password, username: _username.text);
+              email: identifier, password: password, username: _username.text);
         }
-        return _auth.signIn(email: email, password: password);
+        if (identifier.isEmpty || password.isEmpty) {
+          throw const AuthException(
+              'Enter your email or username and password.');
+        }
+        return _auth.signIn(identifier: identifier, password: password);
       });
-
-  void _openLeaderboard() => Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => const LeaderboardScreen()));
 
   @override
   Widget build(BuildContext context) => Container(
@@ -77,8 +83,6 @@ class _AccountPanelState extends State<AccountPanel> {
                 const SizedBox(height: 10),
                 Text(_error!, style: captionText(13, color: coral)),
               ],
-              const Divider(color: deskLight, height: 25),
-              _leaderboardRow(),
             ],
           ),
         ),
@@ -90,8 +94,11 @@ class _AccountPanelState extends State<AccountPanel> {
       Icon(_auth.available ? Icons.cloud_outlined : Icons.cloud_off_outlined,
           color: parchment),
       const SizedBox(width: 9),
-      Expanded(child: Text('ONLINE FEATURES', style: titleText(20, color: paperWhite))),
-      InkTag(signedIn ? 'SIGNED IN' : 'OPTIONAL', color: signedIn ? mint : mustard),
+      Expanded(
+          child: Text('ONLINE FEATURES',
+              style: titleText(20, color: paperWhite))),
+      InkTag(signedIn ? 'SIGNED IN' : 'OPTIONAL',
+          color: signedIn ? mint : mustard),
     ]);
   }
 
@@ -105,8 +112,10 @@ class _AccountPanelState extends State<AccountPanel> {
     if (!_auth.signedIn) return _signedOutForm();
     if (_auth.profileError) {
       return Row(children: [
-        Expanded(child: Text('Could not load your profile. Check your connection.',
-            style: captionText(13, color: parchment))),
+        Expanded(
+            child: Text(
+                'Could not load your profile. Check your connection.',
+                style: captionText(13, color: parchment))),
         TextButton(onPressed: _auth.reloadProfile, child: const Text('RETRY')),
       ]);
     }
@@ -114,7 +123,9 @@ class _AccountPanelState extends State<AccountPanel> {
       return const Center(
           child: Padding(
               padding: EdgeInsets.all(8),
-              child: SizedBox(width: 24, height: 24,
+              child: SizedBox(
+                  width: 24,
+                  height: 24,
                   child: CircularProgressIndicator(strokeWidth: 3))));
     }
     if (_auth.needsUsername) return _chooseUsername();
@@ -147,12 +158,16 @@ class _AccountPanelState extends State<AccountPanel> {
           ],
           TextField(
             controller: _email,
-            keyboardType: TextInputType.emailAddress,
+            keyboardType: _registerMode
+                ? TextInputType.emailAddress
+                : TextInputType.text,
             textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.mail_outline_rounded),
-              labelText: 'Email address',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              prefixIcon: Icon(_registerMode
+                  ? Icons.mail_outline_rounded
+                  : Icons.person_outline_rounded),
+              labelText: _registerMode ? 'Email address' : 'Email or Username',
+              border: const OutlineInputBorder(),
               isDense: true,
             ),
           ),
@@ -179,19 +194,14 @@ class _AccountPanelState extends State<AccountPanel> {
             width: double.infinity,
             child: FilledButton.icon(
               onPressed: _auth.busy ? null : _submitForm,
-              icon: Icon(_registerMode ? Icons.person_add_alt_1_rounded : Icons.login_rounded),
+              icon: Icon(_registerMode
+                  ? Icons.person_add_alt_1_rounded
+                  : Icons.login_rounded),
               label: Text(_auth.busy
                   ? 'PLEASE WAIT…'
-                  : _registerMode ? 'CREATE ACCOUNT' : 'SIGN IN'),
-            ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _auth.busy ? null : () => _perform(_auth.signInWithGoogle),
-              icon: const Icon(Icons.account_circle_outlined),
-              label: const Text('CONTINUE WITH GOOGLE'),
+                  : _registerMode
+                      ? 'CREATE ACCOUNT'
+                      : 'SIGN IN'),
             ),
           ),
           Align(
@@ -212,7 +222,8 @@ class _AccountPanelState extends State<AccountPanel> {
   Widget _chooseUsername() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Pick a username for the leaderboards. Other players will see it.',
+          Text(
+              'Pick a username for the leaderboards. Other players will see it.',
               style: captionText(13, color: parchment)),
           const SizedBox(height: 12),
           TextField(
@@ -240,6 +251,65 @@ class _AccountPanelState extends State<AccountPanel> {
         ],
       );
 
+  Future<void> _showChangeUsernameDialog() async {
+    final ctrl = TextEditingController(text: _auth.username ?? '');
+    final next = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: deskBlue,
+        title: Text('CHANGE USERNAME', style: titleText(20, color: mustard)),
+        content: TextField(
+          controller: ctrl,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.alternate_email_rounded),
+            labelText: 'New username',
+            helperText: '3–16 letters, numbers or _',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx), child: const Text('CANCEL')),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, ctrl.text),
+            child: const Text('SAVE'),
+          ),
+        ],
+      ),
+    );
+    ctrl.dispose();
+    if (next != null && next.trim().isNotEmpty) {
+      await _perform(() => _auth.changeUsername(next));
+    }
+  }
+
+  Future<void> _confirmDeleteAccount() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: deskBlue,
+        title: Text('DELETE ACCOUNT?', style: titleText(20, color: coral)),
+        content: Text(
+          'This permanently deletes your account, cloud save, and leaderboard scores. This cannot be undone.',
+          style: captionText(14, color: paperWhite),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('CANCEL')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: coral),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('DELETE'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) {
+      await _perform(_auth.deleteAccount);
+    }
+  }
+
   Widget _signedInCard() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -252,42 +322,27 @@ class _AccountPanelState extends State<AccountPanel> {
                     overflow: TextOverflow.ellipsis)),
           ]),
           const SizedBox(height: 6),
-          Text('Your best arcade runs are ranked worldwide. Offline play still works.',
+          Text('Your progress, cosmetics, and best runs sync across devices.',
               style: captionText(13, color: parchment)),
-          const SizedBox(height: 10),
-          OutlinedButton.icon(
-            onPressed: _auth.busy ? null : _auth.signOut,
-            icon: const Icon(Icons.logout_rounded),
-            label: const Text('SIGN OUT'),
-          ),
-        ],
-      );
-
-  Widget _leaderboardRow() => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(children: [
-            const Icon(Icons.leaderboard_outlined, color: parchment),
-            const SizedBox(width: 9),
-            Expanded(
-                child: Text('GLOBAL LEADERBOARDS',
-                    style: captionText(16, color: paperWhite))),
-          ]),
-          const SizedBox(height: 5),
-          Text(
-              _auth.username != null
-                  ? 'Weekly and all-time Top 50 for every mode and difficulty.'
-                  : 'Anyone can look. Sign in to get ranked.',
-              style: captionText(12, color: parchment)),
-          const SizedBox(height: 9),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.tonalIcon(
-              onPressed: _auth.available ? _openLeaderboard : null,
-              icon: const Icon(Icons.emoji_events_outlined),
-              label: const Text('VIEW TOP 50'),
+          const SizedBox(height: 12),
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            OutlinedButton.icon(
+              onPressed: _auth.busy ? null : _showChangeUsernameDialog,
+              icon: const Icon(Icons.edit_outlined),
+              label: const Text('CHANGE USERNAME'),
             ),
-          ),
+            OutlinedButton.icon(
+              onPressed: _auth.busy ? null : _auth.signOut,
+              icon: const Icon(Icons.logout_rounded),
+              label: const Text('SIGN OUT'),
+            ),
+            TextButton.icon(
+              style: TextButton.styleFrom(foregroundColor: coral),
+              onPressed: _auth.busy ? null : _confirmDeleteAccount,
+              icon: const Icon(Icons.delete_forever_outlined),
+              label: const Text('DELETE ACCOUNT'),
+            ),
+          ]),
         ],
       );
 }
@@ -302,7 +357,8 @@ class _BoardData {
 
 /// Top 50 for one period x mode x difficulty, plus the player's own rank.
 class LeaderboardScreen extends StatefulWidget {
-  const LeaderboardScreen({super.key});
+  final bool embedded;
+  const LeaderboardScreen({super.key, this.embedded = false});
   @override
   State<LeaderboardScreen> createState() => _LeaderboardScreenState();
 }
@@ -348,6 +404,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         backgroundColor: midnight,
         appBar: AppBar(
           backgroundColor: midnight,
+          automaticallyImplyLeading: !widget.embedded,
           title: Text('LEADERBOARD', style: titleText(24)),
           actions: [
             IconButton(
@@ -386,7 +443,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             child: SegmentedButton<ArcadeDifficulty>(
               segments: [
                 for (final d in ArcadeDifficulty.values)
-                  ButtonSegment<ArcadeDifficulty>(value: d, label: Text(d.title)),
+                  ButtonSegment<ArcadeDifficulty>(
+                      value: d, label: Text(d.title)),
               ],
               selected: {_difficulty},
               onSelectionChanged: (s) => _change(() => _difficulty = s.first),
@@ -452,7 +510,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             Text(text, textAlign: TextAlign.center, style: captionText(14)),
             if (retry) ...[
               const SizedBox(height: 10),
-              OutlinedButton(onPressed: () => _change(() {}), child: const Text('TRY AGAIN')),
+              OutlinedButton(
+                  onPressed: () => _change(() {}),
+                  child: const Text('TRY AGAIN')),
             ],
           ]),
         ),
@@ -506,11 +566,40 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     mine == null
                         ? 'YOUR RANK: play a run on this board to get ranked.'
                         : 'YOUR RANK: #${mine.rank} • best ${mine.score} XP',
-                    style: captionText(14, color: mustard, weight: FontWeight.w700),
+                    style: captionText(14,
+                        color: mustard, weight: FontWeight.w700),
                   );
                 },
               );
             },
+          ),
+        ),
+      );
+}
+
+/// Dedicated page for signing in, registering, changing username, or deleting account.
+class AccountScreen extends StatelessWidget {
+  const AccountScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: midnight,
+        appBar: AppBar(
+          backgroundColor: midnight,
+          title: Text('ACCOUNT', style: titleText(24, color: mustard)),
+        ),
+        body: SafeArea(
+          child: DeskBackdrop(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 520),
+                  child: const AccountPanel(),
+                ),
+              ),
+            ),
           ),
         ),
       );
