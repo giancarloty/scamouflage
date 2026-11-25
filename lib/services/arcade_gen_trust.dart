@@ -364,19 +364,16 @@ ArcadeCase buildTrust(Gen g, ArcadeDifficulty d, int index) {
     final opposingOpinions = [
       "Legit 'to, nakita ko rin sa GC.",
       "Fake 'to sabi ng pinsan ko.",
-      'Confirmed daw pero walang link o source.',
     ];
     for (final opinion in opposingOpinions.take(d.profile.conflictingEvidence)) {
       replies += ' Comment (${g.between(18, 950)} likes): "$opinion"';
     }
-    final decoyOpinions = [
-      'Shared by a friend who says they know someone involved.',
-      'The screenshot looks familiar, but I cannot find the original post.',
-      'A lot of people are sharing this, so it might be true.',
-      'Someone commented that this was already confirmed, but gave no link.',
-      'The details seem believable, but the date is unclear.',
-    ];
-    for (final decoyOpinion in decoyOpinions.take(d.profile.decoyClues)) {
+    if (d.profile.decoyClues > 0) {
+      final decoyOpinion = g.pick([
+        'May nagsabi lang, better check the source first.',
+        'Mukhang tunay, pero wala pa akong makita na official source.',
+        'Hindi enough ang dami ng shares para malaman kung totoo.',
+      ]);
       replies += ' Comment (${g.between(18, 950)} likes): "$decoyOpinion"';
     }
   }
@@ -387,13 +384,7 @@ ArcadeCase buildTrust(Gen g, ArcadeDifficulty d, int index) {
     Finding('photo', p.photoLabel, '🖼️', fillSlots(p.photo, slots), p.rPhoto),
     Finding('account', 'ACCOUNT', '👤', p.account ?? g.pick(_accounts), p.rAccount),
     Finding('date', 'DATE CHECK', '🕒', fillSlots(p.date, slots), p.rDate),
-    Finding(
-      'source',
-      d.profile.requiresCrossChecking ? 'SOURCE TRACE' : 'ORIGINAL SOURCE',
-      '🔎',
-      fillSlots(p.source, slots),
-      p.rSource,
-    ),
+    Finding('source', 'ORIGINAL SOURCE', '🔎', fillSlots(p.source, slots), p.rSource),
     Finding('replies', 'REPLIES', '💬', replies, p.rReplies),
   ];
   final decisive = tools.firstWhere((t) => t.relevance == Relevance.decisive);
