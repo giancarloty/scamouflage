@@ -1,6 +1,16 @@
 import 'arcade_common.dart';
 import '../models/arcade_models.dart';
 
+/// An alternative way to prove the same verdict. Anything left null falls
+/// back to the post's own value. Each variant must keep at least one
+/// decisive check, and must not change the truth.
+class _Variant {
+  final String? q, photo, date, source;
+  final Relevance? rPhoto, rDate, rSource;
+  const _Variant({this.q, this.photo, this.date, this.source,
+      this.rPhoto, this.rDate, this.rSource});
+}
+
 /// Post Autopsy. Each scenario fixes the truth first, then writes five
 /// inspection results. Account details, tone and engagement are rolled
 /// independently of the truth, so they never predict the verdict.
@@ -12,6 +22,9 @@ class _Post {
   final Relevance rPhoto, rDate, rSource, rReplies;
   final String? account;
   final Relevance rAccount;
+  final List<Concept> concepts;
+  final String ruleOfThumb;
+  final List<_Variant> variants;
   const _Post(this.id, this.bad, this.topic, this.caption, this.bodies, {
     required this.q, required this.lesson,
     required this.photo, required this.date, required this.source,
@@ -20,6 +33,9 @@ class _Post {
     this.rSource = Relevance.decisive, this.rReplies = Relevance.support,
     this.account, this.rAccount = Relevance.decoy,
     this.photoLabel = 'MEDIA TRACE',
+    this.concepts = const [],
+    this.ruleOfThumb = '',
+    this.variants = const [],
   });
 }
 
@@ -34,6 +50,8 @@ const _posts = <_Post>[
     date: "Advisory posted today, 5:12 AM.",
     source: "City Hall's own page posted the same advisory: all levels suspended tomorrow.",
     replies: "Students say their school group chats got the same notice.",
+    concepts: [Concept.officialSource],
+    ruleOfThumb: "Check the official page for advisories. A real advisory is not misinformation.",
     rDate: Relevance.support,
     lesson: "Even a small or brand-new page can share a real advisory. The City Hall's own page matched it."),
   _Post('flood_critic', false, 'Government', 'Flooded street photo', [
@@ -45,6 +63,8 @@ const _posts = <_Post>[
     date: "Posted the evening after the rain.",
     source: "The city's public project list shows a P{amt}M flood wall for Brgy. {town}. The post quotes it correctly.",
     replies: "Residents argue about whether the wall or the drainage is the problem. Heated, but no threats.",
+    concepts: [Concept.opinionVsHarassment],
+    ruleOfThumb: "Strong criticism is allowed when the facts it cites match public records.",
     rPhoto: Relevance.support,
     lesson: "Strong criticism of a public project is allowed when the facts it cites are accurate. Asking for accountability is not misinformation."),
   _Post('satire_page', false, 'Government', 'Meme image', [
@@ -56,6 +76,8 @@ const _posts = <_Post>[
     date: "Posted this morning, like the page's other jokes.",
     source: "No news outlet reports this, and the page posts jokes like it every day.",
     replies: "Everyone is laughing and tagging friends.",
+    concepts: [Concept.satireLabel],
+    ruleOfThumb: "Check the page's bio for context. Labeled satire is allowed.",
     account: "Page bio: \"Satire at memes lang. Walang totoo dito 😂\". Active for 3 years.",
     rAccount: Relevance.decisive, rSource: Relevance.support,
     lesson: "Labeled satire is allowed. The page's bio tells you it's a joke, so context matters."),
@@ -68,6 +90,8 @@ const _posts = <_Post>[
     date: "Posted today with the artist's other digital art.",
     source: "The creator's portfolio lists it under AI art, not news.",
     replies: "People ask for the prompt. Nobody thinks it's a real photo.",
+    concepts: [Concept.aiGenerated],
+    ruleOfThumb: "Look for labels indicating AI generation. AI art is acceptable when properly disclosed.",
     rPhoto: Relevance.decisive, rSource: Relevance.support,
     photoLabel: 'MEDIA TRACE',
     lesson: "AI images are fine when presented as art. The problem is passing them off as real events."),
@@ -80,6 +104,8 @@ const _posts = <_Post>[
     date: "The post is 3 weeks old.",
     source: "In this fictional case, the school's current portal confirms applications are still open this term.",
     replies: "Applicants confirm that the portal is still accepting applications.",
+    concepts: [Concept.oldValid],
+    ruleOfThumb: "An older post isn't automatically outdated. Check whether the information is still current.",
     rDate: Relevance.decoy,
     lesson: "An older post isn't automatically outdated. Check whether the information is still current."),
   _Post('review_receipts', false, 'Shopping', 'Order screenshot', [
@@ -91,6 +117,8 @@ const _posts = <_Post>[
     date: "Posted after the delivery window passed.",
     source: "The order number in the screenshot matches the shop's own order page.",
     replies: "A few buyers had good experiences; others had the same delay.",
+    concepts: [Concept.editedScreenshot],
+    ruleOfThumb: "Check the receipts or screenshots provided. A negative review with receipts is customer feedback, not misinformation.",
     rPhoto: Relevance.decisive, rSource: Relevance.support,
     lesson: "A negative review with receipts is customer feedback. Disliking a business is not misinformation."),
   _Post('flood_real', false, 'Weather', 'Flooded street', [
@@ -102,8 +130,23 @@ const _posts = <_Post>[
     date: "Posted 20 minutes ago.",
     source: "The weather bureau's bulletin has a heavy-rain warning for the area today.",
     replies: "Neighbors confirm and add their own photos.",
+    concepts: [Concept.recycledMedia],
+    ruleOfThumb: "A fresh photo with a matching place and a matching official warning can be trusted.",
     rPhoto: Relevance.decisive, rSource: Relevance.support, rReplies: Relevance.support, rDate: Relevance.support,
-    lesson: "A fresh, local photo with matching details can be trusted. Check where and when it was taken."),
+    lesson: "A fresh, local photo with matching details can be trusted. Check where and when it was taken.",
+    variants: [
+    _Variant(
+      q: 'Do the authorities confirm flooding there today?',
+      photo: "No readable street sign, but nothing in the photo looks edited.",
+      source: "The weather bureau and the city disaster office both report flooding in Brgy. {town} this afternoon.",
+      rPhoto: Relevance.support, rSource: Relevance.decisive,
+    ),
+    _Variant(
+      q: 'Does the photo\'s capture time match the rain?',
+      photo: "Nothing looks edited, and the street looks like Brgy. {town}.",
+      date: "The photo's capture time is 3:40 PM today, the same hour the heavy rain started.",
+      rPhoto: Relevance.support, rDate: Relevance.decisive,
+    ),],),
   _Post('fan_hot_take', false, 'Music', 'MV screenshot', [
     "Hot take: mid ang bagong MV ng {group}, pero stan pa rin ako 😭 Sana mas maganda ang choreo next time.",
     "Unpopular opinion: overrated ang comeback ng {group}. Pero mahal ko pa rin sila, huwag n'yo akong i-cancel 😅",
@@ -113,6 +156,8 @@ const _posts = <_Post>[
     date: "Posted the day of the MV release.",
     source: "Nothing to fact-check: it's a personal opinion about a music video.",
     replies: "Fans disagree politely. A few jokes.",
+    concepts: [Concept.opinionVsHarassment],
+    ruleOfThumb: "Distinguish between personal opinions and harassment. Constructive criticism is allowed.",
     lesson: "Disliking a music video is not misinformation or harassment. Opinions are allowed."),
   _Post('ayuda_real', false, 'Government', 'Payout poster', [
     "Ayuda payout para sa registered seniors sa Brgy. {town}: bukas 8AM sa covered court. Dalhin ang valid ID at pension slip.",
@@ -123,6 +168,8 @@ const _posts = <_Post>[
     date: "Posted the day before the payout.",
     source: "The barangay's page and the city welfare office both list this payout with the same time and place.",
     replies: "Seniors say they got text reminders from the barangay.",
+    concepts: [Concept.linkMismatch],
+    ruleOfThumb: "A payout post is safe when its details match the barangay's own pages and nothing asks for a fee.",
     lesson: "Not every ayuda post is a scam. The agency's own pages confirmed the details, and no link or fee was involved."),
   _Post('weather_news', false, 'Weather', 'Weather map', [
     "{outlet}: Signal No. 2 sa 4 na lalawigan habang papalapit ang Bagyong Ligaya.",
@@ -133,6 +180,8 @@ const _posts = <_Post>[
     date: "Published within the hour of the 5 PM bulletin.",
     source: "The weather bureau's 5 PM bulletin lists Signal No. 2 for those same provinces.",
     replies: "People tag relatives in the affected areas.",
+    concepts: [Concept.officialSource],
+    ruleOfThumb: "Check the official bulletin for weather warnings. A news report that matches the bulletin is solid.",
     rDate: Relevance.support,
     lesson: "A news report that matches the official bulletin is solid. Reputation matters less than whether it checks out."),
   _Post('nepo_question', false, 'Government', 'Vacation photo', [
@@ -144,6 +193,8 @@ const _posts = <_Post>[
     date: "Posted two days after the floods, same week as the travel photos.",
     source: "The post makes no claim of theft. It asks for the official's published asset statement, which is a public document.",
     replies: "Supporters and critics argue; nobody posts threats.",
+    concepts: [Concept.opinionVsHarassment],
+    ruleOfThumb: "Distinguish between personal opinions and harassment. Constructive criticism is allowed.",
     rSource: Relevance.decisive, rPhoto: Relevance.support,
     lesson: "Asking an official for transparency is allowed. The post claims no crime and shows nothing doctored. Heated politics is not misinformation."),
   _Post('celeb_donation', true, 'Music', 'Donation graphic', [
@@ -155,6 +206,8 @@ const _posts = <_Post>[
     date: "Posted during the typhoon news cycle.",
     source: "The group's agency page says it has announced no such donation or giveaway.",
     replies: "Many comment 'SHARE' hoping for money; nobody reports receiving any.",
+    concepts: [Concept.payToReceive],
+    ruleOfThumb: "A giveaway that pays you for sharing is bait. Check what the agency really announced.",
     rSource: Relevance.decisive, rPhoto: Relevance.support, rReplies: Relevance.support,
     lesson: "A donation that pays you for sharing is bait to spread a scam. Check what the person or agency has actually said."),
   _Post('sk_event', false, 'Campus', 'Event poster', [
@@ -166,6 +219,8 @@ const _posts = <_Post>[
     date: "Posted four days before the event.",
     source: "The barangay's page lists the same event, date and 'free' note. No payment link anywhere.",
     replies: "Residents ask about parking; the SK chair answers.",
+    concepts: [Concept.officialSource],
+    ruleOfThumb: "Check the official page for event confirmations. A real event is not misinformation.",
     rSource: Relevance.decisive,
     lesson: "Not every event post is a scam. The barangay's own page matched it and nothing asked for money."),
   _Post('fake_queen_quote', true, 'Drag Race', 'Edited screenshot', [
@@ -177,6 +232,8 @@ const _posts = <_Post>[
     date: "The original post time doesn't appear on {queen}'s page.",
     source: "{queen}'s own page has a post from that hour: 'Mahal ko ang fans ko, salamat sa 1M!'",
     replies: "Fans are split; one asks for the link to the original post and gets no answer.",
+    concepts: [Concept.fakeQuote, Concept.editedScreenshot],
+    ruleOfThumb: "Check the person's own page for quotes. A screenshot can be edited to misrepresent what someone said.",
     rPhoto: Relevance.decisive, rSource: Relevance.decisive,
     lesson: "Fandom drama makes edited screenshots spread. The real page says the opposite."),
   // -------------------------------------------------------------- REMOVE
@@ -189,8 +246,24 @@ const _posts = <_Post>[
     date: "The image file dates to {y1}; the post says it's happening now.",
     source: "The weather bureau lists no flood warning for {city} today.",
     replies: "One user says: \"Taong {y1} 'yan ah, hindi 'to ngayon.\"",
+    concepts: [Concept.recycledMedia],
+    ruleOfThumb: "Check the date and location of the photo against official sources.",
     rPhoto: Relevance.decisive, rDate: Relevance.support, rSource: Relevance.support,
-    lesson: "Old disaster photos return every storm season. A real photo can still mislead when it is shown with the wrong date and place."),
+    lesson: "Old disaster photos return every storm season. A real photo can still mislead when it is shown with the wrong date and place.",
+    variants: [
+    _Variant(
+      q: 'Does the photo itself say when it was taken?',
+      photo: "The location is hard to tell from the photo. No readable signs or landmarks.",
+      date: "The file's original upload date is {y1}, years before this storm. The post says it's happening now.",
+      rPhoto: Relevance.decoy, rDate: Relevance.decisive,
+    ),
+    _Variant(
+      q: 'Do the authorities report any flooding in {city} today?',
+      photo: "The photo is too blurry to tell where it was taken.",
+      date: "The post doesn't say when the photo was taken.",
+      source: "The weather bureau shows no warning for {city} today, and the city disaster office reports no flooding.",
+      rPhoto: Relevance.support, rDate: Relevance.decoy, rSource: Relevance.decisive,
+    ),],),
   _Post('fake_quote', true, 'Government', 'News card', [
     "SINABI NI {who}: \"Wala akong pakialam sa mga nabaha, bayaran na lang nila ang utang nila.\" Grabe 'tong taong 'to!!",
     "Eto ang tunay na ugali ni {who}. Basahin n'yo ang sinabi niya sa mga biktima 😡 SHARE!",
@@ -200,6 +273,8 @@ const _posts = <_Post>[
     date: "Posted at 1 AM, with no link to a full story.",
     source: "{outlet} says it never published this card. Its website has no such quote.",
     replies: "People are furious, but nobody can link the original interview.",
+    concepts: [Concept.fakeQuote, Concept.editedScreenshot],
+    ruleOfThumb: "Check the source of any quote before sharing. A fake news card can put words in someone's mouth, whether you like that person or not.",
     rSource: Relevance.decisive, rPhoto: Relevance.support,
     lesson: "Anger is not evidence. A fake news card can put words in someone's mouth, whether you like that person or not."),
   _Post('fake_ayuda_link', true, 'Government', 'Cash graphic', [
@@ -211,6 +286,8 @@ const _posts = <_Post>[
     date: "Posted late at night, with a deadline of midnight.",
     source: "City Hall posted: \"We have no such program. Don't click links.\"",
     replies: "Some ask for the link, others say they never received anything.",
+    concepts: [Concept.urgencyPressure, Concept.linkMismatch],
+    ruleOfThumb: "Free cash with a deadline and a link is pressure. Check the agency's own page, not the post's link.",
     rPhoto: Relevance.support,
     lesson: "Free cash with a link and a deadline is a classic scam pattern. Check the official page, not the post's own link."),
   _Post('fake_recruitment', true, 'Government', 'Hiring poster', [
@@ -222,6 +299,8 @@ const _posts = <_Post>[
     date: "Posted by a page created last week.",
     source: "The agency's official page says it never charges application fees and lists no such hiring.",
     replies: "Applicants say they paid and were then blocked.",
+    concepts: [Concept.payToReceive],
+    ruleOfThumb: "A real job never asks you to pay to apply. Check the agency's own page.",
     rPhoto: Relevance.support, rSource: Relevance.decisive,
     lesson: "Legit agencies don't charge a fee to apply. A high salary with no requirements is bait."),
   _Post('deepfake_doc', true, 'Health', 'Video thumbnail', [
@@ -233,6 +312,8 @@ const _posts = <_Post>[
     date: "The audio was added to an older video.",
     source: "The doctor's official page says: \"I never promoted this product. This video is an AI edit.\"",
     replies: "Many glowing testimonials, all from new accounts using the same wording.",
+    concepts: [Concept.aiGenerated, Concept.editedScreenshot],
+    ruleOfThumb: "Check the person's own page for statements. AI can copy a real person's face and voice, but that doesn't mean they said it.",
     rPhoto: Relevance.decisive, rSource: Relevance.decisive, rDate: Relevance.support,
     lesson: "AI can copy a real person's face and voice. A trusted face selling a cure is a reason to check the person's own page."),
   _Post('doctored_screenshot', true, 'Weather', 'Advisory screenshot', [
@@ -244,6 +325,8 @@ const _posts = <_Post>[
     date: "That advisory was from {y1} and covered one school only.",
     source: "City Hall's current page has no suspension notice today.",
     replies: "Students say their schools haven't announced anything.",
+    concepts: [Concept.editedScreenshot],
+    ruleOfThumb: "Check the date on the advisory itself. Old advisories get reposted as new.",
     rPhoto: Relevance.decisive, rDate: Relevance.decisive, rSource: Relevance.decisive,
     lesson: "Old advisories get reposted as new. Check the date on the graphic and the official page."),
   _Post('false_scope', true, 'Campus', 'School news photo', [
@@ -255,6 +338,8 @@ const _posts = <_Post>[
     date: "The news item is from this week.",
     source: "The real notice is from one school in Brgy. {town}: two days of cleaning after dengue cases.",
     replies: "Parents from other schools say their classes are still on.",
+    concepts: [Concept.editedScreenshot, Concept.recycledMedia],
+    ruleOfThumb: "Misleading posts often start with something real and then stretch the scope. Compare the claim with the original notice.",
     rPhoto: Relevance.support, rDate: Relevance.decoy, rSource: Relevance.decisive,
     lesson: "Misleading posts often start with something real and then stretch the scope. Compare the claim with the original notice."),
   _Post('ghost_wrong_site', true, 'Government', 'Empty lot photo', [
@@ -266,6 +351,8 @@ const _posts = <_Post>[
     date: "The photo is real but is two weeks old.",
     source: "The city's inspection report shows the Brgy. {town} wall as finished, with dated photos.",
     replies: "Residents say the wall exists, but the old drainage still floods.",
+    concepts: [Concept.missingContext],
+    ruleOfThumb: "A real photo from the wrong place is not proof. Check where it was taken.",
     rPhoto: Relevance.decisive, rSource: Relevance.decisive, rReplies: Relevance.support,
     lesson: "Corruption is a real issue and worth asking about. But a photo of the wrong place is not proof. Accountability needs accurate evidence."),
   _Post('ticket_resale', true, 'Music', 'Ticket image', [
@@ -277,6 +364,8 @@ const _posts = <_Post>[
     date: "Posted minutes after the official sale sold out.",
     source: "The official ticketing site says tickets are sold only on its own page, with no resale or DM sales.",
     replies: "Several people say they paid and were blocked.",
+    concepts: [Concept.payToReceive, Concept.urgencyPressure],
+    ruleOfThumb: "Check the official seller's rules before paying anyone. Sold-out tickets are often used to scam buyers.",
     rPhoto: Relevance.support, rSource: Relevance.decisive, rReplies: Relevance.support,
     lesson: "Sold-out concert tickets attract scammers. Check the official seller's rules before paying anyone."),
   _Post('election_count', true, 'Election', 'Results screenshot', [
@@ -288,6 +377,8 @@ const _posts = <_Post>[
     date: "The results page was created during {y1}'s test.",
     source: "The election office says no results have been released yet.",
     replies: "People argue about cheating without linking any official numbers.",
+    concepts: [Concept.missingContext],
+    ruleOfThumb: "A partial or practice count isn't a result. Only the election office's release counts.",
     rPhoto: Relevance.decisive, rDate: Relevance.support, rSource: Relevance.decisive, rReplies: Relevance.decoy,
     lesson: "Fake election results spread fast because people are emotional. Only the election office's own release counts."),
   _Post('ai_disaster', true, 'AI', 'Dramatic photo', [
@@ -299,8 +390,90 @@ const _posts = <_Post>[
     date: "The scene doesn't match today's weather.",
     source: "The weather bureau and major outlets report no tsunami warning.",
     replies: "Others point out melted text on signs and odd building shapes.",
+    concepts: [Concept.aiGenerated, Concept.editedScreenshot],
+    ruleOfThumb: "AI images can look dramatic and real. When there's no official warning, don't spread panic.",
     rPhoto: Relevance.decisive, rSource: Relevance.decisive, rDate: Relevance.support,
     lesson: "AI images can look dramatic and real. When there's no official warning, don't spread panic."),
+      _Post('satire_stripped', true, 'Government', 'Cropped news card', [
+    "Rice cooker, bawal na sa buong {city} simula Lunes! Basahin ang screenshot, galing sa news site!",
+    "Grabe 'to: bawal na ang rice cooker sa {city} para tipid-kuryente. Share para malaman ng lahat!",
+  ],
+    q: 'Was this published as news, or as a joke?',
+    photo: "The screenshot is cropped. The original has a 'SATIRE' banner and the humor site's joke logo at the bottom.",
+    date: "The original article is two days old and was posted by the humor site itself.",
+    source: "No news outlet or city office reports a rice cooker ban. The humor site files the story under satire.",
+    replies: "Some laugh and tag friends; others panic and ask where to buy a backup stove.",
+    concepts: [Concept.satireLabel],
+    ruleOfThumb: "A joke with its label cropped off becomes misinformation. Look for the original.",
+    rPhoto: Relevance.decisive, rSource: Relevance.support,
+    lesson: "Satire is fine with its label. Once the label is cropped, readers can mistake a joke for news."),
+  _Post('outdated_deadline', true, 'Campus', 'Scholarship reminder', [
+    "LAST CALL! Hanggang bukas na lang ang {school} scholarship applications. Mag-apply na bago maubos ang slots!",
+    "Pa-share po: deadline na bukas ng {school} scholarship. Huwag nang palampasin!",
+  ],
+    q: 'Is this deadline for this term, or an old one?',
+    photo: "The poster is the school's own design, but its small print names the {y1} school year.",
+    date: "This is a re-share of a poster first published in {y1}.",
+    source: "The school's current portal says that term's applications closed long ago and lists a new schedule.",
+    replies: "Some commenters say they were told the deadline had passed; others share it without checking.",
+    concepts: [Concept.oldValid],
+    ruleOfThumb: "Check the school year on the poster, then confirm on the current portal.",
+    rDate: Relevance.decisive, rSource: Relevance.support,
+    lesson: "Old posts can be harmless or outdated. Here the poster is from a past term, so the deadline no longer applies."),
+  _Post('fake_agency_page', true, 'Weather', 'Bulletin graphic', [
+    "OFFICIAL ADVISORY: Signal No. 4 na sa {city}! Lumikas na ngayon din, huwag nang maghintay ng update.",
+    "Weather Bureau PH Official: Signal No. 4 sa {city} simula ngayong gabi. Pakisabi sa pamilya n'yo.",
+  ],
+    q: "Is this the handle the weather bureau really uses?",
+    photo: "The graphic copies the bureau's colors, but the logo is stretched and the map has no legend.",
+    date: "Posted at 11 PM, ahead of the bureau's next scheduled bulletin.",
+    source: "The weather bureau's real page has posted no Signal No. 4. Its last bulletin lists Signal No. 1.",
+    replies: "Some residents start packing. One points out the page name has a zero in place of an O.",
+    account: "Page created 6 days ago, 410 followers. Handle: @weatherbureau_ph0fficial. The real bureau uses @weatherbureau, with years of posts.",
+    concepts: [Concept.lookalikeHandle],
+    ruleOfThumb: "Compare the exact handle with the agency's real page. One swapped letter means a different account.",
+    rAccount: Relevance.decisive, rSource: Relevance.support,
+    lesson: "A page can copy an agency's name and colors. Compare the handle with the real page before sharing a warning."),
+  _Post('agency_warning_real', false, 'Government', 'Impostor page warning', [
+    "PAALALA mula sa City Hall ng {city}: may peking page na gumagamit ng pangalan namin para humingi ng bayad. Ang opisyal na site lang ay cityhall.example. I-report ang peke.",
+    "Babala: may kumakalat na page na nagpapanggap na City Hall of {city}. Hindi kami nagpapadala ng mensahe para humingi ng pera. Opisyal: cityhall.example.",
+  ],
+    q: "Is this posted by the agency's own page?",
+    photo: "The graphic matches City Hall's earlier notices and shows the fake page's handle circled.",
+    date: "Posted this afternoon, an hour after residents reported the fake page.",
+    source: "The warning also appears on City Hall's official website.",
+    replies: "Residents thank the office and report the fake page. A few share it in barangay group chats.",
+    account: "Page created 9 years ago, 210K followers. Handle matches the one listed on the city's official website.",
+    concepts: [Concept.lookalikeHandle],
+    ruleOfThumb: "Confirm the handle matches the official website. A warning from the real page is worth sharing.",
+    rAccount: Relevance.decisive, rSource: Relevance.support,
+    lesson: "Real agencies warn about impostors. This one comes from the page whose handle matches the official site, so it's safe to keep."),
+  _Post('otp_giveaway', true, 'Shopping', 'Giveaway announcement', [
+    "{wallet} GIVEAWAY! P{amt} sa 50 winners. I-comment ang number mo, tapos ibigay ang 6-digit code na matatanggap mo para ma-verify ang panalo!",
+    "Congrats sa mga mananalo! Para ma-claim ang P{amt} sa {wallet}, i-DM ang OTP na ite-text sa inyo. First 50 lang!",
+  ],
+    q: 'Would a real wallet app ever ask you for this code?',
+    photo: "The graphic uses {wallet}'s colors but not its current logo, and the same image appears on other pages.",
+    date: "Posted minutes ago, with a countdown for the 'first 50' winners.",
+    source: "{wallet}'s official page says it never asks for your OTP, PIN or password, not even for prizes.",
+    replies: "Several people say they sent the code and lost access to their account.",
+    concepts: [Concept.otpRequest, Concept.urgencyPressure],
+    ruleOfThumb: "An OTP is the key to your account. Nobody legitimate needs you to send it, even for a prize.",
+    rSource: Relevance.decisive,
+    lesson: "OTP codes prove it's you. Anyone who asks for one, even for a prize, is trying to take over your account."),
+  _Post('wallet_otp_warning', false, 'Shopping', 'Safety reminder', [
+    "Paalala mula sa {wallet}: huwag ibigay kahit kanino ang OTP, PIN o password. Hindi hihingi nito ang staff namin sa chat, tawag, o comment.",
+    "Reminder sa lahat ng users ng {wallet}: ang OTP ay para sa'yo lang. Kung may humingi nito, i-report agad sa app.",
+  ],
+    q: "Does this match the wallet's own help page?",
+    photo: "The reminder graphic matches the wallet's earlier safety notices.",
+    date: "Posted as part of the wallet's regular safety reminders.",
+    source: "The wallet's app and help page carry the same reminder: staff never ask for OTPs.",
+    replies: "Users share their own scam messages and thank the page.",
+    concepts: [Concept.otpRequest],
+    ruleOfThumb: "Real security notices tell you to protect your codes. They never ask you to send one.",
+    rSource: Relevance.decisive,
+    lesson: "A reminder not to share your OTP protects users. It asks for nothing and matches the wallet's own help page."),
 ];
 
 const _accounts = <String>[
@@ -341,6 +514,7 @@ bool trustScenarioBad(int i) => _posts[i].bad;
 
 ArcadeCase buildTrust(Gen g, ArcadeDifficulty d, int index) {
   final p = _posts[index];
+  final v = p.variants.isEmpty? null : g.pick(p.variants);
   final town = g.pick(Pools.towns);
   final town2 = g.pick(Pools.towns.where((t) => t != town).toList());
   final slots = <String, String>{
@@ -381,10 +555,13 @@ ArcadeCase buildTrust(Gen g, ArcadeDifficulty d, int index) {
       : g.pick(['Balita Ngayon', 'Kanto Updates', 'Tambayan Feed', 'Sikat PH',
         'Barkada Bulletin', 'Mika R.', 'Paolo D.']);
   final tools = <Finding>[
-    Finding('photo', p.photoLabel, '🖼️', fillSlots(p.photo, slots), p.rPhoto),
+    Finding('photo', p.photoLabel, '🖼️',
+        fillSlots(v?.photo ?? p.photo, slots), v?.rPhoto ?? p.rPhoto),
     Finding('account', 'ACCOUNT', '👤', p.account ?? g.pick(_accounts), p.rAccount),
-    Finding('date', 'DATE CHECK', '🕒', fillSlots(p.date, slots), p.rDate),
-    Finding('source', 'ORIGINAL SOURCE', '🔎', fillSlots(p.source, slots), p.rSource),
+    Finding('date', 'DATE CHECK', '🕒',
+        fillSlots(v?.date ?? p.date, slots), v?.rDate ?? p.rDate),
+    Finding('source', 'ORIGINAL SOURCE', '🔎',
+        fillSlots(v?.source ?? p.source, slots), v?.rSource ?? p.rSource),
     Finding('replies', 'REPLIES', '💬', replies, p.rReplies),
   ];
   final decisive = tools.firstWhere((t) => t.relevance == Relevance.decisive);
@@ -398,6 +575,8 @@ ArcadeCase buildTrust(Gen g, ArcadeDifficulty d, int index) {
     tools: tools, deceptive: p.bad, correct: [p.bad ? 1 : 0],
     choices: const [ArcadeOption('KEEP'), ArcadeOption('REMOVE')],
     lesson: fillSlots(p.lesson, slots),
-    hint: 'Try ${decisive.emoji} ${decisive.label}. Ask: ${fillSlots(p.q, slots)}',
+    concepts: p.concepts, 
+    ruleOfThumb: p.ruleOfThumb,
+    hint: 'Try ${decisive.emoji} ${decisive.label}. Ask: ${fillSlots(v?.q ?? p.q, slots)}',
   );
 }

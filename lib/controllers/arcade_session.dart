@@ -1,6 +1,7 @@
 import 'dart:math';
 import '../services/arcade_generator.dart';
 import '../models/arcade_models.dart';
+import '../models/round_record.dart';
 
 /// One play session, independent of Flutter widgets. v5 GameEngine is the
 /// only permanent career-XP store. Tests use deterministic seeds.
@@ -16,6 +17,7 @@ class ArcadeSession {
   final ArcadeGenerator generator;
   final Set<String> signatures = <String>{};
   final List<ArcadeMode> recentModes = [];
+  final List<RoundRecord> log = [];
   static const firstDayModes = [
     ArcadeMode.trust, ArcadeMode.impostor, ArcadeMode.scamSlam,
     ArcadeMode.inbox, ArcadeMode.comments,
@@ -35,6 +37,7 @@ class ArcadeSession {
   bool waitingForNext = false;
   bool? lastCorrect;
   List<int> lastAnswer = const [];
+  List<String> lastOpened =const[];
 
   ArcadeSession({
     required this.difficulty,
@@ -115,14 +118,22 @@ class ArcadeSession {
   /// [ArcadeCase.correct]). One answer per case; XP never decreases, errors
   /// cost a heart. The first day is forgiving so a beginner is never locked
   /// out. Inbox Sprint earns partial XP but any wrong swipe costs a heart.
-  bool submit(List<int> answer, {bool usedDecisive = false}) {
+  bool submit(List<int> answer, {bool usedDecisive = false, List<String> opened = const[]}) {
     if (finished || waitingForNext) return lastCorrect ?? false;
     final c = current;
     final parts = c.totalParts;
     final right = c.matches(answer);
     final correct = c.isBatch ? right == parts : c.isCorrect(answer);
     lastAnswer = List.unmodifiable(answer);
+    lastOpened = List.unmodifiable(opened);
     lastCorrect = correct;
+    log.add(RoundRecord(
+      mode: c.mode,
+      scenario: c.scenario,
+      concepts: c.concepts,
+      correct: correct,
+      error: c.errorKind(answer),
+    ));
     lastParts = right;
     lastUsedDecisive = usedDecisive &&
         (c.mode == ArcadeMode.trust || c.mode == ArcadeMode.clip);
@@ -159,6 +170,7 @@ class ArcadeSession {
     if (finished || !waitingForNext) return;
     waitingForNext = false;
     lastAnswer = const [];
+    lastOpened = const [];
     lastCorrect = null;
     lastEarnedXp = 0;
     lastUsedDecisive = false;

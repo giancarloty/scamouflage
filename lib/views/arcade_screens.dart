@@ -13,6 +13,8 @@ import '../services/game_audio.dart';
 import 'mascot.dart';
 import '../models/player_progression.dart';
 import 'theme.dart';
+import '../models/run_stats.dart';
+import 'run_summary.dart';
 import '../services/leaderboard_service.dart';
 
 /// The Arcade: seven minigames, each with its own mechanic. All people,
@@ -35,6 +37,7 @@ class _ArcadeHubState extends State<ArcadeHub> {
   ArcadeSession? session;
   bool introJustCompleted = false;
   bool hintOn = false;
+  ArcadeSession? _summarySession;
   String? newestCareerReward;
   late final DailyChallengeController dailyChallenges;
 
@@ -446,7 +449,7 @@ class _ArcadeHubState extends State<ArcadeHub> {
     );
   }
 
-  void _submit(List<int> answer, bool usedDecisive) {
+  void _submit(List<int> answer, bool usedDecisive, {List<String> opened = const []}) {
     final s = session;
     if (s == null || s.waitingForNext) return;
     final xpBefore = widget.game.careerXp;
@@ -506,6 +509,51 @@ class _ArcadeHubState extends State<ArcadeHub> {
       setState(() { s.next(); hintOn = false; newestCareerReward = null; });
       GameAudio.instance.setScene(_sceneFor(s.current.mode));
     }
+  }
+
+  void _showRunOver(ArcadeSession s) {
+    GameAudio.instance.cue(GameCue.tap);
+    setState(() => _summarySession = s);
+  }
+
+  Widget _runOverPopup(ArcadeSession s) {
+    final maxH = MediaQuery.sizeOf(context).height * .8;
+    return Container(
+      color: Colors.black.withValues(alpha: .6),
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(20),
+      child: Container(
+        constraints: BoxConstraints(maxHeight: maxH, maxWidth: 520),
+        decoration: BoxDecoration(
+          color: paperWhite,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: coal, width: 4)),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Flexible(child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 8),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(s.firstDay ? 'DAY COMPLETE 🎉' : 'RUN OVER',
+                  style: titleText(26, color: coal)),
+              const SizedBox(height: 6),
+              Text(s.firstDay
+                  ? 'ARCADE UNLOCKED'
+                  : '${s.successful}/${s.round} correct • ${s.score} XP',
+                style: captionText(15, color: coal, weight: FontWeight.w800)),
+              if (!s.firstDay) ...[
+                const SizedBox(height: 14),
+                RunSummary(stats: RunStats(s.log)),
+              ],
+            ]),
+          )),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+            child: SizedBox(width: double.infinity,
+              child: ArcadeButton(
+                s.firstDay ? 'OPEN ARCADE!' : 'BACK TO ARCADE',
+                color: mustard, onTap: _next))),
+        ]),
+      ),
+    );
   }
 
   Future<void> _confirmExit() async {
@@ -633,7 +681,9 @@ class _ArcadeHubState extends State<ArcadeHub> {
         Positioned.fill(child: KeyedSubtree(
           key: ValueKey('${c.signature}:${s.waitingForNext ? s.round - 1 : s.round}'),
           child: _surface(s, c))),
-        if (s.waitingForNext) Positioned.fill(child: _resultOverlay(s, c)),
+        if (s.waitingForNext) Positioned.fill(
+          child: s.finished && identical(_summarySession, s)
+          ? _runOverPopup(s) : _resultOverlay(s, c)),
       ])),
     ]);
   }
@@ -735,19 +785,19 @@ class _ArcadeHubState extends State<ArcadeHub> {
               Text('WHY IT MATTERS', style: typewriter(11, color: coal)),
               const SizedBox(height: 4),
               Text(c.lesson, style: captionText(15, color: coal)),
-              if (s.finished) ...[
-                const SizedBox(height: 12),
-                Text(s.firstDay ? 'DAY COMPLETE • ARCADE UNLOCKED 🎉'
-                    : 'RUN OVER • ${s.successful}/${s.round} correct • ${s.score} XP',
-                  style: captionText(14, color: coal, weight: FontWeight.w800)),
+              if (c.ruleOfThumb.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text('RULE OF THUMB', style: typewriter(11, color: coal)),
+                const SizedBox(height: 4),
+                Text(c.ruleOfThumb, style: captionText(15, color: coal, weight: FontWeight.w700)),
               ],
             ]),
           )),
           Padding(padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
             child: SafeArea(top: false, child: SizedBox(width: double.infinity,
-              child: ArcadeButton(s.finished
-                  ? (s.firstDay ? 'OPEN ARCADE!' : 'BACK TO ARCADE')
-                  : 'NEXT CHALLENGE', color: mustard, onTap: _next)))),
+              child: ArcadeButton(s.finished ? 'SEE RESULTS' : 'NEXT CHALLENGE',
+              color: mustard,
+              onTap: s.finished ? () => _showRunOver(s) : _next)))),
         ]),
       ),
     );
@@ -774,9 +824,26 @@ class _ArcadeHubState extends State<ArcadeHub> {
     switch (c.mode) {
       case ArcadeMode.trust:
       case ArcadeMode.clip:
-        return [for (final t in c.tools)
-          if (t.relevance == Relevance.decisive)
-            _recapLine('KEY CLUE • ${t.emoji} ${t.label}', t.text)];
+        final opened = s.lastOpened;
+        final wrong = s.lastCorrect == false;
+        final settled = c.decisiveIds.any(opened.contains);
+        final keyClue = c.tools.firstWhere(
+            (t) => t.relevance == Relevance.decisive);
+        return [
+          for (final t in c.tools)
+            if (t.relevance == Relevance.decisive)
+              _recapLine('KEY CLUE • ${t.emoji} ${t.label}', t.text),
+          if (wrong)
+            for (final t in c.tools)
+              if (t.relevance == Relevance.decoy && opened.contains(t.id))
+                _recapLine('DIDN\'T SETTLE IT • ${t.emoji} ${t.label}',
+                    'You opened this, but it doesn\'t decide the case on its own.'),
+          if (!settled)
+            _recapLine('YOU SKIPPED • ${keyClue.emoji} ${keyClue.label}',
+                wrong
+                    ? 'This check would have settled it. Open it before you decide.'
+                    : 'You got it right without it. Opening it makes the answer certain.'),
+        ];
       case ArcadeMode.impostor:
         return [_recapLine('ANSWER', c.correctChoice == 2
             ? 'Both accounts are OK.'
