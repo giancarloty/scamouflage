@@ -253,7 +253,10 @@ ArcadeCase buildClip(Gen g, ArcadeDifficulty d, int index) {
   return ArcadeCase(
     signature: 'clip:${c.id}', scenario: c.id, mode: ArcadeMode.clip,
     title: c.title, author: 'Tambayan Reels', handle: '@reels${g.id()}',
-    text: f(c.caption), subtext: 'Scrub the timeline and compare both cuts.',
+    text: f(c.caption),
+    subtext: d.profile.requiresCrossChecking
+        ? 'Compare timeline, upload details, audio, labels and the full video.'
+        : 'Scrub the timeline and compare both cuts.',
     imageTopic: c.topic, imageCaption: c.title, tools: tools, beats: beats,
     deceptive: c.bad, correct: [c.bad ? 1 : 0],
     choices: const [ArcadeOption('KEEP'), ArcadeOption('REMOVE')],
