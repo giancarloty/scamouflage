@@ -4,6 +4,8 @@ import '../models/arcade_models.dart';
 import 'arcade_modes_a.dart';
 import 'arcade_modes_b.dart';
 import '../controllers/arcade_session.dart';
+import '../controllers/daily_challenge_controller.dart';
+import 'daily_challenges_screen.dart';
 import 'arcade_widgets.dart';
 import 'career_identity.dart';
 import '../controllers/engine.dart';
@@ -34,6 +36,16 @@ class _ArcadeHubState extends State<ArcadeHub> {
   bool introJustCompleted = false;
   bool hintOn = false;
   String? newestCareerReward;
+  late final DailyChallengeController dailyChallenges;
+
+  @override
+  void initState() {
+    super.initState();
+    dailyChallenges = DailyChallengeController(
+      awardXp: widget.game.awardArcadeXp,
+    );
+    dailyChallenges.initialize();
+  }
 
   /// One-time server ticket for the current ranked run. It is requested when
   /// the run starts and redeemed by [_submitScore] when the run ends.
@@ -49,6 +61,7 @@ class _ArcadeHubState extends State<ArcadeHub> {
   @override
   void dispose() {
     GameAudio.instance.setScene(MusicScene.menu);
+    dailyChallenges.dispose();
     super.dispose();
   }
 
@@ -162,8 +175,72 @@ class _ArcadeHubState extends State<ArcadeHub> {
     setState(() { introJustCompleted = true; session = null; });
   }
 
+  Widget _dailyChallengesCard() => AnimatedBuilder(
+    animation: dailyChallenges,
+    builder: (context, _) {
+      final completed = dailyChallenges.completedCount;
+      final total = dailyChallenges.challenges.length;
+      final ready = dailyChallenges.ready;
+      return Material(
+        color: const Color(0xFF143A4C),
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          onTap: () async {
+            await dailyChallenges.refreshForDateChange();
+            if (!context.mounted) return;
+            Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) => DailyChallengesScreen(controller: dailyChallenges),
+            ));
+          },
+          borderRadius: BorderRadius.circular(18),
+          child: Container(
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: mint.withValues(alpha: .8), width: 1.5),
+            ),
+            child: Row(children: [
+              Container(
+                height: 48, width: 48,
+                decoration: BoxDecoration(
+                  color: mint.withValues(alpha: .15),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(Icons.today_rounded, color: mint, size: 27),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('DAILY CHALLENGES',
+                    style: titleText(17, color: paperWhite)),
+                  const SizedBox(height: 3),
+                  Text(ready ? '$completed / $total completed • bonus XP' : 'Loading today’s missions…',
+                    style: captionText(12, color: paperWhite)),
+                  if (ready && total > 0) ...[
+                    const SizedBox(height: 7),
+                    LinearProgressIndicator(
+                      value: completed / total,
+                      minHeight: 5,
+                      backgroundColor: Colors.white12,
+                      color: mint,
+                    ),
+                  ],
+                ],
+              )),
+              const SizedBox(width: 6),
+              const Icon(Icons.chevron_right_rounded, color: mint),
+            ]),
+          ),
+        ),
+      );
+    },
+  );
+
   Widget _hub() => _scroll([
     _header('SCAMOUFLAGE ARCADE'),
+    const SizedBox(height: 12),
+    _dailyChallengesCard(),
     const SizedBox(height: 16),
     Material(color: Colors.transparent, child: InkWell(
       onTap: () => _begin(null),
@@ -373,8 +450,20 @@ class _ArcadeHubState extends State<ArcadeHub> {
     final s = session;
     if (s == null || s.waitingForNext) return;
     final xpBefore = widget.game.careerXp;
+    final submittedCase = s.current;
     setState(() => s.submit(answer, usedDecisive: usedDecisive));
+<<<<<<< ours
     if (s.finished) _submitScore(s);
+=======
+    final correct = s.lastCorrect == true;
+    if (!s.firstDay) {
+      dailyChallenges.onAnswer(
+        correct: correct,
+        correctlyIdentifiedScam: correct && submittedCase.deceptive,
+      );
+      dailyChallenges.onRoundCompleted(perfect: correct);
+    }
+>>>>>>> theirs
     final xpAfter = widget.game.careerXp;
     final unlocked = ArcadeMode.values.any((m) =>
         m.unlockXp > xpBefore && m.unlockXp <= xpAfter);
