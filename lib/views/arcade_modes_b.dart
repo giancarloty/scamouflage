@@ -50,8 +50,8 @@ class _RumorViewState extends State<RumorView> {
   void _move(int pos, int delta) {
     GameAudio.instance.cue(GameCue.choose);
     setState(() {
-    final item = order.removeAt(pos);
-    order.insert(pos + delta, item);
+      final item = order.removeAt(pos);
+      order.insert(pos + delta, item);
     });
   }
 
@@ -174,7 +174,7 @@ class InboxView extends StatefulWidget {
 class _InboxViewState extends State<InboxView>
     with TickerProviderStateMixin {
   int idx = 0;
-  bool flipped = false, flippedEver = false, flying = false;
+  bool flipped = false, flippedEver = false, flying = false, _submitted = false;
   final List<int> decisions = [];
 
   late final AnimationController _flipController;
@@ -196,7 +196,18 @@ class _InboxViewState extends State<InboxView>
     _slideController = AnimationController(
       vsync: this, duration: const Duration(milliseconds: 320))
       ..addListener(_onSlideTick);
+    final s = seconds;
+    if (s != null) {
+      _timer = AnimationController(vsync: this, duration: Duration(seconds: s))
+        ..addStatusListener(_onTimerStatus);
+    }
     _startTimer();
+  }
+
+  void _onTimerStatus(AnimationStatus status) {
+    if (status == AnimationStatus.completed && !flying && !_submitted && mounted) {
+      _decide(2);
+    }
   }
 
   void _onSlideTick() {
@@ -208,21 +219,16 @@ class _InboxViewState extends State<InboxView>
   }
 
   void _startTimer() {
-    _timer?.dispose();
-    _timer = null;
-    final s = seconds;
-    if (s == null) return;
-    final timer = AnimationController(vsync: this,
-        duration: Duration(seconds: s));
-    timer.addStatusListener((status) {
-      if (status == AnimationStatus.completed && !flying) _decide(2);
-    });
-    _timer = timer;
+    final timer = _timer;
+    if (timer == null || _submitted || !mounted) return;
+    timer.stop();
+    timer.reset();
     timer.forward();
   }
 
   @override
   void dispose() {
+    _timer?.removeStatusListener(_onTimerStatus);
     _timer?.dispose();
     _flipController.dispose();
     _slideController.dispose();
@@ -279,7 +285,7 @@ class _InboxViewState extends State<InboxView>
   }
 
   void _decide(int value) {
-    if (flying || !mounted) return;
+    if (flying || _submitted || !mounted) return;
     GameAudio.instance.cue(value == 2 ? GameCue.wrong : GameCue.swipe);
     _timer?.stop();
     setState(() => flying = true);
@@ -298,11 +304,11 @@ class _InboxViewState extends State<InboxView>
   }
 
   void _finishEmail(int decision) {
-    if (!mounted) return;
+    if (!mounted || _submitted) return;
     decisions.add(decision);
     if (decisions.length >= widget.c.emails.length) {
-      _timer?.dispose();
-      _timer = null;
+      _submitted = true;
+      _timer?.stop();
       widget.onSubmit(decisions, flippedEver);
       return;
     }
