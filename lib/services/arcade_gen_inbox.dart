@@ -106,10 +106,10 @@ EmailItem _make(Gen g, _E e, Map<String, String> s) {
 }
 
 ArcadeCase buildInbox(Gen g, ArcadeDifficulty d, int index, {int? count}) {
-  final n = count ?? switch (d) {
-    ArcadeDifficulty.easy => 3,
-    ArcadeDifficulty.medium => 4,
-    ArcadeDifficulty.hard => 5,
+  final n = count ?? switch (d.profile.reasoningLevel) {
+    1 => 3,
+    2 => 4,
+    _ => 6,
   };
   final store = g.pick(Pools.stores);
   final wallet = g.pick(Pools.wallets);
@@ -138,7 +138,9 @@ ArcadeCase buildInbox(Gen g, ArcadeDifficulty d, int index, {int? count}) {
     scenario: 'batch', mode: ArcadeMode.inbox,
     title: 'Inbox', author: 'Tambayan Mail',
     text: 'Swipe each email: left = SPAM, right = KEEP.',
-    subtext: 'Tap an email to see who really sent it.',
+    subtext: d.profile.requiresCrossChecking
+        ? 'Inspect the sender, reply-to, link destination and request before deciding.'
+        : 'Tap an email to see who really sent it.',
     emails: emails, deceptive: spamCount > 0,
     correct: [for (final e in emails) e.spam ? 0 : 1],
     lesson: 'Spam can look polished and real mail can look rushed. The sender address, where a link really goes, and what the email asks you for are what count.',

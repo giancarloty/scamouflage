@@ -56,32 +56,61 @@ extension ArcadeModeInfo on ArcadeMode {
   };
 }
 
+/// Shared difficulty settings. Difficulty should change the reasoning required,
+/// not only the amount of punishment for a wrong answer.
+class DifficultyProfile {
+  final int startingHearts;
+  final int scanBudget;
+  final int? emailSeconds;
+  final int reasoningLevel;
+  final int decoyClues;
+  final int conflictingEvidence;
+  final bool requiresCrossChecking;
+
+  const DifficultyProfile({
+    required this.startingHearts,
+    required this.scanBudget,
+    required this.emailSeconds,
+    required this.reasoningLevel,
+    required this.decoyClues,
+    required this.conflictingEvidence,
+    required this.requiresCrossChecking,
+  });
+}
+
 extension ArcadeDifficultyInfo on ArcadeDifficulty {
   String get title => switch (this) {
     ArcadeDifficulty.easy => 'EASY',
     ArcadeDifficulty.medium => 'MEDIUM',
     ArcadeDifficulty.hard => 'HARD',
   };
-  int get startingHearts => switch (this) {
-    ArcadeDifficulty.easy => 5,
-    ArcadeDifficulty.medium => 4,
-    ArcadeDifficulty.hard => 3,
+
+  DifficultyProfile get profile => switch (this) {
+    ArcadeDifficulty.easy => const DifficultyProfile(
+      startingHearts: 5, scanBudget: 5, emailSeconds: null,
+      reasoningLevel: 1, decoyClues: 0, conflictingEvidence: 0,
+      requiresCrossChecking: false,
+    ),
+    ArcadeDifficulty.medium => const DifficultyProfile(
+      startingHearts: 4, scanBudget: 4, emailSeconds: 10,
+      reasoningLevel: 2, decoyClues: 1, conflictingEvidence: 1,
+      requiresCrossChecking: false,
+    ),
+    ArcadeDifficulty.hard => const DifficultyProfile(
+      startingHearts: 3, scanBudget: 2, emailSeconds: null,
+      reasoningLevel: 4, decoyClues: 3, conflictingEvidence: 3,
+      requiresCrossChecking: true,
+    ),
   };
+
+  int get startingHearts => profile.startingHearts;
   int get bonusXp => index * 10;
 
-  /// How many of the five inspection tools a player may open on one case.
-  int get scanBudget => switch (this) {
-    ArcadeDifficulty.easy => 5,
-    ArcadeDifficulty.medium => 4,
-    ArcadeDifficulty.hard => 3,
-  };
+  /// How many inspection tools a player may open on one case.
+  int get scanBudget => profile.scanBudget;
 
   /// Seconds per email in Inbox Sprint; null means untimed.
-  int? get emailSeconds => switch (this) {
-    ArcadeDifficulty.easy => null,
-    ArcadeDifficulty.medium => 14,
-    ArcadeDifficulty.hard => 9,
-  };
+  int? get emailSeconds => profile.emailSeconds;
 }
 
 class ArcadeOption {

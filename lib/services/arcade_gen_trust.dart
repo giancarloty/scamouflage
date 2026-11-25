@@ -358,15 +358,24 @@ ArcadeCase buildTrust(Gen g, ArcadeDifficulty d, int index) {
   // Its popularity, confidence and opinion are unrelated to the truth;
   // otherwise players could learn to invert the top comment for easy XP.
   var replies = fillSlots(p.replies, slots);
-  if (d == ArcadeDifficulty.hard) {
-    final opinion = g.pick([
+  if (d.profile.requiresCrossChecking) {
+    // Hard mode deliberately presents conflicting social proof. Comments are
+    // opinions, not evidence, and neither one is tied to the case's truth.
+    final opposingOpinions = [
       "Legit 'to, nakita ko rin sa GC.",
       "Fake 'to sabi ng pinsan ko.",
-      'May nagsabi lang, better check the source first.',
-      'Mukhang tunay, pero wala pa akong makita na official source.',
-      'Hindi enough ang dami ng shares para malaman kung totoo.',
-    ]);
-    replies += ' Top comment (${g.between(18, 950)} likes): "$opinion"';
+    ];
+    for (final opinion in opposingOpinions.take(d.profile.conflictingEvidence)) {
+      replies += ' Comment (${g.between(18, 950)} likes): "$opinion"';
+    }
+    if (d.profile.decoyClues > 0) {
+      final decoyOpinion = g.pick([
+        'May nagsabi lang, better check the source first.',
+        'Mukhang tunay, pero wala pa akong makita na official source.',
+        'Hindi enough ang dami ng shares para malaman kung totoo.',
+      ]);
+      replies += ' Comment (${g.between(18, 950)} likes): "$decoyOpinion"';
+    }
   }
   final author = p.id == 'satire_page' ? 'Kalokohan PH'
       : g.pick(['Balita Ngayon', 'Kanto Updates', 'Tambayan Feed', 'Sikat PH',
