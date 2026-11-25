@@ -6,6 +6,7 @@ import '../services/game_audio.dart';
 import '../models/player_progression.dart';
 import 'theme.dart';
 import 'account_screens.dart';
+import 'package:flutter/foundation.dart';
 
 /// Local-only cosmetics. Accounts and public scores are visible future-feature
 /// previews, not working authentication or cloud storage.
@@ -78,22 +79,28 @@ class CareerIdentityScreen extends StatelessWidget {
             const SizedBox(height: 20),
             _sectionTitle('MASCOT NICKNAMES', 'Choose a new nickname for your companion.'),
             const SizedBox(height: 10),
-            Wrap(spacing: 10, runSpacing: 10, children: [
-              for (final item in CareerProgression.mascotNames)
-                _cosmeticTile(item.name, item.symbol, item.xp,
-                  game.equippedMascotNameId == item.id,
-                  () => _equip(() => game.equipMascotName(item.id)), context: context),
-            ]),
+            SizedBox(
+              width: double.infinity,
+              child: Wrap(alignment: WrapAlignment.center, spacing: 10, runSpacing: 10, children: [
+                for (final item in CareerProgression.mascotNames)
+                  _cosmeticTile(item.name, item.symbol, item.xp,
+                    game.equippedMascotNameId == item.id,
+                    () => _equip(() => game.equipMascotName(item.id)), context: context),
+              ]),
+            ),
             const SizedBox(height: 20),
             _sectionTitle('MASCOT COLORS', 'Unlocked colors change the mascot, not your XP.'),
             const SizedBox(height: 10),
-            Wrap(spacing: 10, runSpacing: 10, children: [
-              for (final item in CareerProgression.mascotColors)
-                _cosmeticTile(item.name, item.symbol, item.xp,
-                  game.equippedMascotColorId == item.id,
-                  () => _equip(() => game.equipMascotColor(item.id)),
-                  accent: MascotPalette.forId(item.id), context: context),
-            ]),
+            SizedBox(
+              width: double.infinity,
+              child: Wrap(alignment: WrapAlignment.center, spacing: 10, runSpacing: 10, children: [
+                for (final item in CareerProgression.mascotColors)
+                  _cosmeticTile(item.name, item.symbol, item.xp,
+                    game.equippedMascotColorId == item.id,
+                    () => _equip(() => game.equipMascotColor(item.id)),
+                    accent: MascotPalette.forId(item.id), context: context),
+              ]),
+            ),
             const SizedBox(height: 20),
             _sectionTitle('EARNED TITLES', 'Choose the title under your name.'),
             const SizedBox(height: 10),
@@ -105,24 +112,30 @@ class CareerIdentityScreen extends StatelessWidget {
             const SizedBox(height: 20),
             _sectionTitle('BADGE COLLECTION', 'Your chosen badge appears on your profile.'),
             const SizedBox(height: 10),
-            Wrap(spacing: 10, runSpacing: 10, children: [
-              for (final badge in CareerProgression.badges)
-                _cosmeticTile(
-                  badge.name, badge.symbol, badge.xp,
-                  game.equippedBadgeId == badge.id,
-                  () => _equip(() => game.equipBadge(badge.id)), context: context),
-            ]),
+            SizedBox(
+              width: double.infinity,
+              child: Wrap(alignment: WrapAlignment.center, spacing: 10, runSpacing: 10, children: [
+                for (final badge in CareerProgression.badges)
+                  _cosmeticTile(
+                    badge.name, badge.symbol, badge.xp,
+                    game.equippedBadgeId == badge.id,
+                    () => _equip(() => game.equipBadge(badge.id)), context: context),
+              ]),
+            ),
             const SizedBox(height: 20),
             _sectionTitle('PROFILE FRAMES', 'Earn a color frame through Career XP.'),
             const SizedBox(height: 10),
-            Wrap(spacing: 10, runSpacing: 10, children: [
-              for (final frame in CareerProgression.frames)
-                _cosmeticTile(
-                  frame.name, frame.symbol, frame.xp,
-                  game.equippedFrameId == frame.id,
-                  () => _equip(() => game.equipFrame(frame.id)),
-                  accent: _framePalette[frame.id], context: context,),
-            ]),
+            SizedBox(
+              width: double.infinity,
+              child: Wrap(alignment: WrapAlignment.center, spacing: 10, runSpacing: 10, children: [
+                for (final frame in CareerProgression.frames)
+                  _cosmeticTile(
+                    frame.name, frame.symbol, frame.xp,
+                    game.equippedFrameId == frame.id,
+                    () => _equip(() => game.equipFrame(frame.id)),
+                    accent: _framePalette[frame.id], context: context),
+              ]),
+            ),
           ]),
         )),
       ),
@@ -194,32 +207,7 @@ class CareerIdentityScreen extends StatelessWidget {
     );
   }
 
-  Widget _evolutionPreview() => SizedBox(height: 154,
-    child: ListView.separated(
-      scrollDirection: Axis.horizontal,
-      itemCount: CareerProgression.ranks.length,
-      separatorBuilder: (_, __) => const SizedBox(width: 8),
-      itemBuilder: (context, index) {
-        final rank = CareerProgression.ranks[index];
-        final unlocked = game.careerXp >= rank.xp;
-        return Container(width: 112,
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: deskBlue, borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: unlocked ? mustard : deskLight)),
-          child: Column(children: [
-            Opacity(opacity: unlocked ? 1 : .45,
-              child: MascotAvatar(game: game, size: 91, level: rank.level)),
-            const SizedBox(height: 3),
-            Text('LV ${rank.level}', style: typewriter(10, color: unlocked ? mustard : parchment)),
-            Text(unlocked ? rank.title : '${rank.xp} XP',
-              style: captionText(10, color: parchment),
-              maxLines: 1, overflow: TextOverflow.ellipsis),
-          ]),
-        );
-      },
-    ),
-  );
+  Widget _evolutionPreview() => _EvolutionStrip(game: game);
 
   Widget _sectionTitle(String title, String caption) => Column(
     crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -297,5 +285,95 @@ class CareerIdentityScreen extends StatelessWidget {
         ]),
       ),
     ));
+  }
+}
+
+class _EvolutionStrip extends StatefulWidget {
+  final GameEngine game;
+  const _EvolutionStrip({required this.game});
+
+  @override
+  State<_EvolutionStrip> createState() => _EvolutionStripState();
+}
+
+class _EvolutionStripState extends State<_EvolutionStrip> {
+  final ScrollController _controller = ScrollController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDesktop = switch (defaultTargetPlatform) {
+      TargetPlatform.windows ||
+      TargetPlatform.macOS ||
+      TargetPlatform.linux => true,
+      _ => false,
+    };
+
+    return SizedBox(
+      height: isDesktop ? 170 : 154,
+      child: RawScrollbar(
+        controller: _controller,
+        thumbVisibility: isDesktop,
+        trackVisibility: isDesktop,
+        interactive: true,
+        scrollbarOrientation: ScrollbarOrientation.bottom,
+        thickness: 6,
+        radius: const Radius.circular(8),
+        trackRadius: const Radius.circular(8),
+        thumbColor: mustard.withValues(alpha: .85),
+        trackColor: deskLight.withValues(alpha: .45),
+        child: ListView.separated(
+          controller: _controller,
+          scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.only(bottom: isDesktop ? 16 : 0),
+          itemCount: CareerProgression.ranks.length,
+          separatorBuilder: (_, __) => const SizedBox(width: 8),
+          itemBuilder: (context, index) {
+            final rank = CareerProgression.ranks[index];
+            final unlocked = widget.game.careerXp >= rank.xp;
+            return Container(
+              width: 112,
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: deskBlue,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: unlocked ? mustard : deskLight,
+                ),
+              ),
+              child: Column(children: [
+                Opacity(
+                  opacity: unlocked ? 1 : .45,
+                  child: MascotAvatar(
+                    game: widget.game,
+                    size: 91,
+                    level: rank.level,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  'LV ${rank.level}',
+                  style: typewriter(
+                    10,
+                    color: unlocked ? mustard : parchment,
+                  ),
+                ),
+                Text(
+                  unlocked ? rank.title : '${rank.xp} XP',
+                  style: captionText(10, color: parchment),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ]),
+            );
+          },
+        ),
+      ),
+    );
   }
 }

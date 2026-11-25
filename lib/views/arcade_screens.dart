@@ -545,7 +545,7 @@ class _ArcadeHubState extends State<ArcadeHub> {
         child: hintOn ? _hintPanel(c.hint) : _howTo(c.mode)),
       Expanded(child: Stack(children: [
         Positioned.fill(child: KeyedSubtree(
-          key: ValueKey('${c.signature}:${s.round}'),
+          key: ValueKey('${c.signature}:${s.waitingForNext ? s.round - 1 : s.round}'),
           child: _surface(s, c))),
         if (s.waitingForNext) Positioned.fill(child: _resultOverlay(s, c)),
       ])),
