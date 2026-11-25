@@ -70,10 +70,10 @@ ArcadeCase buildRumor(Gen g, ArcadeDifficulty d, int index) {
 ArcadeCase _order(Gen g, ArcadeDifficulty d) {
   final topic = g.pick(_escalations.keys.toList());
   final levels = _escalations[topic]!;
-  final n = switch (d) {
-    ArcadeDifficulty.easy => 3,
-    ArcadeDifficulty.medium => 4,
-    ArcadeDifficulty.hard => 5,
+  final n = switch (d.profile.reasoningLevel) {
+    1 => 3,
+    2 => 4,
+    _ => 6,
   };
   final town = g.pick(Pools.towns);
   final handles = List.generate(n, (_) => _h(g));
@@ -104,7 +104,9 @@ ArcadeCase _order(Gen g, ArcadeDifficulty d) {
     signature: 'rumor:order:$topic:$n', scenario: 'order', mode: ArcadeMode.rumor,
     title: 'Who started it?', rumorTask: RumorTask.order,
     text: 'Use the arrows: first-hand post at the top, newest repost last.',
-    subtext: 'Each card says who it copied from.',
+    subtext: d.profile.requiresCrossChecking
+        ? 'Trace the source chain; reposts may add unsupported details.'
+        : 'Each card says who it copied from.',
     cards: cards, correct: correct, deceptive: true,
     lesson: "Each repost copies the one before it, and the story grows. The post at the top is first-hand, and the later ones add details nobody there confirmed.",
     hint: 'Start with the card that says it saw it personally. Then follow each "Shared from".',
@@ -154,7 +156,7 @@ ArcadeCase _spot(Gen g, ArcadeDifficulty d) {
   }
   final official = render((a, real) => real);
   final faithful = render((a, real) => real);
-  final n = d == ArcadeDifficulty.hard ? 4 : 3;
+  final n = d.profile.reasoningLevel >= 3 ? 5 : 3;
   final wrongOne = render(altered);
   final texts = <String>[wrongOne];
   while (texts.length < n) {
@@ -206,7 +208,7 @@ ArcadeCase _outdated(Gen g, ArcadeDifficulty d) {
   final school = g.pick(Pools.schools);
   String line(int deadlineOffset) =>
       '${fillSlots(what.$2, {'school': school})} ${dateAt(deadlineOffset)}.';
-  final n = d == ArcadeDifficulty.easy ? 3 : 4;
+  final n = d.profile.reasoningLevel == 1 ? 3 : d.profile.reasoningLevel >= 3 ? 5 : 4;
   // Stale post can be an old post OR a freshly re-shared old poster.
   final recycled = d == ArcadeDifficulty.easy ? false : g.chance(.6);
   final items = <(RumorCard, bool)>[];
@@ -216,8 +218,13 @@ ArcadeCase _outdated(Gen g, ArcadeDifficulty d) {
       'Posted ${g.between(20, 35)} days ago'), false)); // old but still valid
   items.add((RumorCard('Page C', line(g.between(10, 20)),
       'Posted ${g.between(1, 3)} days ago'), false));
-  if (n == 4) {
+  if (n >= 4) {
     items.add((RumorCard('Page D', line(g.between(3, 9)), 'Posted today'), false));
+  }
+  if (n >= 5) {
+    // An additional current post creates a comparison task on Hard without
+    // changing which card is stale or making the answer depend on post age.
+    items.add((RumorCard('Page E', line(g.between(8, 18)), 'Posted 2 days ago'), false));
   }
   final perm = g.shuffled([for (var i = 0; i < n; i++) i]);
   final cards = [for (final i in perm) items[i].$1];
@@ -227,7 +234,9 @@ ArcadeCase _outdated(Gen g, ArcadeDifficulty d) {
     scenario: 'outdated', mode: ArcadeMode.rumor,
     title: 'What is stale?', rumorTask: RumorTask.outdated,
     text: 'Today is ${dateAt(0)}. Which post would mislead people if you shared it now?',
-    subtext: 'Look at the deadline, not just when it was posted.',
+    subtext: d.profile.requiresCrossChecking
+        ? 'Compare deadlines with today; a recent repost can still be stale.'
+        : 'Look at the deadline, not just when it was posted.',
     cards: cards, correct: [correct], deceptive: true,
     lesson: "The stale post has a deadline that's already passed. The post date can fool you: an old post can still be valid, and a brand-new post can recycle an old deadline.",
     hint: 'Compare each deadline to today. Ignore how old each post is.',
@@ -257,7 +266,7 @@ ArcadeCase _independent(Gen g, ArcadeDifficulty d) {
     const RumorCard('Fan page copy', 'Same wording as the viral post, posted 2 hours later.', 'Basis: copied the viral post'),
     const RumorCard('"Insider" screenshot', 'A blurry screenshot of a chat, no names visible.', 'Basis: unnamed source'),
   ];
-  final n = d == ArcadeDifficulty.easy ? 3 : 4;
+  final n = d.profile.reasoningLevel == 1 ? 3 : d.profile.reasoningLevel >= 3 ? 5 : 4;
   final good = g.pick(real);
   final all = [good, ...g.sample(fake, n - 1)];
   final perm = g.shuffled([for (var i = 0; i < n; i++) i]);
@@ -266,7 +275,9 @@ ArcadeCase _independent(Gen g, ArcadeDifficulty d) {
     signature: 'rumor:independent:${real.indexOf(good)}:${all.skip(1).map((e) => e.title).join('|')}',
     scenario: 'independent', mode: ArcadeMode.rumor,
     title: 'Where is the proof?', rumorTask: RumorTask.independent,
-    text: 'Tap the one item that confirms the claim by itself, without copying the viral post.',
+    text: d.profile.requiresCrossChecking
+        ? 'Cross-check the claim. Find independent evidence, not repeated copies.'
+        : 'Tap the one item that confirms the claim by itself, without copying the viral post.',
     subtext: 'Claim: $c',
     cards: cards, correct: [perm.indexOf(0)], deceptive: true,
     lesson: "Independent proof comes from the people or place that made the decision, or from someone who was physically there. A big outlet that just cites a viral post isn't proof, and neither is the 3.2K shares.",

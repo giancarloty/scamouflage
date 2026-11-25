@@ -75,7 +75,7 @@ String _lookalike(Gen g, String base) {
 
 ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
   final story = _stories[index];
-  final hard = d == ArcadeDifficulty.hard;
+  final hard = d.profile.requiresCrossChecking;
   final easy = d == ArcadeDifficulty.easy;
 
   List<_Org> fit(List<String> kinds) =>
@@ -283,7 +283,9 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
     mode: ArcadeMode.impostor, title: org.name,
     author: 'Tambayan Identity Desk', handle: '@identitychecks',
     text: 'Two accounts use a similar name. Does either one fake an identity?',
-    subtext: hard ? 'The directory is below: read it carefully.' : 'Open both profiles, then compare.',
+    subtext: hard
+        ? 'Cross-check the directory, links, account history and recent behavior.'
+        : 'Open both profiles, then compare.',
     directory: spec.dir,
     leftProfile: left, rightProfile: right,
     deceptive: flagged != -1,

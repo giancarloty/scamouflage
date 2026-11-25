@@ -185,8 +185,7 @@ void main() {
       expect(firstDay.emails.any((e) => e.spam), true);
       expect(firstDay.emails.any((e) => !e.spam), true);
       expect(ArcadeDifficulty.easy.emailSeconds, isNull);
-      expect(ArcadeDifficulty.hard.emailSeconds,
-          lessThan(ArcadeDifficulty.medium.emailSeconds!));
+      expect(ArcadeDifficulty.hard.emailSeconds, isNull);
     });
 
     test('Comment Chaos: zero, one or two rule breakers; criticism stays allowed', () {
