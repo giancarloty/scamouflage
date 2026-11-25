@@ -452,9 +452,6 @@ class _ArcadeHubState extends State<ArcadeHub> {
     final xpBefore = widget.game.careerXp;
     final submittedCase = s.current;
     setState(() => s.submit(answer, usedDecisive: usedDecisive));
-<<<<<<< ours
-    if (s.finished) _submitScore(s);
-=======
     final correct = s.lastCorrect == true;
     if (!s.firstDay) {
       dailyChallenges.onAnswer(
@@ -463,7 +460,7 @@ class _ArcadeHubState extends State<ArcadeHub> {
       );
       dailyChallenges.onRoundCompleted(perfect: correct);
     }
->>>>>>> theirs
+    if (s.finished) _submitScore(s);
     final xpAfter = widget.game.careerXp;
     final unlocked = ArcadeMode.values.any((m) =>
         m.unlockXp > xpBefore && m.unlockXp <= xpAfter);
