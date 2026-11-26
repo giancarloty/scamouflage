@@ -529,8 +529,8 @@ class _ArcadeHubState extends State<ArcadeHub> {
 
   String _difficultyNote() => switch (difficulty) {
     ArcadeDifficulty.easy => 'all checks open, no timers',
-    ArcadeDifficulty.medium => 'fewer checks, timed inbox',
-    ArcadeDifficulty.hard => 'few checks, noisy replies, fast inbox',
+    ArcadeDifficulty.medium => 'fewer checks, 15-second inbox',
+    ArcadeDifficulty.hard => 'few checks, noisy replies, 8-second inbox',
   };
 
   void _openAudioSettings() {
@@ -650,7 +650,7 @@ class _ArcadeHubState extends State<ArcadeHub> {
     if (s == null || s.waitingForNext) return;
     final xpBefore = widget.game.careerXp;
     final submittedCase = s.current;
-    setState(() => s.submit(answer, usedDecisive: usedDecisive));
+    setState(() => s.submit(answer, usedDecisive: usedDecisive, opened: opened));
     final correct = s.lastCorrect == true;
     if (!s.firstDay) {
       dailyChallenges.onAnswer(
@@ -845,7 +845,7 @@ class _ArcadeHubState extends State<ArcadeHub> {
         : c.mode.title;
     final subtitle = s.firstDay
         ? c.mode.title
-        : '${s.selectedMode == null ? 'ENDLESS MIX' : difficulty.title} • ROUND ${s.round + (s.waitingForNext ? 0 : 1)}';
+        : '${s.selectedMode == null ? 'ENDLESS MIX ${difficulty.title}' : difficulty.title} • ROUND ${s.round + (s.waitingForNext ? 0 : 1)}';
     final compact = PhoneLayout.compact(context);
     final title = Column(
       crossAxisAlignment: CrossAxisAlignment.start,

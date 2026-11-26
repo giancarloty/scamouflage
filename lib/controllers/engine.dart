@@ -24,6 +24,7 @@ class GameEngine extends ChangeNotifier {
   final List<int> _pendingLevelUps = [];
   String get mascotName => CareerProgression.mascotNameById(equippedMascotNameId)?.name ?? 'ChameLeo';
   int? takeLevelUp() {
+    _pendingLevelUps.removeWhere((level) => level > careerRank.level);
     if (_pendingLevelUps.isEmpty) return null;
     final highest = _pendingLevelUps.last;
     _pendingLevelUps.clear();
@@ -225,6 +226,7 @@ class GameEngine extends ChangeNotifier {
     int readInt(dynamic v, int fallback) => v is num ? v.toInt() : fallback;
 
     careerXp = max(0, readInt(data['careerXp'], careerXp));
+    _pendingLevelUps.removeWhere((level) => level > careerRank.level);
     completedShifts = max(0, readInt(data['completedShifts'], completedShifts));
     unlockedShift = readInt(data['unlockedShift'], unlockedShift).clamp(1, 7).toInt();
     safety = readInt(data['safety'], safety).clamp(0, 100).toInt();

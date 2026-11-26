@@ -25,13 +25,14 @@ enum Concept {
   missingContext('Checking for missing context or information that changes the meaning'),
   aiGenerated('Checking whether content is AI-generated and honestly labeled'),
   fakeQuote('Checking whether a quote is fabricated or misattributed'),
-  oldValid('Checking whether an older post is still valid or really outdated'),;
+  oldValid('Checking whether an older post is still valid or really outdated');
+
   final String label;
   const Concept(this.label);
 }
 
 /// What kind of mistake a wrong answer was. Used for the run summary.
-enum ErrorKind {none, trustedBad, flaggedGood, timeout, other}
+enum ErrorKind { none, trustedBad, flaggedGood, timeout, other }
 
 extension ArcadeModeInfo on ArcadeMode {
   String get title => switch (this) {
@@ -64,9 +65,12 @@ extension ArcadeModeInfo on ArcadeMode {
     ArcadeMode.clip => 'Slide the timeline. Compare cuts.',
   };
   String get emoji => switch (this) {
-    ArcadeMode.trust => '📣', ArcadeMode.impostor => '🕵️',
-    ArcadeMode.scamSlam => '💬', ArcadeMode.rumor => '🧩',
-    ArcadeMode.inbox => '✉️', ArcadeMode.comments => '👑',
+    ArcadeMode.trust => '📣',
+    ArcadeMode.impostor => '🕵️',
+    ArcadeMode.scamSlam => '💬',
+    ArcadeMode.rumor => '🧩',
+    ArcadeMode.inbox => '✉️',
+    ArcadeMode.comments => '👑',
     ArcadeMode.clip => '🎬',
   };
   int get unlockXp => switch (this) {
@@ -108,21 +112,9 @@ extension ArcadeDifficultyInfo on ArcadeDifficulty {
   };
 
   DifficultyProfile get profile => switch (this) {
-    ArcadeDifficulty.easy => const DifficultyProfile(
-      startingHearts: 5, scanBudget: 5, emailSeconds: null,
-      reasoningLevel: 1, decoyClues: 0, conflictingEvidence: 0,
-      requiresCrossChecking: false,
-    ),
-    ArcadeDifficulty.medium => const DifficultyProfile(
-      startingHearts: 4, scanBudget: 4, emailSeconds: 10,
-      reasoningLevel: 2, decoyClues: 1, conflictingEvidence: 1,
-      requiresCrossChecking: false,
-    ),
-    ArcadeDifficulty.hard => const DifficultyProfile(
-      startingHearts: 3, scanBudget: 2, emailSeconds: null,
-      reasoningLevel: 4, decoyClues: 3, conflictingEvidence: 3,
-      requiresCrossChecking: true,
-    ),
+    ArcadeDifficulty.easy => const DifficultyProfile(startingHearts: 5, scanBudget: 5, emailSeconds: null, reasoningLevel: 1, decoyClues: 0, conflictingEvidence: 0, requiresCrossChecking: false),
+    ArcadeDifficulty.medium => const DifficultyProfile(startingHearts: 4, scanBudget: 4, emailSeconds: 15, reasoningLevel: 2, decoyClues: 1, conflictingEvidence: 1, requiresCrossChecking: false),
+    ArcadeDifficulty.hard => const DifficultyProfile(startingHearts: 3, scanBudget: 4, emailSeconds: 8, reasoningLevel: 3, decoyClues: 2, conflictingEvidence: 2, requiresCrossChecking: true),
   };
 
   int get startingHearts => profile.startingHearts;
@@ -153,37 +145,41 @@ class ProfileView {
   final bool badge;
   final List<String> recent;
   final int ageDays, followers;
-  const ProfileView({
-    required this.name, required this.handle, required this.bio,
-    required this.ageDays, required this.followers,
-    this.link = 'no link', this.label, this.badge = false,
-    this.recent = const [],
-  });
-  String get ageLabel => ageDays < 7 ? '$ageDays days old' :
-      ageDays < 365 ? '${(ageDays / 30).round()} months old' :
-      '${(ageDays / 365).round()} yrs old';
+  const ProfileView({required this.name, required this.handle, required this.bio, required this.ageDays, required this.followers, this.link = 'no link', this.label, this.badge = false, this.recent = const []});
+  String get ageLabel => ageDays < 7
+      ? '$ageDays days old'
+      : ageDays < 365
+      ? '${(ageDays / 30).round()} months old'
+      : '${(ageDays / 365).round()} yrs old';
 }
 
 class EmailItem {
   final String fromName, fromAddress, replyTo, subject, body;
   final String linkLabel, linkTarget, attachment;
+
   /// The sorting truth: true = spam/phishing, false = legitimate.
   final bool spam;
   final String why;
   const EmailItem({
-    required this.fromName, required this.fromAddress, required this.subject,
-    required this.body, required this.spam, required this.why,
-    this.replyTo = '', this.linkLabel = '', this.linkTarget = '',
+    required this.fromName,
+    required this.fromAddress,
+    required this.subject,
+    required this.body,
+    required this.spam,
+    required this.why,
+    this.replyTo = '',
+    this.linkLabel = '',
+    this.linkTarget = '',
     this.attachment = '',
   });
 }
 
 class CommentView {
   final String handle, body, context, reason;
+
   /// True when this comment really breaks the community rules.
   final bool violates;
-  const CommentView(this.handle, this.body,
-      {this.context = '', this.violates = false, this.reason = ''});
+  const CommentView(this.handle, this.body, {this.context = '', this.violates = false, this.reason = ''});
 }
 
 class RumorCard {
@@ -196,8 +192,7 @@ class ClipBeat {
   final int second;
   final String scene, viralLine, fullLine;
   final bool inViral;
-  const ClipBeat(this.second, this.scene, this.viralLine, this.fullLine,
-      {this.inViral = true});
+  const ClipBeat(this.second, this.scene, this.viralLine, this.fullLine, {this.inViral = true});
 }
 
 /// A complete scenario. Truth is generated first (see [deceptive] and
@@ -248,27 +243,83 @@ class ArcadeCase {
   final List<ClipBeat> beats;
 
   const ArcadeCase({
-    required this.signature, required this.scenario, required this.mode,
-    required this.title, required this.lesson, required this.hint,
-    required this.correct, required this.deceptive,
-    this.author = '', this.handle = '', this.text = '', this.subtext = '',
-    this.visual = '', this.imageTopic = 'Government', this.imageCaption = '',
-    this.reactions = '', this.tools = const [],
-    this.leftProfile, this.rightProfile, this.directory = const [],
-    this.chatIn = const [], this.activity = const [], this.linkDomain = '',
-    this.choices = const [], this.followUps = const {},
-    this.rumorTask, this.cards = const [], this.tokens = const [],
-    this.emails = const [], this.comments = const [], this.beats = const [],
-    this.concepts = const [], this.ruleOfThumb = '',
+    required this.signature,
+    required this.scenario,
+    required this.mode,
+    required this.title,
+    required this.lesson,
+    required this.hint,
+    required this.correct,
+    required this.deceptive,
+    this.author = '',
+    this.handle = '',
+    this.text = '',
+    this.subtext = '',
+    this.visual = '',
+    this.imageTopic = 'Government',
+    this.imageCaption = '',
+    this.reactions = '',
+    this.tools = const [],
+    this.leftProfile,
+    this.rightProfile,
+    this.directory = const [],
+    this.chatIn = const [],
+    this.activity = const [],
+    this.linkDomain = '',
+    this.choices = const [],
+    this.followUps = const {},
+    this.rumorTask,
+    this.cards = const [],
+    this.tokens = const [],
+    this.emails = const [],
+    this.comments = const [],
+    this.beats = const [],
+    this.concepts = const [],
+    this.ruleOfThumb = '',
   });
+
+  ArcadeCase copyWith({String? signature}) => ArcadeCase(
+    signature: signature ?? this.signature,
+    scenario: scenario,
+    mode: mode,
+    title: title,
+    lesson: lesson,
+    hint: hint,
+    correct: correct,
+    deceptive: deceptive,
+    author: author,
+    handle: handle,
+    text: text,
+    subtext: subtext,
+    visual: visual,
+    imageTopic: imageTopic,
+    imageCaption: imageCaption,
+    reactions: reactions,
+    tools: tools,
+    leftProfile: leftProfile,
+    rightProfile: rightProfile,
+    directory: directory,
+    chatIn: chatIn,
+    activity: activity,
+    linkDomain: linkDomain,
+    choices: choices,
+    followUps: followUps,
+    rumorTask: rumorTask,
+    cards: cards,
+    tokens: tokens,
+    emails: emails,
+    comments: comments,
+    beats: beats,
+    concepts: concepts,
+    ruleOfThumb: ruleOfThumb,
+  );
 
   /// Single-choice convenience.
   int get correctChoice => correct.isEmpty ? -1 : correct.first;
 
   bool get isBatch => mode == ArcadeMode.inbox;
 
-  bool get _sortsAnswer => mode == ArcadeMode.comments ||
-      (mode == ArcadeMode.rumor && rumorTask == RumorTask.wordEdit);
+  bool get _sortsAnswer => mode == ArcadeMode.comments || (mode == ArcadeMode.rumor && rumorTask == RumorTask.wordEdit);
 
   /// Number of sub-answers that match the truth (Inbox Sprint is partial).
   int matches(List<int> answer) {
@@ -307,7 +358,5 @@ class ArcadeCase {
   }
 
   /// The tool ids that actually settle the question.
-  List<String> get decisiveIds => tools
-      .where((t) => t.relevance == Relevance.decisive)
-      .map((t) => t.id).toList();
+  List<String> get decisiveIds => tools.where((t) => t.relevance == Relevance.decisive).map((t) => t.id).toList();
 }

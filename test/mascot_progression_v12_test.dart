@@ -13,8 +13,10 @@ void main() {
   test('Career has ten ordered ranks and never spends XP to equip', () async {
     expect(CareerProgression.ranks.length, 10);
     for (var i = 1; i < CareerProgression.ranks.length; i++) {
-      expect(CareerProgression.ranks[i].xp,
-          greaterThan(CareerProgression.ranks[i-1].xp));
+      expect(
+        CareerProgression.ranks[i].xp,
+        greaterThan(CareerProgression.ranks[i - 1].xp),
+      );
     }
     final game = GameEngine();
     await game.load();
@@ -29,6 +31,17 @@ void main() {
     expect(game.careerXp, 10000);
     expect(game.equippedMascotNameId, 'truth');
     expect(game.equippedMascotColorId, 'gold');
+    game.dispose();
+  });
+
+  test('A level-up notice never exceeds the corrected current rank', () async {
+    final game = GameEngine();
+    await game.load();
+    game.awardArcadeXp(10000);
+    await game.applyCloud({'careerXp': 7400});
+    expect(game.careerRank.level, 9);
+    expect(game.takeLevelUp(), 9);
+    expect(game.takeLevelUp(), isNull);
     game.dispose();
   });
 
@@ -53,16 +66,23 @@ void main() {
     final ordered = [...ArcadeMode.values]
       ..sort((a, b) => a.unlockXp.compareTo(b.unlockXp));
     for (var i = 1; i < ordered.length; i++) {
-      expect(ordered[i].unlockXp, greaterThanOrEqualTo(ordered[i - 1].unlockXp));
+      expect(
+        ordered[i].unlockXp,
+        greaterThanOrEqualTo(ordered[i - 1].unlockXp),
+      );
     }
     expect(ordered.first.unlockXp, 0);
     expect(ordered.last.unlockXp, 1200);
   });
 
-  testWidgets('Ten outfit variants render with changeable body colors', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: Scaffold(body: Center(
-      child: ChameleonDebugPreview(),
-    ))));
+  testWidgets('Ten outfit variants render with changeable body colors', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(body: Center(child: ChameleonDebugPreview())),
+      ),
+    );
     expect(find.byType(MascotAvatar), findsNWidgets(2));
     expect(tester.takeException(), isNull);
   });
@@ -70,11 +90,15 @@ void main() {
 
 class ChameleonDebugPreview extends StatelessWidget {
   const ChameleonDebugPreview({super.key});
-  @override Widget build(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     final game = GameEngine();
-    return Column(mainAxisSize: MainAxisSize.min, children: [
-      MascotAvatar(game: game, level: 1, size: 80),
-      MascotAvatar(game: game, level: 10, size: 80),
-    ]);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        MascotAvatar(game: game, level: 1, size: 80),
+        MascotAvatar(game: game, level: 10, size: 80),
+      ],
+    );
   }
 }

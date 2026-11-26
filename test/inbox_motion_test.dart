@@ -93,11 +93,8 @@ void main() {
     });
   });
 
-  Future<void> mountInbox(
-    WidgetTester tester, {
-    double width = 375,
-    double height = 812,
-  }) async {
+  Future<void> mountInbox(WidgetTester tester,
+      {double width = 375, double height = 812}) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = Size(width, height);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -136,7 +133,9 @@ void main() {
     await mountInbox(tester, width: 320, height: 568);
     final card = find.byKey(const ValueKey('inbox-swipe-card'));
     final gesture = await tester.startGesture(tester.getCenter(card));
-    await gesture.moveBy(const Offset(53, 0));
+    await gesture.moveBy(const Offset(27, 0));
+    await tester.pump();
+    await gesture.moveBy(const Offset(26, 0));
     await tester.pump();
 
     final visible = find.descendant(
@@ -174,8 +173,4 @@ void main() {
   });
 }
 
-void _ignoreResult(
-  List<int> answer,
-  bool flipped, {
-  List<String> opened = const [],
-}) {}
+void _ignoreResult(List<int> answer, bool flipped) {}

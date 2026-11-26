@@ -17,6 +17,7 @@ const _escalations = <String, List<String>>{
     "SUNOG SA {town}! Halos buong barangay na, may mga patay daw!",
     "Walang lumalabas na balita pero sunog na ang buong lungsod! Magtago na kayo!",
     "BREAKING: Sunog sa buong probinsya, itinatago ng gobyerno!",
+    "Lumikas na raw ang buong bansa dahil sa sunog; huwag nang maghintay ng kumpirmasyon!",
   ],
   'flood': [
     "Hanggang bukung-bukong ang baha sa kanto ng Brgy. {town}, passable pa rin.",
@@ -24,6 +25,7 @@ const _escalations = <String, List<String>>{
     "Hanggang bewang na ang baha sa buong {town}! Hindi na madaanan!",
     "Lubog na ang buong lungsod, rescue na ang kailangan!",
     "WALANG TUMUTULONG! Lubog ang buong probinsya, nawawala na ang mga tao!",
+    "Aabot na raw sa kabisera ang baha; walang ligtas kahit saan!",
   ],
   'dengue': [
     "Limang kaso ng dengue ang naitala sa isang paaralan sa Brgy. {town}.",
@@ -31,6 +33,7 @@ const _escalations = <String, List<String>>{
     "Outbreak ng dengue sa buong {town}, sarado na raw ang mga paaralan!",
     "Dengue emergency sa lungsod, daan-daang patay na daw!",
     "Lockdown na ang buong probinsya dahil sa dengue, itinatago ng gobyerno!",
+    "Kumakalat na raw sa buong bansa at wala nang ospital na tumatanggap ng pasyente!",
   ],
   'fare': [
     "Panukala: ₱2 na dagdag-pasahe sa jeep, pag-uusapan pa sa hearing sa Huwebes.",
@@ -38,6 +41,7 @@ const _escalations = <String, List<String>>{
     "Doble na ang pamasahe simula bukas!!",
     "Hindi na makakasakay ang mga estudyante dahil sa taas ng pamasahe, kanselado na ang klase!",
     "Walang jeep na bibiyahe simula Lunes, hindi na raw babalik!",
+    "Wala nang pampublikong sasakyan sa buong bansa simula bukas, maglakad na lang daw!",
   ],
   'road': [
     "Isang lane sa highway ang sarado ngayong gabi para sa pag-aayos.",
@@ -45,6 +49,7 @@ const _escalations = <String, List<String>>{
     "SARADO ang highway buong linggo! Wag na kayong dumaan!",
     "Sarado na ang buong NCR at probinsya, lahat ng tulay bagsak na!",
     "Bagsak ang tulay at sarado ang bansa, magtago na!",
+    "Lahat ng daan at tulay ay gumuho raw; walang makakapasok o makakalabas!",
   ],
   'water': [
     "Walang tubig sa ilang bahay sa Brgy. {town} mula 8PM hanggang 4AM para sa pag-aayos ng tubo.",
@@ -52,6 +57,7 @@ const _escalations = <String, List<String>>{
     "Walang tubig sa buong {town} ng tatlong araw! Mag-ipon na ngayon!",
     "Wala nang tubig ang buong lungsod, kontaminado raw ang supply!",
     "Nilalason daw ang tubig ng buong probinsya, huwag uminom!",
+    "Lason na raw ang lahat ng gripo sa bansa; huwag nang gumamit ng tubig!",
   ],
   'power': [
     "May brownout sa Brgy. {town} bukas, 9AM hanggang 3PM, para sa maintenance ng linya.",
@@ -59,6 +65,7 @@ const _escalations = <String, List<String>>{
     "Tatlong araw na brownout sa {town}, wala raw kuryente hanggang Linggo!",
     "Blackout na sa buong lungsod, sabotahe raw ito!",
     "Wala nang kuryente sa buong bansa, itinatago ng gobyerno ang totoo!",
+    "Hindi na raw maibabalik ang kuryente sa buong bansa; maghanda sa maraming taon!",
   ],
   'exam': [
     "Ang quiz sa Math sa {town} High ay inilipat sa Huwebes dahil sa suspensyon.",
@@ -66,24 +73,42 @@ const _escalations = <String, List<String>>{
     "Kanselado na ang lahat ng exam sa buong {town} hanggang next month!",
     "Walang pasok ang buong lungsod hanggang next month, kanselado na ang school year!",
     "Tapos na ang school year sa buong bansa, wala nang exam at walang diploma!",
+    "Isinara na raw ang lahat ng paaralan sa bansa nang permanente!",
+  ],
+  'library': [
+    "Paalala: ₱5 kada araw ang late return ng libro pagkatapos ng due date.",
+    "May ₱5 late fee na raw lahat ng humiram ng libro, kahit hindi pa due.",
+    "Kailangan na raw magbayad ng ₱500 ang bawat estudyante bago makapasok sa library.",
+    "Isasara na raw ang library bukas kapag walang nagbayad ng bagong fee.",
+    "Wala nang libreng library access sa buong paaralan simula ngayon!",
+    "Isinara na raw ang lahat ng library sa buong lungsod dahil sa utang ng estudyante!",
+  ],
+  'bridge': [
+    "Isang lane lang ng tulay sa Brgy. {town} ang isasara sa inspeksyon bukas, 9AM-12NN.",
+    "Sarado na raw ang buong tulay sa Brgy. {town} bukas habang may inspeksyon.",
+    "Bawal na raw dumaan sa lahat ng tulay sa {town} hanggang matapos ang inspeksyon.",
+    "Delikado raw ang mga tulay sa buong lungsod; huwag nang bumiyahe.",
+    "May bumagsak na raw na tulay kahit walang opisyal na ulat.",
+    "Gumuho na raw ang lahat ng tulay sa probinsya at walang ligtas na ruta!",
   ],
 };
 
-const _eyewitness = [
-  "Nandito ako mismo sa lugar. Ito ang kuha ko kanina.",
-  "Personal kong nakita. Kuha ko ang larawan na ito.",
-  "Residente ako dito, ako ang nag-video.",
-];
+const _eyewitness = ["Nandito ako mismo sa lugar. Ito ang kuha ko kanina.", "Personal kong nakita. Kuha ko ang larawan na ito.", "Residente ako dito, ako ang nag-video."];
 
 String _h(Gen g) => '@${g.pick(Pools.handlesFirst)}${g.id()}';
 
 ArcadeCase buildRumor(Gen g, ArcadeDifficulty d, int index) {
   switch (RumorTask.values[index]) {
-    case RumorTask.order: return _order(g, d);
-    case RumorTask.spotDiff: return _spot(g, d);
-    case RumorTask.outdated: return _outdated(g, d);
-    case RumorTask.independent: return _independent(g, d);
-    case RumorTask.wordEdit: return _word(g, d);
+    case RumorTask.order:
+      return _order(g, d);
+    case RumorTask.spotDiff:
+      return _spot(g, d);
+    case RumorTask.outdated:
+      return _outdated(g, d);
+    case RumorTask.independent:
+      return _independent(g, d);
+    case RumorTask.wordEdit:
+      return _word(g, d);
   }
 }
 
@@ -122,13 +147,16 @@ ArcadeCase _order(Gen g, ArcadeDifficulty d) {
   // correct: display indexes in chain order (origin first).
   final correct = [for (var i = 0; i < n; i++) perm.indexOf(i)];
   return ArcadeCase(
-    signature: 'rumor:order:$topic:$n', scenario: 'order', mode: ArcadeMode.rumor,
-    title: 'Who started it?', rumorTask: RumorTask.order,
+    signature: 'rumor:order:$topic:$n',
+    scenario: 'order',
+    mode: ArcadeMode.rumor,
+    title: 'Who started it?',
+    rumorTask: RumorTask.order,
     text: 'Use the arrows: first-hand post at the top, newest repost last.',
-    subtext: d.profile.requiresCrossChecking
-        ? 'Trace the source chain; reposts may add unsupported details.'
-        : 'Each card says who it copied from.',
-    cards: cards, correct: correct, deceptive: true,
+    subtext: d.profile.requiresCrossChecking ? 'Trace the source chain; reposts may add unsupported details.' : 'Each card says who it copied from.',
+    cards: cards,
+    correct: correct,
+    deceptive: true,
     lesson: "Each repost copies the one before it, and the story grows. The post at the top is first-hand, and the later ones add details nobody there confirmed.",
     hint: 'Start with the card that says it saw it personally. Then follow each "Shared from".',
   );
@@ -145,27 +173,55 @@ bool _isIdentity(List<int> p) {
 ArcadeCase _spot(Gen g, ArcadeDifficulty d) {
   final days = ['Sabado', 'Linggo', 'Biyernes', 'Huwebes'];
   final times = ['8:00 AM', '9:30 AM', '1:00 PM', '3:00 PM'];
-  final venues = ['covered court ng Brgy. {town}', 'Health Center ng Brgy. {town}',
-    'gym ng {school}', 'plaza ng {city}'];
+  final venues = ['covered court ng Brgy. {town}', 'Health Center ng Brgy. {town}', 'gym ng {school}', 'plaza ng {city}'];
   final fees = ['Libre', 'Libre', 'Libre'];
   final town = g.pick(Pools.towns);
-  final slots = {
-    'town': town, 'school': g.pick(Pools.schools), 'city': g.pick(Pools.cities),
-  };
+  final slots = {'town': town, 'school': g.pick(Pools.schools), 'city': g.pick(Pools.cities)};
   final day = g.pick(days), time = g.pick(times);
   final venue = fillSlots(g.pick(venues), slots);
   final fee = g.pick(fees);
   final phone = '0917 ${g.between(100, 999)} ${g.between(1000, 9999)}';
-  final event = g.pick(['Libreng medical mission', 'Libreng bakuna',
-    'Scholarship briefing', 'Job fair', 'Blood donation drive',
-    'Libreng eye check-up', 'Tree planting', 'Livelihood training']);
+  final event = g.pick([
+    'Libreng medical mission',
+    'Libreng bakuna',
+    'Scholarship briefing',
+    'Job fair',
+    'Blood donation drive',
+    'Libreng eye check-up',
+    'Tree planting',
+    'Livelihood training',
+    'Libreng legal consultation',
+    'Farmers market',
+    'Disaster-preparedness seminar',
+    'Community legal-aid clinic',
+    'Free school-supplies distribution',
+    'Bridge inspection and traffic reroute',
+    'Public library book-return drive',
+  ]);
   final attrs = ['day', 'time', 'venue', 'fee', 'phone'];
   final changed = g.pick(attrs);
-  String render(String Function(String a, String real) tweak) {
+  String render(String Function(String a, String real) tweak, {int style = 0}) {
     String v(String a, String real) => tweak(a, real);
-    return '$event: ${v('day', day)}, ${v('time', time)}, ${v('venue', venue)}. '
-        '${v('fee', fee)}. Hotline: ${v('phone', phone)}';
+    final values = {'day': v('day', day), 'time': v('time', time), 'venue': v('venue', venue), 'fee': v('fee', fee), 'phone': v('phone', phone)};
+    return switch (style) {
+      1 =>
+        'Schedule for $event at ${values['venue']} — ${values['day']}, ${values['time']}. '
+            'Entry: ${values['fee']}. Hotline: ${values['phone']}.',
+      2 =>
+        'Notice for residents: $event will be held on ${values['day']} at ${values['time']} '
+            '(${values['venue']}). ${values['fee']}. For questions, call ${values['phone']}.',
+      3 =>
+        'Announcement: ${values['venue']}, ${values['time']} on ${values['day']} — $event. '
+            '${values['fee']}. Hotline for details: ${values['phone']}.',
+      4 =>
+        '$event bulletin | Date: ${values['day']} | Time: ${values['time']} | '
+            'Place: ${values['venue']} | Cost: ${values['fee']} | Contact: ${values['phone']}',
+      _ =>
+        '$event: ${values['day']}, ${values['time']}, ${values['venue']}. '
+            '${values['fee']}. Hotline: ${values['phone']}',
+    };
   }
+
   String altered(String a, String real) {
     if (a != changed) return real;
     return switch (a) {
@@ -176,34 +232,37 @@ ArcadeCase _spot(Gen g, ArcadeDifficulty d) {
       _ => '0917 ${g.between(100, 999)} ${g.between(1000, 9999)}',
     };
   }
+
   final official = render((a, real) => real);
   final faithful = render((a, real) => real);
   final n = d.profile.reasoningLevel >= 3 ? 5 : 3;
-  final wrongOne = render(altered);
+  final wrongOne = render(altered, style: d == ArcadeDifficulty.hard ? g.between(0, 4) : 0);
   final texts = <String>[wrongOne];
   while (texts.length < n) {
-    // Hard mode requires semantic comparison, not simply finding the lone
-    // string that isn't byte-for-byte identical to its neighbours.
-    texts.add(d == ArcadeDifficulty.hard
-        ? g.pick(['Reposted notice: $faithful', 'Forwarded: $faithful',
-            'Shared community announcement: $faithful'])
-        : faithful);
+    texts.add(d == ArcadeDifficulty.hard ? render((a, real) => real, style: texts.length) : faithful);
   }
-  final sources = g.shuffled(['Group chat forward', 'Page repost',
-    'Screenshot in a story', 'Fan page', 'Barangay board repost']).take(n).toList();
+  final sources = g.shuffled(['Group chat forward', 'Page repost', 'Screenshot in a story', 'Fan page', 'Barangay board repost']).take(n).toList();
   final perm = g.shuffled([for (var i = 0; i < n; i++) i]);
   final cards = [for (final i in perm) RumorCard('Version ${perm.indexOf(i) + 1}', texts[i], sources[i])];
   final correct = perm.indexOf(0);
   final label = switch (changed) {
-    'day' => 'day', 'time' => 'time', 'venue' => 'place',
-    'fee' => 'fee', _ => 'hotline',
+    'day' => 'day',
+    'time' => 'time',
+    'venue' => 'place',
+    'fee' => 'fee',
+    _ => 'hotline',
   };
   return ArcadeCase(
-    signature: 'rumor:spot:$changed:$n', scenario: 'spotDiff', mode: ArcadeMode.rumor,
-    title: 'Which one was changed?', rumorTask: RumorTask.spotDiff,
+    signature: 'rumor:spot:$changed:$n',
+    scenario: 'spotDiff',
+    mode: ArcadeMode.rumor,
+    title: 'Which one was changed?',
+    rumorTask: RumorTask.spotDiff,
     text: 'Which version changes a fact from the official notice? Ignore forwarding labels.',
     subtext: 'OFFICIAL NOTICE: $official',
-    cards: cards, correct: [correct], deceptive: true,
+    cards: cards,
+    correct: [correct],
+    deceptive: true,
     lesson: "Only the $label changed in one version. Small edits to a date, fee or hotline are how scammers redirect people, so compare each detail line by line.",
     hint: 'Read each version line by line against the official notice. What detail is different?',
   );
@@ -217,10 +276,17 @@ ArcadeCase _outdated(Gen g, ArcadeDifficulty d) {
   String dateAt(int offset) {
     var day = todayDay + offset;
     var month = todayMonth;
-    if (day > 31) { day -= 31; month = 'Nov'; }
-    if (day < 1) { day += 30; month = 'Sep'; }
+    if (day > 31) {
+      day -= 31;
+      month = 'Nov';
+    }
+    if (day < 1) {
+      day += 30;
+      month = 'Sep';
+    }
     return '$month $day';
   }
+
   final what = g.pick([
     ('Enrollment deadline', 'Enrollment sa {school} hanggang'),
     ('Promo end', 'Libreng sakay promo hanggang'),
@@ -229,20 +295,27 @@ ArcadeCase _outdated(Gen g, ArcadeDifficulty d) {
     ('Voucher promo', 'Libreng voucher promo hanggang'),
     ('Vaccination', 'Libreng bakuna sa Health Center hanggang'),
     ('Bazaar', 'Bazaar sale sa {school} hanggang'),
+    ('Transport pass', 'Student transport pass application sa {school} hanggang'),
+    ('Clinic hours', 'Libreng check-up sa Health Center hanggang'),
+    ('Library access', 'Enrollment sa {school} library program hanggang'),
+    ('Permit renewal', 'Renewal ng barangay permit hanggang'),
+    ('Clinic registration', 'Registration para sa health-center check-up hanggang'),
+    ('Book return', 'Libreng extension ng book-return deadline sa {school} hanggang'),
+    ('Road pass', 'Application para sa resident road pass sa {school} hanggang'),
   ]);
   final school = g.pick(Pools.schools);
-  String line(int deadlineOffset) =>
-      '${fillSlots(what.$2, {'school': school})} ${dateAt(deadlineOffset)}.';
-  final n = d.profile.reasoningLevel == 1 ? 3 : d.profile.reasoningLevel >= 3 ? 5 : 4;
+  String line(int deadlineOffset) => '${fillSlots(what.$2, {'school': school})} ${dateAt(deadlineOffset)}.';
+  final n = d.profile.reasoningLevel == 1
+      ? 3
+      : d.profile.reasoningLevel >= 3
+      ? 5
+      : 4;
   // Stale post can be an old post OR a freshly re-shared old poster.
   final recycled = d == ArcadeDifficulty.easy ? false : g.chance(.6);
   final items = <(RumorCard, bool)>[];
-  items.add((RumorCard('Page A', line(-g.between(4, 9)),
-      recycled ? 'Posted yesterday' : 'Posted ${g.between(18, 30)} days ago'), true));
-  items.add((RumorCard('Page B', line(g.between(6, 14)),
-      'Posted ${g.between(20, 35)} days ago'), false)); // old but still valid
-  items.add((RumorCard('Page C', line(g.between(10, 20)),
-      'Posted ${g.between(1, 3)} days ago'), false));
+  items.add((RumorCard('Page A', line(-g.between(4, 9)), recycled ? 'Posted yesterday' : 'Posted ${g.between(18, 30)} days ago'), true));
+  items.add((RumorCard('Page B', line(g.between(6, 14)), 'Posted ${g.between(20, 35)} days ago'), false)); // old but still valid
+  items.add((RumorCard('Page C', line(g.between(10, 20)), 'Posted ${g.between(1, 3)} days ago'), false));
   if (n >= 4) {
     items.add((RumorCard('Page D', line(g.between(3, 9)), 'Posted today'), false));
   }
@@ -256,13 +329,15 @@ ArcadeCase _outdated(Gen g, ArcadeDifficulty d) {
   final correct = perm.indexWhere((i) => items[i].$2);
   return ArcadeCase(
     signature: 'rumor:outdated:${what.$1}:${recycled ? 1 : 0}:$n',
-    scenario: 'outdated', mode: ArcadeMode.rumor,
-    title: 'What is stale?', rumorTask: RumorTask.outdated,
+    scenario: 'outdated',
+    mode: ArcadeMode.rumor,
+    title: 'What is stale?',
+    rumorTask: RumorTask.outdated,
     text: 'Today is ${dateAt(0)}. Which post would mislead people if you shared it now?',
-    subtext: d.profile.requiresCrossChecking
-        ? 'Compare deadlines with today; a recent repost can still be stale.'
-        : 'Look at the deadline, not just when it was posted.',
-    cards: cards, correct: [correct], deceptive: true,
+    subtext: d.profile.requiresCrossChecking ? 'Compare deadlines with today; a recent repost can still be stale.' : 'Look at the deadline, not just when it was posted.',
+    cards: cards,
+    correct: [correct],
+    deceptive: true,
     lesson: "The stale post has a deadline that's already passed. The post date can fool you: an old post can still be valid, and a brand-new post can recycle an old deadline.",
     hint: 'Compare each deadline to today. Ignore how old each post is.',
   );
@@ -279,6 +354,13 @@ ArcadeCase _independent(Gen g, ArcadeDifficulty d) {
     'Inilipat sa Huwebes ang pagsusulit sa {town}',
     'Walang pasok sa Lunes sa lahat ng antas',
     'Bukas na ulit ang tulay sa Brgy. {town}',
+    'May libreng konsultasyon sa City Hall sa Miyerkules',
+    'Naglabas ng bagong evacuation route ang disaster office',
+    'Maaaring mag-apply online para sa student ID replacement',
+    'Ipinagpaliban ng konseho ang botohan sa bagong parke',
+    'Isang lane ng tulay ang bubuksan matapos ang inspeksyon',
+    'May libreng blood-pressure check sa health center sa Sabado',
+    'Pinalawig ng registrar ang deadline ng scholarship application',
   ]);
   final town = g.pick(Pools.towns);
   final c = fillSlots(claim, {'town': town});
@@ -295,20 +377,26 @@ ArcadeCase _independent(Gen g, ArcadeDifficulty d) {
     const RumorCard('Fan page copy', 'Same wording as the viral post, posted 2 hours later.', 'Basis: copied the viral post'),
     const RumorCard('"Insider" screenshot', 'A blurry screenshot of a chat, no names visible.', 'Basis: unnamed source'),
   ];
-  final n = d.profile.reasoningLevel == 1 ? 3 : d.profile.reasoningLevel >= 3 ? 5 : 4;
+  final n = d.profile.reasoningLevel == 1
+      ? 3
+      : d.profile.reasoningLevel >= 3
+      ? 5
+      : 4;
   final good = g.pick(real);
   final all = [good, ...g.sample(fake, n - 1)];
   final perm = g.shuffled([for (var i = 0; i < n; i++) i]);
   final cards = [for (final i in perm) all[i]];
   return ArcadeCase(
     signature: 'rumor:independent:${real.indexOf(good)}:${all.skip(1).map((e) => e.title).join('|')}',
-    scenario: 'independent', mode: ArcadeMode.rumor,
-    title: 'Where is the proof?', rumorTask: RumorTask.independent,
-    text: d.profile.requiresCrossChecking
-        ? 'Cross-check the claim. Find independent evidence, not repeated copies.'
-        : 'Tap the one item that confirms the claim by itself, without copying the viral post.',
+    scenario: 'independent',
+    mode: ArcadeMode.rumor,
+    title: 'Where is the proof?',
+    rumorTask: RumorTask.independent,
+    text: d.profile.requiresCrossChecking ? 'Cross-check the claim. Find independent evidence, not repeated copies.' : 'Tap the one item that confirms the claim by itself, without copying the viral post.',
     subtext: 'Claim: $c',
-    cards: cards, correct: [perm.indexOf(0)], deceptive: true,
+    cards: cards,
+    correct: [perm.indexOf(0)],
+    deceptive: true,
     lesson: "Independent proof comes from the people or place that made the decision, or from someone who was physically there. A big outlet that just cites a viral post isn't proof, and neither is the 3.2K shares.",
     hint: 'Read each "Basis" line. Which one does not depend on the viral post?',
   );
@@ -337,6 +425,13 @@ const _quotes = <_Quote>[
   _Quote('Teacher', "Mag-submit ng proyekto bago ang Biyernes, walang late penalty hanggang Sabado.", "Mag-submit ng proyekto bago ang Biyernes, [[bagsak agad kapag late.]]"),
   _Quote('Forecaster', "Posibleng lumakas ang bagyo pero hindi pa tiyak ang landas nito.", "[[Tiyak na tatama ang bagyo]] pero hindi pa tiyak ang landas nito."),
   _Quote('Social worker', "Mamimigay kami ng ayuda sa mga nakarehistro lamang, walang bayad.", "Mamimigay kami ng ayuda sa [[lahat, magbayad lang ng ₱200 sa registration.]]"),
+  _Quote('City engineer', "Isang lane lang ang isasara habang ginagawa ang drainage.", "[[Lahat ng lane]] ang isasara habang ginagawa ang drainage."),
+  _Quote('School principal', "May klase bukas para sa senior high; suspended ang elementarya.", "May klase bukas para sa [[lahat ng antas]]; suspended ang elementarya."),
+  _Quote('Health officer', "Walang kumpirmadong kaso sa barangay; patuloy ang pagsusuri.", "[[May kumpirmadong outbreak]] sa barangay; patuloy ang pagsusuri."),
+  _Quote('Council secretary', "Pinag-uusapan pa ang panukala; wala pang botohan.", "[[Naaprubahan na]] ang panukala; wala pang botohan."),
+  _Quote('Weather officer', "Lumikas kung umabot sa orange alert ang tubig sa inyong lugar.", "[[Lumikas na ang buong lungsod]] kung umabot sa orange alert ang tubig sa inyong lugar."),
+  _Quote('School principal', "Maaaring gamitin ang gym kung sarado ang covered court.", "[[Dapat gamitin]] ang gym kung sarado ang covered court."),
+  _Quote('Water district', "Walang nakitang kontaminasyon sa unang sample; susuriin pa ang iba.", "[[May nakitang kontaminasyon]] sa unang sample; susuriin pa ang iba."),
 ];
 
 ArcadeCase _word(Gen g, ArcadeDifficulty d) {
@@ -346,7 +441,10 @@ ArcadeCase _word(Gen g, ArcadeDifficulty d) {
   var inMark = false;
   for (final raw in q.edit.split(' ')) {
     var t = raw;
-    if (t.startsWith('[[')) { inMark = true; t = t.substring(2); }
+    if (t.startsWith('[[')) {
+      inMark = true;
+      t = t.substring(2);
+    }
     final ends = t.endsWith(']]');
     if (ends) t = t.substring(0, t.length - 2);
     if (inMark) changed.add(tokens.length);
@@ -354,11 +452,16 @@ ArcadeCase _word(Gen g, ArcadeDifficulty d) {
     if (ends) inMark = false;
   }
   return ArcadeCase(
-    signature: 'rumor:words:${q.speaker}:${q.orig.length}', scenario: 'wordEdit',
-    mode: ArcadeMode.rumor, title: 'Spot the edit', rumorTask: RumorTask.wordEdit,
+    signature: 'rumor:words:${q.speaker}:${q.orig.length}',
+    scenario: 'wordEdit',
+    mode: ArcadeMode.rumor,
+    title: 'Spot the edit',
+    rumorTask: RumorTask.wordEdit,
     text: 'Tap the words in the viral caption that were changed.',
     subtext: 'FULL RECORDING (${q.speaker}): "${q.orig}"',
-    tokens: tokens, correct: changed, deceptive: true,
+    tokens: tokens,
+    correct: changed,
+    deceptive: true,
     lesson: "Changing a single word can flip a statement. Always compare a viral quote with the full recording.",
     hint: 'Read the full recording first, then compare it word by word.',
   );

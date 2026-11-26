@@ -1,4 +1,5 @@
 import 'dart:math';
+import '../services/arcade_gen_thread.dart';
 import '../services/arcade_generator.dart';
 import '../models/arcade_models.dart';
 import '../models/round_record.dart';
@@ -16,12 +17,11 @@ class ArcadeSession {
   final Set<String> history;
   final ArcadeGenerator generator;
   final Set<String> signatures = <String>{};
+  final Set<String> _threadChoices = <String>{};
+  final Set<String> _threadParts = <String>{};
   final List<ArcadeMode> recentModes = [];
   final List<RoundRecord> log = [];
-  static const firstDayModes = [
-    ArcadeMode.trust, ArcadeMode.impostor, ArcadeMode.scamSlam,
-    ArcadeMode.inbox, ArcadeMode.comments,
-  ];
+  static const firstDayModes = [ArcadeMode.trust, ArcadeMode.impostor, ArcadeMode.scamSlam, ArcadeMode.inbox, ArcadeMode.comments];
 
   late ArcadeCase current;
   int hearts;
@@ -37,7 +37,7 @@ class ArcadeSession {
   bool waitingForNext = false;
   bool? lastCorrect;
   List<int> lastAnswer = const [];
-  List<String> lastOpened =const[];
+  List<String> lastOpened = const [];
 
   ArcadeSession({
     required this.difficulty,
@@ -59,10 +59,8 @@ class ArcadeSession {
   ArcadeMode _chooseMode() {
     if (firstDay) return firstDayModes[round.clamp(0, 4).toInt()];
     if (selectedMode != null) return selectedMode!;
-    final unlocked = ArcadeMode.values
-        .where((mode) => careerXp() >= mode.unlockXp).toList();
-    final candidates = unlocked.where((mode) =>
-        recentModes.isEmpty || mode != recentModes.last).toList();
+    final unlocked = ArcadeMode.values.where((mode) => careerXp() >= mode.unlockXp).toList();
+    final candidates = unlocked.where((mode) => recentModes.isEmpty || mode != recentModes.last).toList();
     final pool = candidates.isEmpty ? unlocked : candidates;
     final fresh = pool.where((mode) => !recentModes.contains(mode)).toList();
     return generator.pick(fresh.isNotEmpty ? fresh : pool);
@@ -70,32 +68,51 @@ class ArcadeSession {
 
   void _deal() {
     final kind = _chooseMode();
-    // Recent families are drawn from both saved and current-run history.
-    // Avoiding a family blocks the same underlying task despite new names or
-    // amounts. Limit exclusion to keep short modes (Rumor's five puzzles)
-    // playable once each archetype has been seen.
-    final recent = [...history, ...signatures].reversed.toList();
     final blockedFamilies = <String>{};
-    final familyPrefix = switch (kind) {
-      ArcadeMode.trust => 'trust:',
-      ArcadeMode.impostor => 'impostor:',
-      ArcadeMode.scamSlam => 'chat:',
-      ArcadeMode.rumor => 'rumor:',
-      ArcadeMode.inbox => 'inbox:',
-      ArcadeMode.comments => 'thread:',
-      ArcadeMode.clip => 'clip:',
-    };
-    for (final signature in recent) {
-      if (signature.startsWith(familyPrefix)) {
-        blockedFamilies.add(ArcadeGenerator.familyOfSignature(signature));
-        if (blockedFamilies.length >= min(4, ArcadeGenerator.scenarioCount(kind) - 1)) {
-          break;
+    if (kind != ArcadeMode.inbox) {
+      // Avoid every template already dealt in this run while another exists.
+      // Once a mode's templates are exhausted, the generator falls back to
+      // fresh, content-distinct cases instead of repeating an answered case.
+      blockedFamilies.addAll(signatures.map(ArcadeGenerator.familyOfSignature));
+      final historyFamilies = <String>{};
+      final familyPrefix = switch (kind) {
+        ArcadeMode.trust => 'trust:',
+        ArcadeMode.impostor => 'impostor:',
+        ArcadeMode.scamSlam => 'chat:',
+        ArcadeMode.rumor => 'rumor:',
+        ArcadeMode.comments => 'thread:',
+        ArcadeMode.clip => 'clip:',
+        ArcadeMode.inbox => '',
+      };
+      for (final signature in history.toList().reversed) {
+        if (signature.startsWith(familyPrefix)) {
+          historyFamilies.add(ArcadeGenerator.familyOfSignature(signature));
+          if (historyFamilies.length >= min(4, ArcadeGenerator.scenarioCount(kind) - 1)) {
+            break;
+          }
         }
       }
+      blockedFamilies.addAll(historyFamilies);
     }
-    current = generator.generate(kind, firstDay ? ArcadeDifficulty.easy : difficulty,
+    current = generator.generate(
+      kind,
+      firstDay ? ArcadeDifficulty.easy : difficulty,
       exclude: {...history, ...signatures},
-      excludeFamilies: blockedFamilies, tutorial: firstDay);
+      excludeFamilies: blockedFamilies,
+      excludeThreadChoices: _threadChoices,
+      excludeThreadParts: _threadParts,
+      tutorial: firstDay,
+    );
+    if (kind == ArcadeMode.comments) {
+      for (final comment in current.comments) {
+        if (!_threadChoices.add(comment.body)) {
+          throw StateError('A thread comment was repeated in this run.');
+        }
+      }
+      for (final part in threadChoiceParts(current)) {
+        if (!_threadParts.add(part)) throw StateError('A thread sentence was repeated in this run.');
+      }
+    }
     signatures.add(current.signature);
     onCaseGenerated?.call(current.signature);
     recentModes.add(kind);
@@ -107,8 +124,7 @@ class ArcadeSession {
 
   /// Single-choice convenience.
   bool answer(int optionIndex, {bool inspected = false}) {
-    if (optionIndex < 0 || optionIndex >= current.choices.length &&
-        current.choices.isNotEmpty) {
+    if (optionIndex < 0 || optionIndex >= current.choices.length && current.choices.isNotEmpty) {
       throw RangeError.index(optionIndex, current.choices);
     }
     return submit([optionIndex], usedDecisive: inspected);
@@ -118,7 +134,7 @@ class ArcadeSession {
   /// [ArcadeCase.correct]). One answer per case; XP never decreases, errors
   /// cost a heart. The first day is forgiving so a beginner is never locked
   /// out. Inbox Sprint earns partial XP but any wrong swipe costs a heart.
-  bool submit(List<int> answer, {bool usedDecisive = false, List<String> opened = const[]}) {
+  bool submit(List<int> answer, {bool usedDecisive = false, List<String> opened = const []}) {
     if (finished || waitingForNext) return lastCorrect ?? false;
     final c = current;
     final parts = c.totalParts;
@@ -127,22 +143,13 @@ class ArcadeSession {
     lastAnswer = List.unmodifiable(answer);
     lastOpened = List.unmodifiable(opened);
     lastCorrect = correct;
-    log.add(RoundRecord(
-      mode: c.mode,
-      scenario: c.scenario,
-      concepts: c.concepts,
-      correct: correct,
-      error: c.errorKind(answer),
-    ));
+    log.add(RoundRecord(mode: c.mode, scenario: c.scenario, concepts: c.concepts, correct: correct, error: c.errorKind(answer)));
     lastParts = right;
-    lastUsedDecisive = usedDecisive &&
-        (c.mode == ArcadeMode.trust || c.mode == ArcadeMode.clip);
+    lastUsedDecisive = usedDecisive && (c.mode == ArcadeMode.trust || c.mode == ArcadeMode.clip);
     lastEarnedXp = 0;
     waitingForNext = true;
     round++;
-    final full = 35 + difficulty.bonusXp + (usedDecisive && (c.mode == ArcadeMode.trust || c.mode == ArcadeMode.clip)
-          ? 15 : 0) +
-        min(streak, 4) * 3;
+    final full = 35 + difficulty.bonusXp + (usedDecisive && (c.mode == ArcadeMode.trust || c.mode == ArcadeMode.clip) ? 15 : 0) + min(streak, 4) * 3;
     var gained = 0;
     if (correct) {
       gained = c.isBatch ? full + 10 : full;
@@ -159,8 +166,7 @@ class ArcadeSession {
       lastEarnedXp = gained;
       awardCareerXp(gained);
     }
-    if ((firstDay && round >= firstDayModes.length) ||
-        (!firstDay && (hearts == 0 || (roundLimit != null && round >= roundLimit!)))) {
+    if ((firstDay && round >= firstDayModes.length) || (!firstDay && (hearts == 0 || (roundLimit != null && round >= roundLimit!)))) {
       finished = true;
     }
     return correct;
