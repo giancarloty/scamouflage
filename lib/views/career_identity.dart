@@ -454,22 +454,6 @@ class CareerIdentityScreen extends StatelessWidget {
             'XP unlocks titles and cosmetics automatically. Equipping is free.',
             style: captionText(12, color: parchment),
           ),
-
-          if (isGoldFrame) ...[
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                const Icon(Icons.auto_awesome, color: _goldHighlight, size: 17),
-                const SizedBox(width: 6),
-                Text(
-                  'LEGENDARY GOLD FRAME',
-                  style: typewriter(10, color: _goldHighlight),
-                ),
-                const Spacer(),
-                const Icon(Icons.auto_awesome, color: _legendaryGold, size: 17),
-              ],
-            ),
-          ],
         ],
       ),
     );
