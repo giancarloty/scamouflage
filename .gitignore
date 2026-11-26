@@ -22,3 +22,8 @@ secrets/
 # Node / Vercel (if backend/ is in this repo)
 node_modules/
 .vercel/
+
+
+build/
+.firebase/
+.dart_tool/
