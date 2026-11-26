@@ -465,11 +465,26 @@ class _GameScreensState extends State<GameScreens> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'SCAMOUFLAGE\nARCADE!',
-                            style: titleText(
-                              PhoneLayout.narrow(context) ? 25 : 32,
-                              color: paperWhite,
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'SCAMOUFLAGE',
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  style: titleText(32, color: paperWhite),
+                                ),
+                                Text(
+                                  'ARCADE!',
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  style: titleText(32, color: paperWhite),
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -488,7 +503,9 @@ class _GameScreensState extends State<GameScreens> {
                     ),
                     MascotAvatar(
                       game: g,
-                      size: PhoneLayout.narrow(context) ? 93 : 142,
+                      size: MediaQuery.sizeOf(context).width < 430
+                          ? 110
+                          : 142,
                     ),
                   ],
                 ),
