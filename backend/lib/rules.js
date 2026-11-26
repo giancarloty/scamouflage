@@ -30,7 +30,7 @@ const BADGES = [
   ['spark', 1800], ['trophy', 3200],
 ];
 const FRAMES = [
-  ['classic', 0], ['sunny', 300], ['bubblegum', 700], ['mint', 1300], ['violet', 2600],
+  ['classic', 0], ['sunny', 300], ['bubblegum', 700], ['mint', 1300], ['violet', 2600], ['gold', 9500],
 ];
 const MASCOT_NAMES = [
   ['chameleo', 0], ['checks', 150], ['linky', 400], ['factgecko', 850], ['receipts', 1400],

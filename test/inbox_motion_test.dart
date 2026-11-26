@@ -40,27 +40,52 @@ const _case = ArcadeCase(
 void main() {
   group('swipe mechanics', () {
     test('short gestures return; deliberate swipes and flicks commit', () {
-      expect(inboxSwipeVerdict(
-        displacement: 40, velocity: 0, viewportWidth: 375), isNull);
-      expect(inboxSwipeVerdict(
-        displacement: 110, velocity: 0, viewportWidth: 375), 1);
-      expect(inboxSwipeVerdict(
-        displacement: -110, velocity: 0, viewportWidth: 375), 0);
-      expect(inboxSwipeVerdict(
-        displacement: -35, velocity: -850, viewportWidth: 375), 0);
-      expect(inboxSwipeVerdict(
-        displacement: 15, velocity: 900, viewportWidth: 375), isNull);
+      expect(
+        inboxSwipeVerdict(displacement: 40, velocity: 0, viewportWidth: 375),
+        isNull,
+      );
+      expect(
+        inboxSwipeVerdict(displacement: 110, velocity: 0, viewportWidth: 375),
+        1,
+      );
+      expect(
+        inboxSwipeVerdict(displacement: -110, velocity: 0, viewportWidth: 375),
+        0,
+      );
+      expect(
+        inboxSwipeVerdict(
+          displacement: -35,
+          velocity: -850,
+          viewportWidth: 375,
+        ),
+        0,
+      );
+      expect(
+        inboxSwipeVerdict(displacement: 15, velocity: 900, viewportWidth: 375),
+        isNull,
+      );
     });
 
     test('card tint follows drag direction and fades back to its base', () {
-      expect(inboxSwipeTint(base: paperWhite,
-        displacement: 0, viewportWidth: 375), paperWhite);
-      final softRed = inboxSwipeTint(base: paperWhite,
-        displacement: -45, viewportWidth: 375);
-      final softGreen = inboxSwipeTint(base: paperWhite,
-        displacement: 45, viewportWidth: 375);
-      final strongRed = inboxSwipeTint(base: paperWhite,
-        displacement: -150, viewportWidth: 375);
+      expect(
+        inboxSwipeTint(base: paperWhite, displacement: 0, viewportWidth: 375),
+        paperWhite,
+      );
+      final softRed = inboxSwipeTint(
+        base: paperWhite,
+        displacement: -45,
+        viewportWidth: 375,
+      );
+      final softGreen = inboxSwipeTint(
+        base: paperWhite,
+        displacement: 45,
+        viewportWidth: 375,
+      );
+      final strongRed = inboxSwipeTint(
+        base: paperWhite,
+        displacement: -150,
+        viewportWidth: 375,
+      );
       expect(softRed, isNot(paperWhite));
       expect(softGreen, isNot(paperWhite));
       expect(softRed, isNot(softGreen));
@@ -68,21 +93,28 @@ void main() {
     });
   });
 
-  Future<void> mountInbox(WidgetTester tester,
-      {double width = 375, double height = 812}) async {
+  Future<void> mountInbox(
+    WidgetTester tester, {
+    double width = 375,
+    double height = 812,
+  }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = Size(width, height);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
-    await tester.pumpWidget(const MaterialApp(
-      home: const Scaffold(body: const InboxView(
-        c: _case,
-        d: ArcadeDifficulty.easy,
-        tutorial: false,
-        hint: false,
-        onSubmit: _ignoreResult,
-      )),
-    ));
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: const Scaffold(
+          body: const InboxView(
+            c: _case,
+            d: ArcadeDifficulty.easy,
+            tutorial: false,
+            hint: false,
+            onSubmit: _ignoreResult,
+          ),
+        ),
+      ),
+    );
   }
 
   testWidgets('tap flips through a half-turn then flips back', (tester) async {
@@ -98,8 +130,9 @@ void main() {
     expect(find.byKey(const ValueKey('inbox-visible-front')), findsOneWidget);
   });
 
-  testWidgets('a partial right drag tints the card and smoothly snaps back',
-      (tester) async {
+  testWidgets('a partial right drag tints the card and smoothly snaps back', (
+    tester,
+  ) async {
     await mountInbox(tester, width: 320, height: 568);
     final card = find.byKey(const ValueKey('inbox-swipe-card'));
     final gesture = await tester.startGesture(tester.getCenter(card));
@@ -108,25 +141,31 @@ void main() {
 
     final visible = find.descendant(
       of: find.byKey(const ValueKey('inbox-visible-front')),
-      matching: find.byType(Container));
-    final tinted = (tester.widget<Container>(visible.first).decoration!
-        as BoxDecoration).color;
+      matching: find.byType(Container),
+    );
+    final tinted =
+        (tester.widget<Container>(visible.first).decoration! as BoxDecoration)
+            .color;
     expect(tinted, isNot(paperWhite));
 
     await gesture.up();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 330));
-    final restored = (tester.widget<Container>(visible.first).decoration!
-        as BoxDecoration).color;
+    final restored =
+        (tester.widget<Container>(visible.first).decoration! as BoxDecoration)
+            .color;
     expect(restored, paperWhite);
     expect(find.text('EMAIL 1 OF 2'), findsOneWidget);
   });
 
-  testWidgets('a committed swipe completes before the next email appears',
-      (tester) async {
+  testWidgets('a committed swipe completes before the next email appears', (
+    tester,
+  ) async {
     await mountInbox(tester, width: 390, height: 844);
-    await tester.drag(find.byKey(const ValueKey('inbox-swipe-card')),
-      const Offset(-145, 0));
+    await tester.drag(
+      find.byKey(const ValueKey('inbox-swipe-card')),
+      const Offset(-145, 0),
+    );
     await tester.pump();
     // Still showing the old email during the exit animation.
     expect(find.text('EMAIL 1 OF 2'), findsOneWidget);
@@ -135,4 +174,8 @@ void main() {
   });
 }
 
-void _ignoreResult(List<int> answer, bool flipped) {}
+void _ignoreResult(
+  List<int> answer,
+  bool flipped, {
+  List<String> opened = const [],
+}) {}
