@@ -754,12 +754,44 @@ void main() {
           ...c.tokens,
         ]);
       }
-      expect(rumorEvidence.any((text) => text.contains('rumor:order:library:')), isTrue);
-      expect(rumorEvidence.any((text) => text.contains('rumor:order:bridge:')), isTrue);
-      expect(rumorEvidence.any((text) => text.contains('Community legal-aid clinic')), isTrue);
-      expect(rumorEvidence.any((text) => text.contains('Permit renewal')), isTrue);
-      expect(rumorEvidence.any((text) => text.contains('Ipinagpaliban ng konseho ang botohan sa bagong parke')), isTrue);
-      expect(rumorEvidence.any((text) => text.contains('Water district')), isTrue);
+      expect(
+        rumorEvidence.any((text) => text.contains('rumor:order:library:')),
+        isTrue,
+      );
+      expect(
+        rumorEvidence.any((text) => text.contains('rumor:order:bridge:')),
+        isTrue,
+      );
+      expect(
+        rumorEvidence.any((text) => text.contains('Community legal-aid clinic')),
+        isTrue,
+      );
+
+      // Outdated-information scenario variety
+      expect(
+        rumorEvidence.any((text) => text.contains('Scholarship application deadline')),
+        isTrue,
+      );
+      expect(
+        rumorEvidence.any((text) => text.contains('medical mission')),
+        isTrue,
+      );
+      expect(
+        rumorEvidence.any((text) => text.contains('vaccination')),
+        isTrue,
+      );
+      expect(
+        rumorEvidence.any((text) => text.contains('Road advisory')),
+        isTrue,
+      );
+      expect(
+        rumorEvidence.any((text) => text.contains('Ayuda registration')),
+        isTrue,
+      );
+      expect(
+        rumorEvidence.any((text) => text.contains('Student fare promo')),
+        isTrue,
+      );
     });
 
     test('recent signatures are avoided when other cases exist', () {
@@ -966,6 +998,29 @@ void main() {
         rich.next();
       }
       expect(seen, containsAll(ArcadeMode.values));
+    });
+
+
+    test('Rumor Radar stale-information puzzles use varied stale reasons', () {
+      final reasons = <String>{};
+      for (var seed = 0; seed < 300; seed++) {
+        final c = ArcadeGenerator(seed).generate(ArcadeMode.rumor, ArcadeDifficulty.hard);
+        if (c.rumorTask == RumorTask.outdated) {
+          reasons.add(c.signature.split(':')[2]);
+          expect(c.cards.map((card) => card.body).toSet().length, c.cards.length);
+        }
+      }
+      expect(reasons.length, greaterThanOrEqualTo(4));
+    });
+
+    test('Hard mode can continue dealing cases without generation retry stalls', () {
+      final s = start(d: ArcadeDifficulty.hard, mode: ArcadeMode.rumor, seed: 1234);
+      for (var i = 0; i < 30; i++) {
+        expect(s.finished, isFalse);
+        s.submit(s.current.correct);
+        s.next();
+      }
+      expect(s.round, 30);
     });
 
     test('XP thresholds are unchanged', () {

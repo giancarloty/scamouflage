@@ -454,7 +454,7 @@ class _GameScreensState extends State<GameScreens> {
                 InkTag(
                   g.arcadeUnlocked
                       ? 'TAP TO ENTER ARCADE'
-                      : 'TAP FOR ARCADE FIRST DAY',
+                      : 'NEW PLAYER? START HERE',
                   color: mustard,
                   icon: Icons.touch_app_rounded,
                 ),
@@ -518,7 +518,7 @@ class _GameScreensState extends State<GameScreens> {
       GameButton(
         g.arcadeUnlocked
             ? 'OPEN ARCADE HUB'
-            : 'ARCADE FIRST DAY • 5 MINI-GAMES',
+            : 'START ARCADE FIRST DAY • 5 MINI-GAMES',
         onTap: _openArcade,
         color: mustard,
         icon: g.arcadeUnlocked
@@ -547,24 +547,24 @@ class _GameScreensState extends State<GameScreens> {
           ),
         ],
       ),
-      const SizedBox(height: 23),
+      const SizedBox(height: 16),
       Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: _openCareer,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: deskBlue,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: blue, width: 2),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: blue, width: 1.5),
             ),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(9),
                   decoration: BoxDecoration(
                     color: blue,
                     borderRadius: BorderRadius.circular(14),
@@ -572,29 +572,29 @@ class _GameScreensState extends State<GameScreens> {
                   child: const Icon(
                     Icons.work_history_rounded,
                     color: coal,
-                    size: 29,
+                    size: 24,
                   ),
                 ),
-                const SizedBox(width: 13),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'CAREER SHIFTS',
-                        style: titleText(24, color: paperWhite),
+                        style: titleText(18, color: paperWhite),
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 3),
                       Text(
                         'Play Shift 1 → 2 → 3 in order. Replay any unlocked shift.',
-                        style: captionText(12, color: parchment),
+                        style: captionText(11, color: parchment),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
                       Text(
                         g.unlockedShift > 6
                             ? 'CAREER FINISHED • 6/6'
                             : 'NEXT • SHIFT ${g.unlockedShift}',
-                        style: typewriter(11, color: blue),
+                        style: typewriter(9, color: blue),
                       ),
                     ],
                   ),
@@ -602,7 +602,7 @@ class _GameScreensState extends State<GameScreens> {
                 const Icon(
                   Icons.arrow_forward_ios_rounded,
                   color: blue,
-                  size: 22,
+                  size: 18,
                 ),
               ],
             ),

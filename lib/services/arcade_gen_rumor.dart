@@ -276,70 +276,104 @@ ArcadeCase _outdated(Gen g, ArcadeDifficulty d) {
   String dateAt(int offset) {
     var day = todayDay + offset;
     var month = todayMonth;
-    if (day > 31) {
-      day -= 31;
-      month = 'Nov';
-    }
-    if (day < 1) {
-      day += 30;
-      month = 'Sep';
-    }
+    if (day > 31) { day -= 31; month = 'Nov'; }
+    if (day < 1) { day += 30; month = 'Sep'; }
     return '$month $day';
   }
 
-  final what = g.pick([
-    ('Enrollment deadline', 'Enrollment sa {school} hanggang'),
-    ('Promo end', 'Libreng sakay promo hanggang'),
-    ('Registration', 'Registration para sa scholarship hanggang'),
-    ('Payout', 'Payout para sa registered seniors sa'),
-    ('Voucher promo', 'Libreng voucher promo hanggang'),
-    ('Vaccination', 'Libreng bakuna sa Health Center hanggang'),
-    ('Bazaar', 'Bazaar sale sa {school} hanggang'),
-    ('Transport pass', 'Student transport pass application sa {school} hanggang'),
-    ('Clinic hours', 'Libreng check-up sa Health Center hanggang'),
-    ('Library access', 'Enrollment sa {school} library program hanggang'),
-    ('Permit renewal', 'Renewal ng barangay permit hanggang'),
-    ('Clinic registration', 'Registration para sa health-center check-up hanggang'),
-    ('Book return', 'Libreng extension ng book-return deadline sa {school} hanggang'),
-    ('Road pass', 'Application para sa resident road pass sa {school} hanggang'),
-  ]);
+  // Stale information is not always an expired deadline. Rotate the kind of
+  // change players must notice: expired, cancelled, moved, superseded, or
+  // eligibility changed. This prevents the puzzle from being "pick oldest".
+  final kind = g.pick(['deadline', 'cancelled', 'location', 'superseded', 'eligibility', 'promo']);
   final school = g.pick(Pools.schools);
-  String line(int deadlineOffset) => '${fillSlots(what.$2, {'school': school})} ${dateAt(deadlineOffset)}.';
-  final n = d.profile.reasoningLevel == 1
-      ? 3
-      : d.profile.reasoningLevel >= 3
-      ? 5
-      : 4;
-  // Stale post can be an old post OR a freshly re-shared old poster.
-  final recycled = d == ArcadeDifficulty.easy ? false : g.chance(.6);
-  final items = <(RumorCard, bool)>[];
-  items.add((RumorCard('Page A', line(-g.between(4, 9)), recycled ? 'Posted yesterday' : 'Posted ${g.between(18, 30)} days ago'), true));
-  items.add((RumorCard('Page B', line(g.between(6, 14)), 'Posted ${g.between(20, 35)} days ago'), false)); // old but still valid
-  items.add((RumorCard('Page C', line(g.between(10, 20)), 'Posted ${g.between(1, 3)} days ago'), false));
-  if (n >= 4) {
-    items.add((RumorCard('Page D', line(g.between(3, 9)), 'Posted today'), false));
-  }
-  if (n >= 5) {
-    // An additional current post creates a comparison task on Hard without
-    // changing which card is stale or making the answer depend on post age.
-    items.add((RumorCard('Page E', line(g.between(8, 18)), 'Posted 2 days ago'), false));
+  final town = g.pick(Pools.towns);
+  final today = dateAt(0);
+  final past = dateAt(-g.between(2, 8));
+  final future = dateAt(g.between(4, 12));
+  final oldPost = g.pick(['Posted 3 weeks ago', 'Posted 2 months ago', 'Posted yesterday', 'Re-shared today']);
+  final stale = switch (kind) {
+    'deadline' => 'Scholarship application deadline: $past. Submit at the registrar.',
+    'cancelled' => 'Announcement: the free medical mission on $past is cancelled due to weather.',
+    'location' => 'Free vaccination today at the old venue: ${school} covered court.',
+    'superseded' => 'Road advisory: ${town} bridge is CLOSED today, $today.',
+    'eligibility' => 'Ayuda registration: all residents may claim until $future.',
+    _ => 'Student fare promo: 50% discount valid until $past.',
+  };
+  final currentInfo = switch (kind) {
+    'deadline' => [
+      'Scholarship application deadline: $future. Submit at the registrar.',
+      'Scholarship forms are accepted until ${dateAt(g.between(8, 16))}.',
+      'Registrar reminder: applications remain open; check the official desk for requirements.',
+      'Scholarship deadline extended to $future by the registrar.',
+    ],
+    'cancelled' => [
+      'Medical mission moved to $future; the organizer confirms it will proceed.',
+      'Free medical mission is rescheduled to $future, weather permitting.',
+      'Organizer update: the medical mission is ON for $future at the health center.',
+      'New notice: the mission will proceed on $future, not the earlier date.',
+    ],
+    'location' => [
+      'Free vaccination today at the health center, not the covered court.',
+      'Venue update: vaccination moved to the barangay health center.',
+      'The vaccination team is at the health center today. Bring your ID.',
+      'Official update: new venue is the health center for today’s vaccination.',
+    ],
+    'superseded' => [
+      'Road advisory: one lane of ${town} bridge is OPEN today, $today.',
+      'Updated traffic notice: bridge is passable with alternating lanes.',
+      'Engineer update: the bridge inspection is complete; traffic resumes today.',
+      'Latest advisory: only the sidewalk remains closed; vehicles may pass.',
+    ],
+    'eligibility' => [
+      'Ayuda registration is only for residents listed in the barangay registry.',
+      'Updated eligibility: registered households only; no walk-in claims.',
+      'The barangay says applicants must have a valid resident ID.',
+      'Official reminder: only pre-registered recipients may claim.',
+    ],
+    _ => [
+      'Student fare promo ended last week; regular fare applies today.',
+      'Promo is valid only on weekdays, and today is a weekend.',
+      'Updated notice: discount applies only to enrolled students with a valid ID.',
+      'The fare promo has been extended to $future for verified students.',
+    ],
+  };
+  final n = d.profile.reasoningLevel == 1 ? 3 : d.profile.reasoningLevel >= 3 ? 5 : 4;
+  final cards = <(RumorCard, bool)>[
+    (RumorCard('Page A', stale, g.pick([oldPost, 'Posted today', 'Posted 1 day ago'])), true),
+    for (var i = 0; i < n - 1; i++)
+      (RumorCard('Page ${String.fromCharCode(66 + i)}', g.pick(currentInfo), g.pick(['Official update', 'Posted today', 'Posted 2 days ago', 'Verified notice'])), false),
+  ];
+  // Ensure the current alternatives are text-distinct even when random picks collide.
+  final used = <String>{cards.first.$1.body};
+  for (var i = 1; i < cards.length; i++) {
+    var body = cards[i].$1.body;
+    while (!used.add(body)) body = g.pick(currentInfo);
+    cards[i] = (RumorCard(cards[i].$1.title, body, cards[i].$1.meta), false);
   }
   final perm = g.shuffled([for (var i = 0; i < n; i++) i]);
-  final cards = [for (final i in perm) items[i].$1];
-  final correct = perm.indexWhere((i) => items[i].$2);
+  final displayed = [for (final i in perm) cards[i].$1];
+  final correct = perm.indexOf(0);
+  final label = switch (kind) {
+    'deadline' => 'expired deadline',
+    'cancelled' => 'cancellation notice',
+    'location' => 'old venue',
+    'superseded' => 'outdated road status',
+    'eligibility' => 'old eligibility rule',
+    _ => 'expired promo',
+  };
   return ArcadeCase(
-    signature: 'rumor:outdated:${what.$1}:${recycled ? 1 : 0}:$n',
+    signature: 'rumor:outdated:$kind:$n',
     scenario: 'outdated',
     mode: ArcadeMode.rumor,
     title: 'What is stale?',
     rumorTask: RumorTask.outdated,
-    text: 'Today is ${dateAt(0)}. Which post would mislead people if you shared it now?',
-    subtext: d.profile.requiresCrossChecking ? 'Compare deadlines with today; a recent repost can still be stale.' : 'Look at the deadline, not just when it was posted.',
-    cards: cards,
+    text: 'Today is $today. Which post has information that has been replaced or is no longer valid?',
+    subtext: 'Check the actual status, venue, conditions, and deadline—not post age alone.',
+    cards: displayed,
     correct: [correct],
     deceptive: true,
-    lesson: "The stale post has a deadline that's already passed. The post date can fool you: an old post can still be valid, and a brand-new post can recycle an old deadline.",
-    hint: 'Compare each deadline to today. Ignore how old each post is.',
+    lesson: 'The stale item is the $label. Stale information can be an expired date, a cancelled event, an old venue, a superseded advisory, changed eligibility, or an ended promotion. A recent repost can still be wrong.',
+    hint: 'Look for the detail that is no longer true. Posting time is only a clue, not the answer.',
   );
 }
 
@@ -436,21 +470,55 @@ const _quotes = <_Quote>[
 
 ArcadeCase _word(Gen g, ArcadeDifficulty d) {
   final q = g.pick(_quotes);
-  final tokens = <String>[];
-  final changed = <int>[];
-  var inMark = false;
-  for (final raw in q.edit.split(' ')) {
-    var t = raw;
-    if (t.startsWith('[[')) {
-      inMark = true;
-      t = t.substring(2);
+
+  // The [[...]] markup is retained in the quote data for readability, but it
+  // is NOT the source of truth for the answer. Compare the edited caption
+  // against the original so unchanged words inside a marked phrase aren't
+  // accidentally counted as edits.
+  final original = q.orig.split(RegExp(r'\s+'));
+  final edited = q.edit
+      .replaceAll('[[', '')
+      .replaceAll(']]', '')
+      .split(RegExp(r'\s+'));
+
+  // Longest common subsequence. These quotes are short, so O(n*m) is trivial.
+  // Matching is exact (including punctuation/case) to flag meaningful edits.
+  final dp = List.generate(
+    original.length + 1,
+    (_) => List<int>.filled(edited.length + 1, 0),
+  );
+  for (var i = original.length - 1; i >= 0; i--) {
+    for (var j = edited.length - 1; j >= 0; j--) {
+      dp[i][j] = original[i] == edited[j]
+          ? dp[i + 1][j + 1] + 1
+          : (dp[i + 1][j] >= dp[i][j + 1]
+              ? dp[i + 1][j]
+              : dp[i][j + 1]);
     }
-    final ends = t.endsWith(']]');
-    if (ends) t = t.substring(0, t.length - 2);
-    if (inMark) changed.add(tokens.length);
-    tokens.add(t);
-    if (ends) inMark = false;
   }
+
+  // Recover which edited-caption tokens are unchanged. Every edited token
+  // outside the LCS is an insertion/replacement and should be selectable.
+  final unchangedEdited = <int>{};
+  var i = 0;
+  var j = 0;
+  while (i < original.length && j < edited.length) {
+    if (original[i] == edited[j]) {
+      unchangedEdited.add(j);
+      i++;
+      j++;
+    } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+      i++;
+    } else {
+      j++;
+    }
+  }
+
+  final changed = <int>[
+    for (var index = 0; index < edited.length; index++)
+      if (!unchangedEdited.contains(index)) index,
+  ];
+
   return ArcadeCase(
     signature: 'rumor:words:${q.speaker}:${q.orig.length}',
     scenario: 'wordEdit',
@@ -459,7 +527,7 @@ ArcadeCase _word(Gen g, ArcadeDifficulty d) {
     rumorTask: RumorTask.wordEdit,
     text: 'Tap the words in the viral caption that were changed.',
     subtext: 'FULL RECORDING (${q.speaker}): "${q.orig}"',
-    tokens: tokens,
+    tokens: edited,
     correct: changed,
     deceptive: true,
     lesson: "Changing a single word can flip a statement. Always compare a viral quote with the full recording.",

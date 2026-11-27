@@ -192,14 +192,24 @@ class ArcadeGenerator {
       // In a fixed-template mode, once every template is considered, it is
       // better to fall back than to keep requesting another random roll.
     }
-    // When all families are blocked (e.g. all 5 Rumor puzzles have appeared),
-    // relax the family rule before abandoning exact-repeat prevention.
-    for (var attempt = 0; attempt < 512; attempt++) {
+    // Once all scenario families are exhausted, relax family exclusion. Keep
+    // this bounded so a difficult/randomized mode can never stall the session.
+    // Try a small randomized pass, then a deterministic template pass.
+    for (var attempt = 0; attempt < 64; attempt++) {
       final built = _build(mode, difficulty, _chooseScenario(mode, badShare), excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
       final candidate = built.copyWith(signature: _identifiedSignature(built));
       if (!exclude.contains(candidate.signature)) return candidate;
     }
-    if (fallback != null && !exclude.contains(fallback.signature)) return fallback;
-    throw StateError('Could not generate an unseen $mode scenario after 512 attempts.');
+    for (var index = 0; index < scenarioCount(mode); index++) {
+      final built = _build(mode, difficulty, index, excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
+      final candidate = built.copyWith(signature: _identifiedSignature(built));
+      if (!exclude.contains(candidate.signature)) return candidate;
+    }
+    // Last-resort fallback: finish dealing instead of throwing and leaving the
+    // game UI stuck in a generation/retry loop. Fixed-template content can be
+    // repeated only after the pool and exact signatures are exhausted.
+    if (fallback != null) return fallback;
+    final built = _build(mode, difficulty, 0, excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
+    return built.copyWith(signature: _identifiedSignature(built));
   }
 }
