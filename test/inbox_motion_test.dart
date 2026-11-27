@@ -93,16 +93,20 @@ void main() {
     });
   });
 
-  Future<void> mountInbox(WidgetTester tester,
-      {double width = 375, double height = 812}) async {
+  Future<void> mountInbox(
+    WidgetTester tester, {
+    double width = 375,
+    double height = 812,
+  }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = Size(width, height);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
+
     await tester.pumpWidget(
       const MaterialApp(
-        home: const Scaffold(
-          body: const InboxView(
+        home: Scaffold(
+          body: InboxView(
             c: _case,
             d: ArcadeDifficulty.easy,
             tutorial: false,
@@ -116,14 +120,19 @@ void main() {
 
   testWidgets('tap flips through a half-turn then flips back', (tester) async {
     await mountInbox(tester);
+
     expect(find.byKey(const ValueKey('inbox-visible-front')), findsOneWidget);
+
     await tester.tap(find.byKey(const ValueKey('inbox-swipe-card')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 270));
+
     expect(find.byKey(const ValueKey('inbox-visible-back')), findsOneWidget);
+
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('inbox-swipe-card')));
     await tester.pumpAndSettle();
+
     expect(find.byKey(const ValueKey('inbox-visible-front')), findsOneWidget);
   });
 
@@ -131,8 +140,10 @@ void main() {
     tester,
   ) async {
     await mountInbox(tester, width: 320, height: 568);
+
     final card = find.byKey(const ValueKey('inbox-swipe-card'));
     final gesture = await tester.startGesture(tester.getCenter(card));
+
     await gesture.moveBy(const Offset(27, 0));
     await tester.pump();
     await gesture.moveBy(const Offset(26, 0));
@@ -142,17 +153,21 @@ void main() {
       of: find.byKey(const ValueKey('inbox-visible-front')),
       matching: find.byType(Container),
     );
+
     final tinted =
         (tester.widget<Container>(visible.first).decoration! as BoxDecoration)
             .color;
+
     expect(tinted, isNot(paperWhite));
 
     await gesture.up();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 330));
+
     final restored =
         (tester.widget<Container>(visible.first).decoration! as BoxDecoration)
             .color;
+
     expect(restored, paperWhite);
     expect(find.text('EMAIL 1 OF 2'), findsOneWidget);
   });
@@ -161,16 +176,26 @@ void main() {
     tester,
   ) async {
     await mountInbox(tester, width: 390, height: 844);
+
     await tester.drag(
       find.byKey(const ValueKey('inbox-swipe-card')),
       const Offset(-145, 0),
     );
+
     await tester.pump();
+
     // Still showing the old email during the exit animation.
     expect(find.text('EMAIL 1 OF 2'), findsOneWidget);
+
     await tester.pump(const Duration(milliseconds: 350));
+
     expect(find.text('EMAIL 2 OF 2'), findsOneWidget);
   });
 }
 
-void _ignoreResult(List<int> answer, bool flipped) {}
+// FIX: Match the SubmitFn signature by including the named `opened` parameter.
+void _ignoreResult(
+  List<int> answer,
+  bool flipped, {
+  List<String> opened = const [],
+}) {}
