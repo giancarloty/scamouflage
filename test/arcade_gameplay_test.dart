@@ -4,7 +4,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:scamouflage/services/arcade_common.dart';
-import 'package:scamouflage/services/arcade_gen_thread.dart';
+import 'package:scamouflage/services/arcade_thread_generator.dart';
 import 'package:scamouflage/services/arcade_generator.dart';
 import 'package:scamouflage/models/arcade_models.dart';
 import 'package:scamouflage/controllers/arcade_session.dart';

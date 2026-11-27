@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/arcade_models.dart';
-import 'arcade_modes_a.dart';
-import 'arcade_modes_b.dart';
+import 'arcade_trust_impostor_chat_clip_views.dart';
+import 'arcade_rumor_inbox_thread_views.dart';
 import '../controllers/arcade_session.dart';
 import '../controllers/daily_challenge_controller.dart';
 import 'daily_challenges_screen.dart';

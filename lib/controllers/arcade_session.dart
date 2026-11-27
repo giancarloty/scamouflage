@@ -1,5 +1,5 @@
 import 'dart:math';
-import '../services/arcade_gen_thread.dart';
+import '../services/arcade_thread_generator.dart';
 import '../services/arcade_generator.dart';
 import '../models/arcade_models.dart';
 import '../models/round_record.dart';

@@ -21,8 +21,8 @@ lib/
 | `controllers/arcade_session.dart` | Arcade rounds, hearts, scoring and case selection |
 | `models/arcade_models.dart` | Arcade data types and difficulty profiles |
 | `services/arcade_generator.dart` | Dispatches case generation to the individual mode generators |
-| `services/arcade_gen_*.dart` | Creates scenarios and evidence for each Arcade mode |
-| `views/arcade_modes_a.dart`, `arcade_modes_b.dart` | Mini-game interfaces |
+| `services/arcade_*_generator.dart` | Creates scenarios and evidence for each Arcade mode |
+| `views/arcade_trust_impostor_chat_clip_views.dart`, `arcade_rumor_inbox_thread_views.dart` | Mini-game interfaces |
 | `views/arcade_screens.dart` | Arcade hub and gameplay flow |
 | `views/screens.dart` | Main navigation and Career screens |
 | `services/auth_service.dart`, `cloud_save_service.dart` | Accounts and cloud progress |

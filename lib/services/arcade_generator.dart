@@ -1,12 +1,12 @@
 import 'dart:math';
 import 'arcade_common.dart';
-import 'arcade_gen_chat.dart';
-import 'arcade_gen_clip.dart';
-import 'arcade_gen_impostor.dart';
-import 'arcade_gen_inbox.dart';
-import 'arcade_gen_rumor.dart';
-import 'arcade_gen_thread.dart';
-import 'arcade_gen_trust.dart';
+import 'arcade_chat_generator.dart';
+import 'arcade_clip_generator.dart';
+import 'arcade_impostor_generator.dart';
+import 'arcade_inbox_generator.dart';
+import 'arcade_rumor_generator.dart';
+import 'arcade_thread_generator.dart';
+import 'arcade_trust_generator.dart';
 import '../models/arcade_models.dart';
 
 /// Offline, truth-first case composer. For each mode the generator first picks

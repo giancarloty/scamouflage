@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:scamouflage/controllers/inbox_motion.dart';
 import 'package:scamouflage/models/arcade_models.dart';
-import 'package:scamouflage/views/arcade_modes_b.dart';
+import 'package:scamouflage/views/arcade_rumor_inbox_thread_views.dart';
 import 'package:scamouflage/views/theme.dart';
 
 const _testEmails = [
