@@ -441,7 +441,13 @@ class _ClipViewState extends State<ClipView> with _Inspect<ClipView> {
   @override
   Widget build(BuildContext context) {
     final c = widget.c;
-    final b = c.beats[beat];
+    final showFull = widget.d == ArcadeDifficulty.easy ||
+        widget.tutorial || opened.contains('full');
+    final timeline = showFull
+        ? c.beats
+        : c.beats.where((b) => b.inViral).toList();
+    final position = beat.clamp(0, timeline.length - 1).toInt();
+    final b = timeline[position];
     return ModeFrame(
       body: [
         Paper(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
@@ -453,30 +459,35 @@ class _ClipViewState extends State<ClipView> with _Inspect<ClipView> {
             CaseMedia(topic: c.imageTopic, caption: b.scene, height: 120, badge: 'VIDEO • ${b.second}s'),
           ])),
         sectionLabel('TIMELINE • ${b.second}s',
-          trailing: Text('${beat + 1}/${c.beats.length}',
+          trailing: Text('${position + 1}/${timeline.length}',
             style: typewriter(12, color: paperWhite))),
         Row(children: [
-          for (var i = 0; i < c.beats.length; i++) Expanded(child: InkWell(
+          for (var i = 0; i < timeline.length; i++) Expanded(child: InkWell(
             onTap: () {
               GameAudio.instance.cue(GameCue.choose);
               setState(() => beat = i);
             },
             child: Container(height: 34, margin: const EdgeInsets.only(right: 5),
               decoration: BoxDecoration(
-                color: i == beat ? mustard : chipFill,
+                color: i == position ? mustard : chipFill,
                 borderRadius: BorderRadius.circular(9),
                 border: Border.all(color: stroke, width: 1.6)),
               alignment: Alignment.center,
-              child: Text('${c.beats[i].second}s',
+              child: Text('${timeline[i].second}s',
                 style: typewriter(11, color: coal))))),
         ]),
-        Slider(value: beat.toDouble(), min: 0,
-          max: (c.beats.length - 1).toDouble(), divisions: c.beats.length - 1,
+        Slider(value: position.toDouble(), min: 0,
+          max: (timeline.length - 1).toDouble(), divisions: timeline.length - 1,
           activeColor: mustard, inactiveColor: deskLight,
           onChanged: (v) => setState(() => beat = v.round())),
         _line('VIRAL CUT', b.inViral ? b.viralLine : '— this moment is not in the viral cut —',
           choiceOrange, dim: !b.inViral),
-        _line('FULL VIDEO', b.fullLine, choiceBlue),
+        if (showFull)
+          _line('FULL VIDEO', b.fullLine, choiceBlue)
+        else
+          _line('FULL VIDEO LOCKED',
+            'Use the FULL VIDEO check to reveal the original timeline.',
+            choiceBlue, dim: true),
         sectionLabel('CHECKS', trailing: budgetTag()),
         chips(),
         sectionLabel('NOTEBOOK'),

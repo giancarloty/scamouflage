@@ -74,12 +74,14 @@ class ArcadeGenerator {
   }
 
   static String _identifiedSignature(ArcadeCase c) {
-    final parts = <String>[
+    final pairedClip = c.mode == ArcadeMode.clip &&
+        (c.scenario.endsWith('__keep') || c.scenario.endsWith('__remove'));
+    final parts = pairedClip ? <String>[c.mode.name, c.scenario] : <String>[
       c.mode.name,
       c.scenario,
       c.title,
       c.author,
-      c.handle,
+      if (c.mode != ArcadeMode.clip) c.handle,
       c.text,
       c.subtext,
       c.lesson,
@@ -137,9 +139,10 @@ class ArcadeGenerator {
     ArcadeMode.clip => 'clip:${clipScenarioId(i)}',
   };
 
-  int _chooseScenario(ArcadeMode mode, double badShare, {Set<String> excludeFamilies = const {}, Set<int> triedIndices = const {}}) {
+  int _chooseScenario(ArcadeMode mode, ArcadeDifficulty difficulty, double badShare, {Set<String> excludeFamilies = const {}, Set<int> triedIndices = const {}}) {
     final count = scenarioCount(mode);
-    final all = [for (var i = 0; i < count; i++) i];
+    final all = [for (var i = 0; i < count; i++)
+      if (mode != ArcadeMode.clip || clipScenarioAllowed(i, difficulty)) i];
     // Inbox generates whole batches rather than selecting a single template,
     // so it is intentionally not subject to family exclusion.
     final unseen = mode == ArcadeMode.inbox ? all : all.where((i) => !excludeFamilies.contains(_familyAt(mode, i))).toList();
@@ -180,7 +183,7 @@ class ArcadeGenerator {
     ArcadeCase? fallback;
     final limit = dynamicBatch ? 64 : scenarioCount(mode);
     for (var attempt = 0; attempt < limit; attempt++) {
-      final index = _chooseScenario(mode, badShare, excludeFamilies: excludeFamilies, triedIndices: tried);
+      final index = _chooseScenario(mode, difficulty, badShare, excludeFamilies: excludeFamilies, triedIndices: tried);
       if (!dynamicBatch) tried.add(index);
       final built = _build(mode, difficulty, index, excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
       final caseData = built.copyWith(signature: _identifiedSignature(built));
@@ -196,11 +199,12 @@ class ArcadeGenerator {
     // this bounded so a difficult/randomized mode can never stall the session.
     // Try a small randomized pass, then a deterministic template pass.
     for (var attempt = 0; attempt < 64; attempt++) {
-      final built = _build(mode, difficulty, _chooseScenario(mode, badShare), excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
+      final built = _build(mode, difficulty, _chooseScenario(mode, difficulty, badShare), excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
       final candidate = built.copyWith(signature: _identifiedSignature(built));
       if (!exclude.contains(candidate.signature)) return candidate;
     }
     for (var index = 0; index < scenarioCount(mode); index++) {
+      if (mode == ArcadeMode.clip && !clipScenarioAllowed(index, difficulty)) continue;
       final built = _build(mode, difficulty, index, excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
       final candidate = built.copyWith(signature: _identifiedSignature(built));
       if (!exclude.contains(candidate.signature)) return candidate;
@@ -209,7 +213,7 @@ class ArcadeGenerator {
     // game UI stuck in a generation/retry loop. Fixed-template content can be
     // repeated only after the pool and exact signatures are exhausted.
     if (fallback != null) return fallback;
-    final built = _build(mode, difficulty, 0, excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
+    final built = _build(mode, difficulty, mode == ArcadeMode.clip ? _chooseScenario(mode, difficulty, badShare) : 0, excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
     return built.copyWith(signature: _identifiedSignature(built));
   }
 }
