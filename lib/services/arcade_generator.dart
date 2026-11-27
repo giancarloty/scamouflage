@@ -16,12 +16,15 @@ import '../models/arcade_models.dart';
 class ArcadeGenerator {
   final Random random;
   final Gen gen;
-  ArcadeGenerator(int seed) : random = Random(seed), gen = Gen(Random(seed ^ 0x5bd1e995));
+  ArcadeGenerator(int seed)
+    : random = Random(seed),
+      gen = Gen(Random(seed ^ 0x5bd1e995));
 
   T pick<T>(List<T> choices) => choices[random.nextInt(choices.length)];
 
   /// Keep verdicts balanced without making the next answer depend on the last.
-  double _badShareFor(ArcadeMode mode) => mode == ArcadeMode.impostor ? .55 : .5;
+  double _badShareFor(ArcadeMode mode) =>
+      mode == ArcadeMode.impostor ? .55 : .5;
 
   /// How many distinct scenarios a mode has (before per-case variation).
   static int scenarioCount(ArcadeMode mode) => switch (mode) {
@@ -74,46 +77,83 @@ class ArcadeGenerator {
   }
 
   static String _identifiedSignature(ArcadeCase c) {
-    final pairedClip = c.mode == ArcadeMode.clip &&
+    final pairedClip =
+        c.mode == ArcadeMode.clip &&
         (c.scenario.endsWith('__keep') || c.scenario.endsWith('__remove'));
-    final parts = pairedClip ? <String>[c.mode.name, c.scenario] : <String>[
-      c.mode.name,
-      c.scenario,
-      c.title,
-      c.author,
-      if (c.mode != ArcadeMode.clip) c.handle,
-      c.text,
-      c.subtext,
-      c.lesson,
-      c.hint,
-      c.visual,
-      c.imageTopic,
-      c.imageCaption,
-      c.reactions,
-      c.deceptive.toString(),
-      c.rumorTask?.name ?? '',
-      ...c.correct.map((value) => 'answer:$value'),
-      ...c.tools.map((item) => '${item.id}:${item.label}:${item.text}:${item.relevance.name}'),
-      ...c.directory,
-      ...c.chatIn,
-      ...c.activity,
-      c.linkDomain,
-      ...c.choices.map((item) => item.text),
-      ...c.followUps.entries.expand((entry) => ['follow:${entry.key}', ...entry.value]),
-      ...c.cards.expand((item) => [item.title, item.body, item.meta]),
-      ...c.tokens,
-      ...c.emails.expand((item) => [item.fromName, item.fromAddress, item.replyTo, item.subject, item.body, item.linkLabel, item.linkTarget, item.attachment, item.spam.toString(), item.why]),
-      ...c.comments.expand((item) => [item.handle, item.body, item.context, item.reason, item.violates.toString()]),
-      ...c.beats.expand((item) => [item.second.toString(), item.scene, item.viralLine, item.fullLine, item.inViral.toString()]),
-      if (c.leftProfile case final profile?)
-        '${profile.name}:${profile.handle}:${profile.bio}:${profile.link}:'
-            '${profile.label}:${profile.ageDays}:${profile.followers}:'
-            '${profile.badge}:${profile.recent.join('|')}',
-      if (c.rightProfile case final profile?)
-        '${profile.name}:${profile.handle}:${profile.bio}:${profile.link}:'
-            '${profile.label}:${profile.ageDays}:${profile.followers}:'
-            '${profile.badge}:${profile.recent.join('|')}',
-    ];
+    final parts = pairedClip
+        ? <String>[c.mode.name, c.scenario]
+        : <String>[
+            c.mode.name,
+            c.scenario,
+            c.title,
+            c.author,
+            if (c.mode != ArcadeMode.clip) c.handle,
+            c.text,
+            c.subtext,
+            c.lesson,
+            c.hint,
+            c.visual,
+            c.imageTopic,
+            c.imageCaption,
+            c.reactions,
+            c.deceptive.toString(),
+            c.rumorTask?.name ?? '',
+            ...c.correct.map((value) => 'answer:$value'),
+            ...c.tools.map(
+              (item) =>
+                  '${item.id}:${item.label}:${item.text}:${item.relevance.name}',
+            ),
+            ...c.directory,
+            ...c.chatIn,
+            ...c.activity,
+            c.linkDomain,
+            ...c.choices.map((item) => item.text),
+            ...c.followUps.entries.expand(
+              (entry) => ['follow:${entry.key}', ...entry.value],
+            ),
+            ...c.cards.expand((item) => [item.title, item.body, item.meta]),
+            ...c.tokens,
+            ...c.emails.expand(
+              (item) => [
+                item.fromName,
+                item.fromAddress,
+                item.replyTo,
+                item.subject,
+                item.body,
+                item.linkLabel,
+                item.linkTarget,
+                item.attachment,
+                item.spam.toString(),
+                item.why,
+              ],
+            ),
+            ...c.comments.expand(
+              (item) => [
+                item.handle,
+                item.body,
+                item.context,
+                item.reason,
+                item.violates.toString(),
+              ],
+            ),
+            ...c.beats.expand(
+              (item) => [
+                item.second.toString(),
+                item.scene,
+                item.viralLine,
+                item.fullLine,
+                item.inViral.toString(),
+              ],
+            ),
+            if (c.leftProfile case final profile?)
+              '${profile.name}:${profile.handle}:${profile.bio}:${profile.link}:'
+                  '${profile.label}:${profile.ageDays}:${profile.followers}:'
+                  '${profile.badge}:${profile.recent.join('|')}',
+            if (c.rightProfile case final profile?)
+              '${profile.name}:${profile.handle}:${profile.bio}:${profile.link}:'
+                  '${profile.label}:${profile.ageDays}:${profile.followers}:'
+                  '${profile.badge}:${profile.recent.join('|')}',
+          ];
     var hashA = 0x811c9dc5;
     var hashB = 0x9e3779b9;
     for (final codeUnit in parts.join('\u0000').codeUnits) {
@@ -139,40 +179,99 @@ class ArcadeGenerator {
     ArcadeMode.clip => 'clip:${clipScenarioId(i)}',
   };
 
-  int _chooseScenario(ArcadeMode mode, ArcadeDifficulty difficulty, double badShare, {Set<String> excludeFamilies = const {}, Set<int> triedIndices = const {}}) {
+  int _chooseScenario(
+    ArcadeMode mode,
+    ArcadeDifficulty difficulty,
+    double badShare, {
+    Set<String> excludeFamilies = const {},
+    Set<int> triedIndices = const {},
+  }) {
     final count = scenarioCount(mode);
-    final all = [for (var i = 0; i < count; i++)
-      if (mode != ArcadeMode.clip || clipScenarioAllowed(i, difficulty)) i];
+    final all = [
+      for (var i = 0; i < count; i++)
+        if (mode != ArcadeMode.clip || clipScenarioAllowed(i, difficulty)) i,
+    ];
     // Inbox generates whole batches rather than selecting a single template,
     // so it is intentionally not subject to family exclusion.
-    final unseen = mode == ArcadeMode.inbox ? all : all.where((i) => !excludeFamilies.contains(_familyAt(mode, i))).toList();
+    final unseen = mode == ArcadeMode.inbox
+        ? all
+        : all
+              .where((i) => !excludeFamilies.contains(_familyAt(mode, i)))
+              .toList();
     final candidates = unseen.where((i) => !triedIndices.contains(i)).toList();
     final pool = candidates.isEmpty ? all : candidates;
     if (scenarioIsBad(mode, 0) == null) return pick(pool);
     final wantBad = random.nextDouble() < badShare;
-    final matched = pool.where((i) => scenarioIsBad(mode, i) == wantBad).toList();
+    final matched = pool
+        .where((i) => scenarioIsBad(mode, i) == wantBad)
+        .toList();
     return pick(matched.isEmpty ? pool : matched);
   }
 
-  ArcadeCase _build(ArcadeMode mode, ArcadeDifficulty d, int i, {bool tutorial = false, Set<String> excludeThreadChoices = const {}, Set<String> excludeThreadParts = const {}}) => switch (mode) {
+  ArcadeCase _build(
+    ArcadeMode mode,
+    ArcadeDifficulty d,
+    int i, {
+    bool tutorial = false,
+    Set<String> excludeThreadChoices = const {},
+    Set<String> excludeThreadParts = const {},
+  }) => switch (mode) {
     ArcadeMode.trust => buildTrust(gen, d, i),
     ArcadeMode.impostor => buildImpostor(gen, d, i),
     ArcadeMode.scamSlam => buildChat(gen, d, i),
     ArcadeMode.rumor => buildRumor(gen, d, i),
     ArcadeMode.inbox => buildInbox(gen, d, i, count: tutorial ? 3 : null),
-    ArcadeMode.comments => buildThread(gen, d, i, forceBad: tutorial ? 1 : null, excludeChoices: excludeThreadChoices, excludeParts: excludeThreadParts),
+    ArcadeMode.comments => buildThread(
+      gen,
+      d,
+      i,
+      forceBad: tutorial ? 1 : null,
+      excludeChoices: excludeThreadChoices,
+      excludeParts: excludeThreadParts,
+    ),
     ArcadeMode.clip => buildClip(gen, d, i),
   };
 
-  ArcadeCase generate(ArcadeMode mode, ArcadeDifficulty difficulty, {Set<String> exclude = const {}, Set<String> excludeFamilies = const {}, Set<String> excludeThreadChoices = const {}, Set<String> excludeThreadParts = const {}, bool tutorial = false}) {
-    return _generateCase(mode, difficulty, exclude: exclude, excludeFamilies: excludeFamilies, excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts, tutorial: tutorial);
+  ArcadeCase generate(
+    ArcadeMode mode,
+    ArcadeDifficulty difficulty, {
+    Set<String> exclude = const {},
+    Set<String> excludeFamilies = const {},
+    Set<String> excludeThreadChoices = const {},
+    Set<String> excludeThreadParts = const {},
+    bool tutorial = false,
+  }) {
+    return _generateCase(
+      mode,
+      difficulty,
+      exclude: exclude,
+      excludeFamilies: excludeFamilies,
+      excludeThreadChoices: excludeThreadChoices,
+      excludeThreadParts: excludeThreadParts,
+      tutorial: tutorial,
+    );
   }
 
   /// Avoid recent scenario families first, then exact generated cases.
   /// Exact repeats are never returned, even after every family has appeared.
-  ArcadeCase _generateCase(ArcadeMode mode, ArcadeDifficulty difficulty, {Set<String> exclude = const {}, Set<String> excludeFamilies = const {}, Set<String> excludeThreadChoices = const {}, Set<String> excludeThreadParts = const {}, bool tutorial = false}) {
+  ArcadeCase _generateCase(
+    ArcadeMode mode,
+    ArcadeDifficulty difficulty, {
+    Set<String> exclude = const {},
+    Set<String> excludeFamilies = const {},
+    Set<String> excludeThreadChoices = const {},
+    Set<String> excludeThreadParts = const {},
+    bool tutorial = false,
+  }) {
     if (tutorial) {
-      return _build(mode, ArcadeDifficulty.easy, _tutorialIndex(mode), tutorial: true, excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
+      return _build(
+        mode,
+        ArcadeDifficulty.easy,
+        _tutorialIndex(mode),
+        tutorial: true,
+        excludeThreadChoices: excludeThreadChoices,
+        excludeThreadParts: excludeThreadParts,
+      );
     }
     final badShare = _badShareFor(mode);
 
@@ -183,13 +282,26 @@ class ArcadeGenerator {
     ArcadeCase? fallback;
     final limit = dynamicBatch ? 64 : scenarioCount(mode);
     for (var attempt = 0; attempt < limit; attempt++) {
-      final index = _chooseScenario(mode, difficulty, badShare, excludeFamilies: excludeFamilies, triedIndices: tried);
+      final index = _chooseScenario(
+        mode,
+        difficulty,
+        badShare,
+        excludeFamilies: excludeFamilies,
+        triedIndices: tried,
+      );
       if (!dynamicBatch) tried.add(index);
-      final built = _build(mode, difficulty, index, excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
+      final built = _build(
+        mode,
+        difficulty,
+        index,
+        excludeThreadChoices: excludeThreadChoices,
+        excludeThreadParts: excludeThreadParts,
+      );
       final caseData = built.copyWith(signature: _identifiedSignature(built));
       fallback ??= caseData;
       final family = familyOfSignature(caseData.signature);
-      if (!excludeFamilies.contains(family) && !exclude.contains(caseData.signature)) {
+      if (!excludeFamilies.contains(family) &&
+          !exclude.contains(caseData.signature)) {
         return caseData;
       }
       // In a fixed-template mode, once every template is considered, it is
@@ -199,13 +311,27 @@ class ArcadeGenerator {
     // this bounded so a difficult/randomized mode can never stall the session.
     // Try a small randomized pass, then a deterministic template pass.
     for (var attempt = 0; attempt < 64; attempt++) {
-      final built = _build(mode, difficulty, _chooseScenario(mode, difficulty, badShare), excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
+      final built = _build(
+        mode,
+        difficulty,
+        _chooseScenario(mode, difficulty, badShare),
+        excludeThreadChoices: excludeThreadChoices,
+        excludeThreadParts: excludeThreadParts,
+      );
       final candidate = built.copyWith(signature: _identifiedSignature(built));
       if (!exclude.contains(candidate.signature)) return candidate;
     }
     for (var index = 0; index < scenarioCount(mode); index++) {
-      if (mode == ArcadeMode.clip && !clipScenarioAllowed(index, difficulty)) continue;
-      final built = _build(mode, difficulty, index, excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
+      if (mode == ArcadeMode.clip && !clipScenarioAllowed(index, difficulty)) {
+        continue;
+      }
+      final built = _build(
+        mode,
+        difficulty,
+        index,
+        excludeThreadChoices: excludeThreadChoices,
+        excludeThreadParts: excludeThreadParts,
+      );
       final candidate = built.copyWith(signature: _identifiedSignature(built));
       if (!exclude.contains(candidate.signature)) return candidate;
     }
@@ -213,7 +339,13 @@ class ArcadeGenerator {
     // game UI stuck in a generation/retry loop. Fixed-template content can be
     // repeated only after the pool and exact signatures are exhausted.
     if (fallback != null) return fallback;
-    final built = _build(mode, difficulty, mode == ArcadeMode.clip ? _chooseScenario(mode, difficulty, badShare) : 0, excludeThreadChoices: excludeThreadChoices, excludeThreadParts: excludeThreadParts);
+    final built = _build(
+      mode,
+      difficulty,
+      mode == ArcadeMode.clip ? _chooseScenario(mode, difficulty, badShare) : 0,
+      excludeThreadChoices: excludeThreadChoices,
+      excludeThreadParts: excludeThreadParts,
+    );
     return built.copyWith(signature: _identifiedSignature(built));
   }
 }

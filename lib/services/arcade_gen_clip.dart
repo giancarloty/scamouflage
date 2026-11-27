@@ -43,20 +43,44 @@ const _clips = <_Clip>[
     'Budget hearing, short cut',
     'Mayor Santillan explains the flood wall delay.',
     [
-      ClipBeat(0, 'Question from a councilor', 'Councilor: "Bakit na-delay?"', 'Councilor: "Bakit na-delay?"'),
-      ClipBeat(12, 'Mayor answers', 'Mayor: "Dahil sa tatlong linggong ulan."', 'Mayor: "Dahil sa tatlong linggong ulan."'),
-      ClipBeat(30, 'Mayor adds', 'Mayor: "Matatapos ito sa Enero."', 'Mayor: "Matatapos ito sa Enero."'),
-      ClipBeat(55, 'Next agenda', '(cut)', 'Councilor moves to the next item.', inViral: false),
+      ClipBeat(
+        0,
+        'Question from a councilor',
+        'Councilor: "Bakit na-delay?"',
+        'Councilor: "Bakit na-delay?"',
+      ),
+      ClipBeat(
+        12,
+        'Mayor answers',
+        'Mayor: "Dahil sa tatlong linggong ulan."',
+        'Mayor: "Dahil sa tatlong linggong ulan."',
+      ),
+      ClipBeat(
+        30,
+        'Mayor adds',
+        'Mayor: "Matatapos ito sa Enero."',
+        'Mayor: "Matatapos ito sa Enero."',
+      ),
+      ClipBeat(
+        55,
+        'Next agenda',
+        '(cut)',
+        'Councilor moves to the next item.',
+        inViral: false,
+      ),
     ],
-    upload: 'The short clip is cut from the livestream, and the page links the full video.',
+    upload:
+        'The short clip is cut from the livestream, and the page links the full video.',
     audio: 'Audio is continuous, with no cuts in the middle of the answer.',
     creator: 'A local news page that usually links to full recordings.',
     label: 'Caption says: "Short cut. Full video in the comments."',
-    full: 'The full video says the same thing; the short cut only trims the end.',
+    full:
+        'The full video says the same thing; the short cut only trims the end.',
     rFull: Relevance.decisive,
     rAudio: Relevance.support,
     rLabel: Relevance.support,
-    lesson: 'Short clips are normal. This cut kept the question, the answer and the context, and the page links the full video.',
+    lesson:
+        'Short clips are normal. This cut kept the question, the answer and the context, and the page links the full video.',
     hint: 'Does cutting the video change what the speaker meant?',
   ),
   _Clip(
@@ -66,9 +90,24 @@ const _clips = <_Clip>[
     'AI parody: barangay robot',
     'A robot barangay captain announces free pandesal for all (AI parody).',
     [
-      ClipBeat(0, 'A robot at a podium', 'Robot: "Mga kababayan!"', 'Robot: "Mga kababayan!"'),
-      ClipBeat(8, 'Crowd cheering', 'Robot: "Libreng pandesal para sa lahat!"', 'Robot: "Libreng pandesal para sa lahat!"'),
-      ClipBeat(20, 'Credits', 'Label: "AI-generated parody"', 'Label: "AI-generated parody"'),
+      ClipBeat(
+        0,
+        'A robot at a podium',
+        'Robot: "Mga kababayan!"',
+        'Robot: "Mga kababayan!"',
+      ),
+      ClipBeat(
+        8,
+        'Crowd cheering',
+        'Robot: "Libreng pandesal para sa lahat!"',
+        'Robot: "Libreng pandesal para sa lahat!"',
+      ),
+      ClipBeat(
+        20,
+        'Credits',
+        'Label: "AI-generated parody"',
+        'Label: "AI-generated parody"',
+      ),
     ],
     upload: 'First uploaded by a comedy page that posts only AI parodies.',
     audio: 'The voice is synthetic, and the page says so in its description.',
@@ -78,7 +117,8 @@ const _clips = <_Clip>[
     rLabel: Relevance.decisive,
     rFull: Relevance.support,
     rCreator: Relevance.support,
-    lesson: 'AI is fine when it is clearly labeled and nobody real is being impersonated. The label is the deciding fact.',
+    lesson:
+        'AI is fine when it is clearly labeled and nobody real is being impersonated. The label is the deciding fact.',
     hint: 'Is the AI use disclosed and obvious?',
   ),
   _Clip(
@@ -88,11 +128,28 @@ const _clips = <_Clip>[
     'Rescue boat clip',
     'Rescue team brings residents out of a flooded street in Brgy. Sinag.',
     [
-      ClipBeat(0, 'Rescue boat arrives', 'Narrator: "Sa Brgy. Sinag ngayon."', 'Narrator: "Sa Brgy. Sinag ngayon."'),
-      ClipBeat(15, 'Residents board', 'Narrator: "Ligtas ang lahat."', 'Narrator: "Ligtas ang lahat."'),
-      ClipBeat(40, 'Hotline', '(cut)', 'Narrator: "Hotline: ang numero ay nasa page."', inViral: false),
+      ClipBeat(
+        0,
+        'Rescue boat arrives',
+        'Narrator: "Sa Brgy. Sinag ngayon."',
+        'Narrator: "Sa Brgy. Sinag ngayon."',
+      ),
+      ClipBeat(
+        15,
+        'Residents board',
+        'Narrator: "Ligtas ang lahat."',
+        'Narrator: "Ligtas ang lahat."',
+      ),
+      ClipBeat(
+        40,
+        'Hotline',
+        '(cut)',
+        'Narrator: "Hotline: ang numero ay nasa page."',
+        inViral: false,
+      ),
     ],
-    upload: 'Uploaded today by the city rescue unit; the location and time are in the description.',
+    upload:
+        'Uploaded today by the city rescue unit; the location and time are in the description.',
     audio: 'Audio matches the footage: the same water sounds and voices.',
     creator: 'The city\'s official rescue page.',
     label: 'No special label. It is plain footage.',
@@ -100,7 +157,8 @@ const _clips = <_Clip>[
     rUpload: Relevance.decisive,
     rFull: Relevance.support,
     rCreator: Relevance.support,
-    lesson: 'This footage is new and local, and it comes from the group that was there. Nothing was added or reversed.',
+    lesson:
+        'This footage is new and local, and it comes from the group that was there. Nothing was added or reversed.',
     hint: 'Where and when was this uploaded, and by whom?',
   ),
   _Clip(
@@ -110,9 +168,24 @@ const _clips = <_Clip>[
     'Fancam edit',
     'A fan edit that cuts together the best moments of the {group} concert.',
     [
-      ClipBeat(0, 'Intro', 'Caption: "Best moments 🔥"', 'Caption: "Best moments 🔥"'),
-      ClipBeat(10, 'Dance break', 'Caption: "Dance break!"', 'Caption: "Dance break!"'),
-      ClipBeat(25, 'Closing', 'Caption: "Thanks for the night"', 'Caption: "Thanks for the night"'),
+      ClipBeat(
+        0,
+        'Intro',
+        'Caption: "Best moments 🔥"',
+        'Caption: "Best moments 🔥"',
+      ),
+      ClipBeat(
+        10,
+        'Dance break',
+        'Caption: "Dance break!"',
+        'Caption: "Dance break!"',
+      ),
+      ClipBeat(
+        25,
+        'Closing',
+        'Caption: "Thanks for the night"',
+        'Caption: "Thanks for the night"',
+      ),
     ],
     upload: 'Uploaded by a fan page after the concert, labeled as a fan edit.',
     audio: 'Music is the group\'s song; there is no added speech.',
@@ -121,7 +194,8 @@ const _clips = <_Clip>[
     full: 'Longer fan video showing the same songs in order.',
     rLabel: Relevance.decisive,
     rFull: Relevance.support,
-    lesson: 'Edits that don\'t claim to be something else aren\'t misleading. A fan edit doesn\'t need to be removed.',
+    lesson:
+        'Edits that don\'t claim to be something else aren\'t misleading. A fan edit doesn\'t need to be removed.',
     hint: 'Does the video claim to be anything other than what it is?',
   ),
   _Clip(
@@ -131,12 +205,24 @@ const _clips = <_Clip>[
     'Inter-U finals highlight',
     'Northridge Falcons\' game-winning shot, short highlight from the school channel.',
     [
-      ClipBeat(0, 'Inbound pass', 'Score: 78-78, 3.2s left', 'Score: 78-78, 3.2s left'),
+      ClipBeat(
+        0,
+        'Inbound pass',
+        'Score: 78-78, 3.2s left',
+        'Score: 78-78, 3.2s left',
+      ),
       ClipBeat(9, 'The shot', 'Shot goes in!', 'Shot goes in!'),
       ClipBeat(15, 'Buzzer', 'Final: 80-78', 'Final: 80-78'),
-      ClipBeat(40, 'Handshakes', '(cut)', 'Both teams shake hands.', inViral: false),
+      ClipBeat(
+        40,
+        'Handshakes',
+        '(cut)',
+        'Both teams shake hands.',
+        inViral: false,
+      ),
     ],
-    upload: 'Uploaded by the school\'s official sports channel an hour after the game.',
+    upload:
+        'Uploaded by the school\'s official sports channel an hour after the game.',
     audio: 'The crowd noise is continuous and matches the footage.',
     creator: 'The school\'s sports channel, which also posts full games.',
     label: 'Caption says "Short highlight. Full game in playlist."',
@@ -144,7 +230,8 @@ const _clips = <_Clip>[
     rFull: Relevance.decisive,
     rUpload: Relevance.support,
     rCreator: Relevance.support,
-    lesson: 'A highlight reel is not misleading when the score and sequence match the full game and the source links it.',
+    lesson:
+        'A highlight reel is not misleading when the score and sequence match the full game and the source links it.',
     hint: 'Does the full game show the same score and play?',
   ),
   _Clip(
@@ -154,9 +241,24 @@ const _clips = <_Clip>[
     'Lip-sync parody',
     'Fans lip-sync a famous {queen} runway moment, labeled parody.',
     [
-      ClipBeat(0, 'Costume reveal', 'On-screen: "FAN PARODY"', 'On-screen: "FAN PARODY"'),
-      ClipBeat(10, 'Lip-sync', 'Fans lip-sync the old line', 'Fans lip-sync the old line'),
-      ClipBeat(22, 'Bow', 'Credits: "Not affiliated"', 'Credits: "Not affiliated"'),
+      ClipBeat(
+        0,
+        'Costume reveal',
+        'On-screen: "FAN PARODY"',
+        'On-screen: "FAN PARODY"',
+      ),
+      ClipBeat(
+        10,
+        'Lip-sync',
+        'Fans lip-sync the old line',
+        'Fans lip-sync the old line',
+      ),
+      ClipBeat(
+        22,
+        'Bow',
+        'Credits: "Not affiliated"',
+        'Credits: "Not affiliated"',
+      ),
     ],
     upload: 'Posted by a fan theater group that makes parodies every month.',
     audio: 'The audio is the original show clip, credited in the description.',
@@ -175,11 +277,27 @@ const _clips = <_Clip>[
     'Street protest clip',
     'LIVE NGAYON: libu-libong tao sa kalsada sa {city}!',
     [
-      ClipBeat(0, 'Crowd on a street', 'Caption: "LIVE ngayon sa {city}"', 'Caption: "Rally, {y1}, ibang lungsod"'),
-      ClipBeat(12, 'Banners', 'Caption: "Libo-libo!"', 'Caption: "Rally, {y1}"'),
-      ClipBeat(30, 'Marchers', 'Caption: "Naglalakad na sila!"', 'Caption: "Rally, {y1}"'),
+      ClipBeat(
+        0,
+        'Crowd on a street',
+        'Caption: "LIVE ngayon sa {city}"',
+        'Caption: "Rally, {y1}, ibang lungsod"',
+      ),
+      ClipBeat(
+        12,
+        'Banners',
+        'Caption: "Libo-libo!"',
+        'Caption: "Rally, {y1}"',
+      ),
+      ClipBeat(
+        30,
+        'Marchers',
+        'Caption: "Naglalakad na sila!"',
+        'Caption: "Rally, {y1}"',
+      ),
     ],
-    upload: 'The earliest upload was in {y1}, from a different city and a different event.',
+    upload:
+        'The earliest upload was in {y1}, from a different city and a different event.',
     audio: 'The chants mention an issue that has nothing to do with today.',
     creator: 'A page that reposts old rally footage as news.',
     label: 'No date or location shown in the video.',
@@ -187,7 +305,8 @@ const _clips = <_Clip>[
     rUpload: Relevance.decisive,
     rFull: Relevance.decisive,
     rAudio: Relevance.support,
-    lesson: 'Real footage from another event, shown as "live now", misleads even though nothing was edited.',
+    lesson:
+        'Real footage from another event, shown as "live now", misleads even though nothing was edited.',
     hint: 'When and where was the earliest version posted?',
   ),
   _Clip(
@@ -197,19 +316,36 @@ const _clips = <_Clip>[
     'Council clip with subtitles',
     'Council member says: "We oppose the new bus lane."',
     [
-      ClipBeat(0, 'Speaker at the council', 'Subtitle: "We oppose the new bus lane."', 'Audio (Filipino): "Hindi po kami tutol sa bus lane."'),
-      ClipBeat(8, 'Speaker continues', 'Subtitle: "It is a waste of money."', 'Audio (Filipino): "Gusto lang naming makita ang gastos."'),
-      ClipBeat(20, 'Close', 'Subtitle: "Thank you."', 'Audio (Filipino): "Salamat po."'),
+      ClipBeat(
+        0,
+        'Speaker at the council',
+        'Subtitle: "We oppose the new bus lane."',
+        'Audio (Filipino): "Hindi po kami tutol sa bus lane."',
+      ),
+      ClipBeat(
+        8,
+        'Speaker continues',
+        'Subtitle: "It is a waste of money."',
+        'Audio (Filipino): "Gusto lang naming makita ang gastos."',
+      ),
+      ClipBeat(
+        20,
+        'Close',
+        'Subtitle: "Thank you."',
+        'Audio (Filipino): "Salamat po."',
+      ),
     ],
     upload: 'The video is a re-upload with burned-in English subtitles.',
     audio: 'The spoken words are Filipino and do not match the subtitles.',
     creator: 'A page that adds subtitles to political clips.',
     label: 'No note that the subtitles were added by the page.',
-    full: 'The council\'s own video has no subtitles; the speaker says they do NOT oppose the lane and only want the costs.',
+    full:
+        'The council\'s own video has no subtitles; the speaker says they do NOT oppose the lane and only want the costs.',
     rAudio: Relevance.decisive,
     rFull: Relevance.decisive,
     rCreator: Relevance.support,
-    lesson: 'The video is real but the subtitles reverse what was said. Always check the spoken words against the captions.',
+    lesson:
+        'The video is real but the subtitles reverse what was said. Always check the spoken words against the captions.',
     hint: 'Do the spoken words match the subtitles?',
   ),
   // ----------------------------------------------------------- REMOVE
@@ -220,19 +356,38 @@ const _clips = <_Clip>[
     'Mayor interview, short cut',
     'Mayor Santillan: "Wala akong pakialam sa mga biktima ng baha."',
     [
-      ClipBeat(0, 'Reporter asks', '(cut)', 'Reporter: "Totoo bang wala kang pakialam sa mga biktima?"', inViral: false),
-      ClipBeat(6, 'Mayor reacts', 'Mayor: "Wala akong pakialam sa mga biktima ng baha."', 'Mayor: "Sinasabi ng iba na wala akong pakialam sa mga biktima ng baha."'),
-      ClipBeat(14, 'Mayor continues', '(cut)', 'Mayor: "Pero hindi iyon totoo. Nandito kami para tumulong."', inViral: false),
+      ClipBeat(
+        0,
+        'Reporter asks',
+        '(cut)',
+        'Reporter: "Totoo bang wala kang pakialam sa mga biktima?"',
+        inViral: false,
+      ),
+      ClipBeat(
+        6,
+        'Mayor reacts',
+        'Mayor: "Wala akong pakialam sa mga biktima ng baha."',
+        'Mayor: "Sinasabi ng iba na wala akong pakialam sa mga biktima ng baha."',
+      ),
+      ClipBeat(
+        14,
+        'Mayor continues',
+        '(cut)',
+        'Mayor: "Pero hindi iyon totoo. Nandito kami para tumulong."',
+        inViral: false,
+      ),
     ],
     upload: 'The short clip starts at 0:06 of a longer interview.',
     audio: 'The cut falls in the middle of the mayor\'s sentence.',
     creator: 'A page that posts only angry captions about politicians.',
     label: 'No source link is given for the full interview.',
-    full: 'In the full interview, the mayor was repeating a rumor the reporter asked about, and then denying it.',
+    full:
+        'In the full interview, the mayor was repeating a rumor the reporter asked about, and then denying it.',
     rFull: Relevance.decisive,
     rAudio: Relevance.support,
     rUpload: Relevance.support,
-    lesson: 'Trimming away the question and the answer reversed the meaning. The kept words are real, but the clip misleads.',
+    lesson:
+        'Trimming away the question and the answer reversed the meaning. The kept words are real, but the clip misleads.',
     hint: 'What came right before and right after the part in the viral clip?',
   ),
   _Clip(
@@ -242,19 +397,38 @@ const _clips = <_Clip>[
     'Flood footage',
     'LIVE NGAYON: baha sa {city}, hanggang bubong na!',
     [
-      ClipBeat(0, 'Flooded street', 'Caption: "LIVE ngayon sa {city}"', 'Caption: "Bagyong Ulan, {y1}. Lungsod ng Tala."'),
-      ClipBeat(10, 'Roofs submerged', 'Caption: "Hanggang bubong na!"', 'Caption: "Bagyong Ulan, {y1}."'),
-      ClipBeat(25, 'Rescue boat', 'Caption: "Rescue na!"', 'Caption: "Bagyong Ulan, {y1}."'),
+      ClipBeat(
+        0,
+        'Flooded street',
+        'Caption: "LIVE ngayon sa {city}"',
+        'Caption: "Bagyong Ulan, {y1}. Lungsod ng Tala."',
+      ),
+      ClipBeat(
+        10,
+        'Roofs submerged',
+        'Caption: "Hanggang bubong na!"',
+        'Caption: "Bagyong Ulan, {y1}."',
+      ),
+      ClipBeat(
+        25,
+        'Rescue boat',
+        'Caption: "Rescue na!"',
+        'Caption: "Bagyong Ulan, {y1}."',
+      ),
     ],
-    upload: 'The earliest version of this video was uploaded in {y1}, by a different page in a different city.',
-    audio: 'The audio names a storm that has nothing to do with today\'s weather.',
+    upload:
+        'The earliest version of this video was uploaded in {y1}, by a different page in a different city.',
+    audio:
+        'The audio names a storm that has nothing to do with today\'s weather.',
     creator: 'A page that posts "live" disaster videos.',
     label: 'No date or location is shown in the video.',
-    full: 'The original video is labeled with the {y1} storm and the city of Tala.',
+    full:
+        'The original video is labeled with the {y1} storm and the city of Tala.',
     rUpload: Relevance.decisive,
     rFull: Relevance.decisive,
     rAudio: Relevance.support,
-    lesson: 'Real disaster footage from an earlier storm is being shown as breaking news. Nothing was edited, but the context is false.',
+    lesson:
+        'Real disaster footage from an earlier storm is being shown as breaking news. Nothing was edited, but the context is false.',
     hint: 'When was the earliest upload of this video?',
   ),
   _Clip(
@@ -264,19 +438,37 @@ const _clips = <_Clip>[
     'Senator announcement',
     'Sen. Magtanggol: "Ayuda para sa lahat, mag-register sa link."',
     [
-      ClipBeat(0, 'Senator at a podium', 'Voice: "Mga kababayan, may ayuda ako!"', 'Voice: "Mga kababayan, mag-ingat po sa baha."'),
-      ClipBeat(9, 'Senator gestures', 'Voice: "Mag-register sa link sa ibaba."', 'Voice: "Sundin ang payo ng mga lokal na opisyal."'),
-      ClipBeat(20, 'Senator waves', 'Voice: "Salamat po!"', 'Voice: "Salamat po!"'),
+      ClipBeat(
+        0,
+        'Senator at a podium',
+        'Voice: "Mga kababayan, may ayuda ako!"',
+        'Voice: "Mga kababayan, mag-ingat po sa baha."',
+      ),
+      ClipBeat(
+        9,
+        'Senator gestures',
+        'Voice: "Mag-register sa link sa ibaba."',
+        'Voice: "Sundin ang payo ng mga lokal na opisyal."',
+      ),
+      ClipBeat(
+        20,
+        'Senator waves',
+        'Voice: "Salamat po!"',
+        'Voice: "Salamat po!"',
+      ),
     ],
-    upload: 'The video is a re-upload of the senator\'s press statement from last week.',
+    upload:
+        'The video is a re-upload of the senator\'s press statement from last week.',
     audio: 'In the viral version, the lip movements don\'t match the words.',
     creator: 'A new page with no other posts.',
     label: 'No label. Nothing says AI or edited.',
-    full: 'The senator\'s own page has the original video: it never mentions ayuda or a link.',
+    full:
+        'The senator\'s own page has the original video: it never mentions ayuda or a link.',
     rAudio: Relevance.decisive,
     rFull: Relevance.decisive,
     rCreator: Relevance.support,
-    lesson: 'The face is real but the voice was swapped. A real person never said these lines, and the link is a trap.',
+    lesson:
+        'The face is real but the voice was swapped. A real person never said these lines, and the link is a trap.',
     hint: 'Do the mouth and the words match? What does the original say?',
   ),
   _Clip(
@@ -286,19 +478,37 @@ const _clips = <_Clip>[
     'Idol apology clip',
     '{group} leader finally admits she lip-synced the whole concert.',
     [
-      ClipBeat(0, 'Leader at a press room', 'Leader: "Aaminin ko na."', 'Leader: "Gusto kong linawin ang usapin."'),
-      ClipBeat(7, 'Leader speaks', 'Leader: "Lip sync lahat."', 'Leader: "May isang kanta na pre-recorded. Hindi lahat."'),
-      ClipBeat(18, 'Leader bows', 'Leader: "Pasensya na."', 'Leader: "Pasensya sa kalituhan."'),
+      ClipBeat(
+        0,
+        'Leader at a press room',
+        'Leader: "Aaminin ko na."',
+        'Leader: "Gusto kong linawin ang usapin."',
+      ),
+      ClipBeat(
+        7,
+        'Leader speaks',
+        'Leader: "Lip sync lahat."',
+        'Leader: "May isang kanta na pre-recorded. Hindi lahat."',
+      ),
+      ClipBeat(
+        18,
+        'Leader bows',
+        'Leader: "Pasensya na."',
+        'Leader: "Pasensya sa kalituhan."',
+      ),
     ],
     upload: 'The clip is a short piece of a longer press conference.',
     audio: 'The viral version\'s audio skips between sentences.',
     creator: 'A page that posts only drama about idols.',
     label: 'No label.',
-    full: 'In the full video, the leader says one song was pre-recorded and the rest was live.',
+    full:
+        'In the full video, the leader says one song was pre-recorded and the rest was live.',
     rFull: Relevance.decisive,
     rAudio: Relevance.support,
-    lesson: 'Cutting between sentences made a small clarification sound like a confession. Always look for the full statement.',
-    hint: 'Are the words in the viral clip in the same order in the full video?',
+    lesson:
+        'Cutting between sentences made a small clarification sound like a confession. Always look for the full statement.',
+    hint:
+        'Are the words in the viral clip in the same order in the full video?',
   ),
   _Clip(
     'unlabeled_ai_ad',
@@ -307,19 +517,37 @@ const _clips = <_Clip>[
     'Doctor testimonial',
     'Doc Ramon says this pill cures every lung problem. Buy now.',
     [
-      ClipBeat(0, 'Doctor in a clinic', 'Doc: "Ito ang lunas sa lahat ng sakit sa baga."', 'Doc: "Maghugas ng kamay para makaiwas sa sakit."'),
-      ClipBeat(10, 'Product shot', 'Doc: "Bumili na bago maubos."', 'Doc: "Magpatingin sa doktor kapag may sintomas."'),
-      ClipBeat(20, 'Hotline', 'Doc: "Mag-order sa link."', 'Doc: "Salamat sa panonood."'),
+      ClipBeat(
+        0,
+        'Doctor in a clinic',
+        'Doc: "Ito ang lunas sa lahat ng sakit sa baga."',
+        'Doc: "Maghugas ng kamay para makaiwas sa sakit."',
+      ),
+      ClipBeat(
+        10,
+        'Product shot',
+        'Doc: "Bumili na bago maubos."',
+        'Doc: "Magpatingin sa doktor kapag may sintomas."',
+      ),
+      ClipBeat(
+        20,
+        'Hotline',
+        'Doc: "Mag-order sa link."',
+        'Doc: "Salamat sa panonood."',
+      ),
     ],
-    upload: 'The video uses footage from a {y1} public health talk by the real doctor.',
+    upload:
+        'The video uses footage from a {y1} public health talk by the real doctor.',
     audio: 'The voice is smooth but cuts out whenever the camera moves.',
     creator: 'A seller page created last week.',
     label: 'No AI disclosure.',
-    full: 'The doctor\'s original video is about hygiene and never mentions any product.',
+    full:
+        'The doctor\'s original video is about hygiene and never mentions any product.',
     rFull: Relevance.decisive,
     rAudio: Relevance.support,
     rUpload: Relevance.support,
-    lesson: 'A trusted face and voice were used to sell a product the doctor never mentioned. This is an AI-edited endorsement without disclosure.',
+    lesson:
+        'A trusted face and voice were used to sell a product the doctor never mentioned. This is an AI-edited endorsement without disclosure.',
     hint: 'What does the doctor\'s own original video talk about?',
   ),
   _Clip(
@@ -329,20 +557,44 @@ const _clips = <_Clip>[
     'Road repair briefing, highlights',
     'City engineer answers when the road repair will finish.',
     [
-      ClipBeat(0, 'Reporter asks about the repair', 'Reporter: "Kailan matatapos ang repair?"', 'Reporter: "Kailan matatapos ang repair?"'),
-      ClipBeat(10, 'Engineer answers', 'Engineer: "Sa katapusan ng buwan."', 'Engineer: "Sa katapusan ng buwan."'),
-      ClipBeat(25, 'Engineer adds details', 'Engineer: "Isang lane lang ang sarado."', 'Engineer: "Isang lane lang ang sarado."'),
-      ClipBeat(45, 'Next question', '(cut)', 'Reporter asks about the budget.', inViral: false),
+      ClipBeat(
+        0,
+        'Reporter asks about the repair',
+        'Reporter: "Kailan matatapos ang repair?"',
+        'Reporter: "Kailan matatapos ang repair?"',
+      ),
+      ClipBeat(
+        10,
+        'Engineer answers',
+        'Engineer: "Sa katapusan ng buwan."',
+        'Engineer: "Sa katapusan ng buwan."',
+      ),
+      ClipBeat(
+        25,
+        'Engineer adds details',
+        'Engineer: "Isang lane lang ang sarado."',
+        'Engineer: "Isang lane lang ang sarado."',
+      ),
+      ClipBeat(
+        45,
+        'Next question',
+        '(cut)',
+        'Reporter asks about the budget.',
+        inViral: false,
+      ),
     ],
-    upload: 'Posted by the city information office, with a link to the full briefing.',
+    upload:
+        'Posted by the city information office, with a link to the full briefing.',
     audio: 'Audio is continuous, with no cuts in the answers.',
     creator: "The city information office's official page.",
     label: 'Caption says: "Highlights only. Full briefing linked below."',
-    full: 'The full briefing says the same thing. The highlights only drop the later questions.',
+    full:
+        'The full briefing says the same thing. The highlights only drop the later questions.',
     rFull: Relevance.decisive,
     rAudio: Relevance.support,
     rLabel: Relevance.support,
-    lesson: 'A highlights clip is fine when it keeps the question and the answer intact and links the full briefing.',
+    lesson:
+        'A highlights clip is fine when it keeps the question and the answer intact and links the full briefing.',
     hint: 'Does the short version change what the engineer meant?',
   ),
   _Clip(
@@ -352,19 +604,37 @@ const _clips = <_Clip>[
     'Throwback: typhoon footage',
     'City rescue unit shares old typhoon footage as a safety reminder.',
     [
-      ClipBeat(0, 'Flooded street from a past storm', 'Narrator: "Ganito ang baha noong {y1}."', 'Narrator: "Ganito ang baha noong {y1}."'),
-      ClipBeat(12, 'Residents wade through water', 'Narrator: "Maghanda tayo ngayong season."', 'Narrator: "Maghanda tayo ngayong season."'),
-      ClipBeat(30, 'Safety tips on screen', 'Text: "Alamin ang evacuation center."', 'Text: "Alamin ang evacuation center."'),
+      ClipBeat(
+        0,
+        'Flooded street from a past storm',
+        'Narrator: "Ganito ang baha noong {y1}."',
+        'Narrator: "Ganito ang baha noong {y1}."',
+      ),
+      ClipBeat(
+        12,
+        'Residents wade through water',
+        'Narrator: "Maghanda tayo ngayong season."',
+        'Narrator: "Maghanda tayo ngayong season."',
+      ),
+      ClipBeat(
+        30,
+        'Safety tips on screen',
+        'Text: "Alamin ang evacuation center."',
+        'Text: "Alamin ang evacuation center."',
+      ),
     ],
-    upload: 'Posted by the city rescue unit with the date in the description: "Throwback: Typhoon {y1}".',
+    upload:
+        'Posted by the city rescue unit with the date in the description: "Throwback: Typhoon {y1}".',
     audio: 'Audio matches the footage, with no cuts.',
     creator: "The city's official rescue page.",
     label: 'An on-screen label says "Throwback {y1}" throughout.',
-    full: 'The full video is the same throwback, with the same label and safety tips.',
+    full:
+        'The full video is the same throwback, with the same label and safety tips.',
     rLabel: Relevance.decisive,
     rFull: Relevance.support,
     rUpload: Relevance.support,
-    lesson: 'Old footage is fine when it is clearly labeled as old. The label separates a throwback from a recycled-footage hoax.',
+    lesson:
+        'Old footage is fine when it is clearly labeled as old. The label separates a throwback from a recycled-footage hoax.',
     hint: 'Does the post say honestly when the footage was filmed?',
   ),
   _Clip(
@@ -374,19 +644,39 @@ const _clips = <_Clip>[
     'Doctor tea clip',
     'Doctor says herbal tea helps with pneumonia!',
     [
-      ClipBeat(0, 'Doctor at a clinic desk', 'Doctor: "Ang herbal tea ay nakakagaan ng pakiramdam."', 'Doctor: "Ang herbal tea ay nakakagaan ng pakiramdam."'),
-      ClipBeat(12, 'Doctor adds a warning', '(cut)', 'Doctor: "Pero hindi ito gamot sa pulmonya. Magpa-check up pa rin."', inViral: false),
-      ClipBeat(25, 'Caption added by the uploader', 'Caption: "Gamot sa pulmonya, sabi ng doktor!"', '(no caption in the original)'),
+      ClipBeat(
+        0,
+        'Doctor at a clinic desk',
+        'Doctor: "Ang herbal tea ay nakakagaan ng pakiramdam."',
+        'Doctor: "Ang herbal tea ay nakakagaan ng pakiramdam."',
+      ),
+      ClipBeat(
+        12,
+        'Doctor adds a warning',
+        '(cut)',
+        'Doctor: "Pero hindi ito gamot sa pulmonya. Magpa-check up pa rin."',
+        inViral: false,
+      ),
+      ClipBeat(
+        25,
+        'Caption added by the uploader',
+        'Caption: "Gamot sa pulmonya, sabi ng doktor!"',
+        '(no caption in the original)',
+      ),
     ],
-    upload: "Re-uploaded by a seller page. The original upload is on the clinic's page and runs longer.",
-    audio: "The audio jumps right after the first sentence, in the middle of the doctor's answer.",
+    upload:
+        "Re-uploaded by a seller page. The original upload is on the clinic's page and runs longer.",
+    audio:
+        "The audio jumps right after the first sentence, in the middle of the doctor's answer.",
     creator: 'A page that sells herbal tea.',
     label: 'Caption claims: "Gamot sa pulmonya, sabi ng doktor!"',
-    full: 'The full video shows the doctor adding that the tea is not a cure and that patients should see a doctor.',
+    full:
+        'The full video shows the doctor adding that the tea is not a cure and that patients should see a doctor.',
     rFull: Relevance.decisive,
     rAudio: Relevance.support,
     rCreator: Relevance.support,
-    lesson: 'Cutting out a warning can flip a message. A claim that "a doctor said it" needs the full video, including what came next.',
+    lesson:
+        'Cutting out a warning can flip a message. A claim that "a doctor said it" needs the full video, including what came next.',
     hint: 'What did the speaker say right after the clip ends?',
   ),
   _Clip(
@@ -396,20 +686,40 @@ const _clips = <_Clip>[
     'Rescue boat clip',
     'Rescue boat brings families out of the flood in {city} today!',
     [
-      ClipBeat(0, 'Rescue boat on a flooded street', 'Caption: "Rescue sa {city} ngayon!"', 'Original caption: "Rescue sa Brgy. Bayanihan, last Tuesday."'),
-      ClipBeat(14, 'Residents board the boat', 'Caption: "Ligtas na ang lahat sa {city}!"', 'Original caption: "Ligtas na ang lahat. Salamat sa rescuers."'),
-      ClipBeat(35, 'A street sign comes into view', '(cut)', 'A street sign reads "Brgy. Bayanihan".', inViral: false),
+      ClipBeat(
+        0,
+        'Rescue boat on a flooded street',
+        'Caption: "Rescue sa {city} ngayon!"',
+        'Original caption: "Rescue sa Brgy. Bayanihan, last Tuesday."',
+      ),
+      ClipBeat(
+        14,
+        'Residents board the boat',
+        'Caption: "Ligtas na ang lahat sa {city}!"',
+        'Original caption: "Ligtas na ang lahat. Salamat sa rescuers."',
+      ),
+      ClipBeat(
+        35,
+        'A street sign comes into view',
+        '(cut)',
+        'A street sign reads "Brgy. Bayanihan".',
+        inViral: false,
+      ),
     ],
-    upload: 'First uploaded last Tuesday by a rescue volunteer in another province, then re-uploaded today with a new caption.',
+    upload:
+        'First uploaded last Tuesday by a rescue volunteer in another province, then re-uploaded today with a new caption.',
     audio: 'The audio matches the footage, with no cuts.',
     creator: 'A page that reposts viral videos without credit.',
-    label: 'The new caption names {city}. The original caption named a different barangay.',
-    full: 'The original video shows a street sign for Brgy. Bayanihan, in a different province.',
+    label:
+        'The new caption names {city}. The original caption named a different barangay.',
+    full:
+        'The original video shows a street sign for Brgy. Bayanihan, in a different province.',
     rFull: Relevance.decisive,
     rUpload: Relevance.support,
     rLabel: Relevance.support,
     rAudio: Relevance.decoy,
-    lesson: 'Real footage can still mislead when it is placed in the wrong location. The original upload and the sign in the full video show where it was filmed.',
+    lesson:
+        'Real footage can still mislead when it is placed in the wrong location. The original upload and the sign in the full video show where it was filmed.',
     hint: 'Where and when was this footage first posted?',
   ),
   _Clip(
@@ -419,20 +729,45 @@ const _clips = <_Clip>[
     'Budget hearing answer',
     'Councilor asks how the library repair budget will be spent.',
     [
-      ClipBeat(0, 'Councilor asks about the cost', 'Councilor: "Magkano ang repair?"', 'Councilor: "Magkano ang repair?"'),
-      ClipBeat(11, 'Engineer gives the estimate', 'Engineer: "?2M ang estimate."', 'Engineer: "?2M ang estimate."'),
-      ClipBeat(24, 'Engineer explains the next step', 'Engineer: "Dadaan ito sa public bidding."', 'Engineer: "Dadaan ito sa public bidding."'),
-      ClipBeat(39, 'Hearing moves on', '(cut)', 'The chair opens the floor for questions.', inViral: false),
+      ClipBeat(
+        0,
+        'Councilor asks about the cost',
+        'Councilor: "Magkano ang repair?"',
+        'Councilor: "Magkano ang repair?"',
+      ),
+      ClipBeat(
+        11,
+        'Engineer gives the estimate',
+        'Engineer: "?2M ang estimate."',
+        'Engineer: "?2M ang estimate."',
+      ),
+      ClipBeat(
+        24,
+        'Engineer explains the next step',
+        'Engineer: "Dadaan ito sa public bidding."',
+        'Engineer: "Dadaan ito sa public bidding."',
+      ),
+      ClipBeat(
+        39,
+        'Hearing moves on',
+        '(cut)',
+        'The chair opens the floor for questions.',
+        inViral: false,
+      ),
     ],
-    upload: 'A student journalist posted this excerpt with a link to the full hearing.',
-    audio: 'The answer is continuous, with no words removed between the estimate and bidding process.',
+    upload:
+        'A student journalist posted this excerpt with a link to the full hearing.',
+    audio:
+        'The answer is continuous, with no words removed between the estimate and bidding process.',
     creator: 'The school publication identifies the recording as an excerpt.',
     label: 'Caption says: "Short excerpt; full hearing linked."',
-    full: 'The full hearing gives the same estimate and confirms that bidding has not happened yet.',
+    full:
+        'The full hearing gives the same estimate and confirms that bidding has not happened yet.',
     rFull: Relevance.decisive,
     rAudio: Relevance.support,
     rLabel: Relevance.support,
-    lesson: 'A short excerpt can be fair when it keeps the answer intact and gives viewers a way to check the full recording.',
+    lesson:
+        'A short excerpt can be fair when it keeps the answer intact and gives viewers a way to check the full recording.',
     hint: 'Does the full hearing change what the speaker said?',
   ),
   _Clip(
@@ -442,19 +777,39 @@ const _clips = <_Clip>[
     'Evacuation order clip',
     'BREAKING: All residents of {city} must evacuate now!',
     [
-      ClipBeat(0, 'Official at a briefing', 'Caption: "Evacuate all of {city} now!"', 'Official: "Prepare your go-bag and follow local advisories."'),
-      ClipBeat(9, 'Map shown on screen', 'Caption: "The whole city is at risk."', 'Map: precautionary zone near the river only.'),
-      ClipBeat(22, 'Briefing ends', 'Caption: "Share before this is deleted."', 'Official: "Only the marked riverside blocks should move if the alert is raised."'),
+      ClipBeat(
+        0,
+        'Official at a briefing',
+        'Caption: "Evacuate all of {city} now!"',
+        'Official: "Prepare your go-bag and follow local advisories."',
+      ),
+      ClipBeat(
+        9,
+        'Map shown on screen',
+        'Caption: "The whole city is at risk."',
+        'Map: precautionary zone near the river only.',
+      ),
+      ClipBeat(
+        22,
+        'Briefing ends',
+        'Caption: "Share before this is deleted."',
+        'Official: "Only the marked riverside blocks should move if the alert is raised."',
+      ),
     ],
-    upload: 'A re-edited clip appeared on an anonymous page without a link to the briefing.',
-    audio: 'The viral audio cuts between sentences and removes the conditional warning.',
+    upload:
+        'A re-edited clip appeared on an anonymous page without a link to the briefing.',
+    audio:
+        'The viral audio cuts between sentences and removes the conditional warning.',
     creator: 'The page is not listed by the city disaster office.',
-    label: 'The caption adds "all residents" and urges viewers to share immediately.',
-    full: 'The full briefing names only marked riverside blocks and says evacuation depends on the alert level.',
+    label:
+        'The caption adds "all residents" and urges viewers to share immediately.',
+    full:
+        'The full briefing names only marked riverside blocks and says evacuation depends on the alert level.',
     rFull: Relevance.decisive,
     rAudio: Relevance.support,
     rUpload: Relevance.support,
-    lesson: 'The edit turns a limited, conditional warning into a citywide order. Check the original briefing before sharing emergency instructions.',
+    lesson:
+        'The edit turns a limited, conditional warning into a citywide order. Check the original briefing before sharing emergency instructions.',
     hint: 'Who is actually covered by the instruction in the full briefing?',
   ),
   _Clip(
@@ -464,19 +819,40 @@ const _clips = <_Clip>[
     'Silent council footage',
     'Councilor admits the bridge inspection was skipped.',
     [
-      ClipBeat(0, 'Councilor walks into the hearing', 'Text overlay: "We skipped the inspection."', 'No spoken quote; the councilor is entering the room.'),
-      ClipBeat(12, 'Councilor points to a document', 'Caption: "They knew it was unsafe."', 'The document is a request to schedule an inspection.'),
-      ClipBeat(24, 'Hearing continues', '(cut)', 'The chair asks when the inspection can be scheduled.', inViral: false),
+      ClipBeat(
+        0,
+        'Councilor walks into the hearing',
+        'Text overlay: "We skipped the inspection."',
+        'No spoken quote; the councilor is entering the room.',
+      ),
+      ClipBeat(
+        12,
+        'Councilor points to a document',
+        'Caption: "They knew it was unsafe."',
+        'The document is a request to schedule an inspection.',
+      ),
+      ClipBeat(
+        24,
+        'Hearing continues',
+        '(cut)',
+        'The chair asks when the inspection can be scheduled.',
+        inViral: false,
+      ),
     ],
-    upload: 'The footage is real, but the earliest upload has no captions or quote.',
-    audio: 'There is no spoken audio under the added quote; the viral text is an uploader overlay.',
+    upload:
+        'The footage is real, but the earliest upload has no captions or quote.',
+    audio:
+        'There is no spoken audio under the added quote; the viral text is an uploader overlay.',
     creator: 'A commentary page that does not link the hearing record.',
     label: 'The caption presents the overlay as the councilor\'s own words.',
-    full: 'The council video shows no admission. The speaker asks for an inspection to be scheduled; the overlay was added later.',
+    full:
+        'The council video shows no admission. The speaker asks for an inspection to be scheduled; the overlay was added later.',
     rFull: Relevance.decisive,
     rAudio: Relevance.support,
-    lesson: 'Real footage does not authenticate text added on top of it. Check whether the quoted words were actually spoken.',
-    hint: 'Can you hear the words attributed to the speaker, or only read them?',
+    lesson:
+        'Real footage does not authenticate text added on top of it. Check whether the quoted words were actually spoken.',
+    hint:
+        'Can you hear the words attributed to the speaker, or only read them?',
   ),
   _Clip(
     'labeled_rainfall_timelapse',
@@ -485,35 +861,78 @@ const _clips = <_Clip>[
     'Drainage time-lapse',
     'A full afternoon of rain and drainage work, shown in 20 seconds.',
     [
-      ClipBeat(0, 'Rain starts over a canal', 'On-screen: "Time-lapse, 1:00-5:00 PM"', 'On-screen: "Time-lapse, 1:00-5:00 PM"'),
-      ClipBeat(10, 'Workers clear leaves', 'Caption: "Drainage crew at work"', 'Caption: "Drainage crew at work"'),
-      ClipBeat(20, 'Water level falls', 'Caption: "Water receding by 5PM"', 'Caption: "Water receding by 5PM"'),
+      ClipBeat(
+        0,
+        'Rain starts over a canal',
+        'On-screen: "Time-lapse, 1:00-5:00 PM"',
+        'On-screen: "Time-lapse, 1:00-5:00 PM"',
+      ),
+      ClipBeat(
+        10,
+        'Workers clear leaves',
+        'Caption: "Drainage crew at work"',
+        'Caption: "Drainage crew at work"',
+      ),
+      ClipBeat(
+        20,
+        'Water level falls',
+        'Caption: "Water receding by 5PM"',
+        'Caption: "Water receding by 5PM"',
+      ),
     ],
-    upload: 'Posted by the city engineering office with the original camera time range.',
-    audio: 'The audio is sped up with the video; no speech is presented as real-time.',
+    upload:
+        'Posted by the city engineering office with the original camera time range.',
+    audio:
+        'The audio is sped up with the video; no speech is presented as real-time.',
     creator: 'The city engineering office, which links the maintenance log.',
-    label: 'The time-lapse label remains visible and states the full four-hour span.',
-    full: 'The original recording covers 1:00-5:00 PM and shows the same work in the same order.',
+    label:
+        'The time-lapse label remains visible and states the full four-hour span.',
+    full:
+        'The original recording covers 1:00-5:00 PM and shows the same work in the same order.',
     rLabel: Relevance.decisive,
     rUpload: Relevance.support,
-    lesson: 'A time-lapse changes speed, not the event, when it is clearly labeled and the time span is verifiable.',
-    hint: 'Does the label disclose the compression, and does the original match?',
+    lesson:
+        'A time-lapse changes speed, not the event, when it is clearly labeled and the time span is verifiable.',
+    hint:
+        'Does the label disclose the compression, and does the original match?',
   ),
 ];
 
 // Paired variants share a family ID and public-facing claim, but the source
 // evidence changes the verdict. They are the exclusive Hard-mode pool.
 const _reasoningClips = <_Clip>[
-  _Clip("scope_announcement", false, "Government", "Campus announcement", "Classes are suspended tomorrow for all students at the campus.", [
-    ClipBeat(0, "Briefing begins", "“Good afternoon, everyone.”", "“Good afternoon, everyone.”"),
-    ClipBeat(12, "Announcement", "“Classes are suspended tomorrow.”", "“Classes are suspended tomorrow.”"),
-    ClipBeat(26, "Closing", "“Please inform your classmates.”", "“Please inform your classmates.”"),
-  ],
+  _Clip(
+    "scope_announcement",
+    false,
+    "Government",
+    "Campus announcement",
+    "Classes are suspended tomorrow for all students at the campus.",
+    [
+      ClipBeat(
+        0,
+        "Briefing begins",
+        "“Good afternoon, everyone.”",
+        "“Good afternoon, everyone.”",
+      ),
+      ClipBeat(
+        12,
+        "Announcement",
+        "“Classes are suspended tomorrow.”",
+        "“Classes are suspended tomorrow.”",
+      ),
+      ClipBeat(
+        26,
+        "Closing",
+        "“Please inform your classmates.”",
+        "“Please inform your classmates.”",
+      ),
+    ],
     upload: "Recorded today at a campus briefing.",
     audio: "Continuous speech; no added voice.",
     creator: "A student news account.",
     label: "Caption says all students at this campus.",
-    full: "The event program identifies the audience as all academic departments, including senior high and college.",
+    full:
+        "The event program identifies the audience as all academic departments, including senior high and college.",
     lesson: "The caption correctly reflects the scope of the announcement.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
@@ -522,17 +941,40 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.decisive,
   ),
-  _Clip("scope_announcement", true, "Government", "Campus announcement", "Classes are suspended tomorrow for all students at the campus.", [
-    ClipBeat(0, "Briefing begins", "“Good afternoon, everyone.”", "“Good afternoon, everyone.”"),
-    ClipBeat(12, "Announcement", "“Classes are suspended tomorrow.”", "“Classes are suspended tomorrow.”"),
-    ClipBeat(26, "Closing", "“Please inform your classmates.”", "“Please inform your classmates.”"),
-  ],
+  _Clip(
+    "scope_announcement",
+    true,
+    "Government",
+    "Campus announcement",
+    "Classes are suspended tomorrow for all students at the campus.",
+    [
+      ClipBeat(
+        0,
+        "Briefing begins",
+        "“Good afternoon, everyone.”",
+        "“Good afternoon, everyone.”",
+      ),
+      ClipBeat(
+        12,
+        "Announcement",
+        "“Classes are suspended tomorrow.”",
+        "“Classes are suspended tomorrow.”",
+      ),
+      ClipBeat(
+        26,
+        "Closing",
+        "“Please inform your classmates.”",
+        "“Please inform your classmates.”",
+      ),
+    ],
     upload: "Recorded today at a campus briefing.",
     audio: "Continuous speech; no added voice.",
     creator: "A student news account.",
     label: "Caption says all students at this campus.",
-    full: "The event program identifies the audience as senior high school only; college classes remain scheduled.",
-    lesson: "The footage is genuine, but the caption incorrectly expands the suspension to all students.",
+    full:
+        "The event program identifies the audience as senior high school only; college classes remain scheduled.",
+    lesson:
+        "The footage is genuine, but the caption incorrectly expands the suspension to all students.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
     rAudio: Relevance.decoy,
@@ -540,12 +982,29 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.decisive,
   ),
-  _Clip("date_rescue", false, "Weather", "Flood rescue", "Rescue operations in {city} this morning.", [
-    ClipBeat(0, "Boat approaches", "“Rescue team on site.”", "“Rescue team on site.”"),
-    ClipBeat(12, "Residents board", "“Slowly, one at a time.”", "“Slowly, one at a time.”"),
-    ClipBeat(26, "Boat departs", "“Everyone aboard.”", "“Everyone aboard.”"),
-  ],
-    upload: "Earliest copy: today, 8:10 AM; rescue log records the same scene in {city}.",
+  _Clip(
+    "date_rescue",
+    false,
+    "Weather",
+    "Flood rescue",
+    "Rescue operations in {city} this morning.",
+    [
+      ClipBeat(
+        0,
+        "Boat approaches",
+        "“Rescue team on site.”",
+        "“Rescue team on site.”",
+      ),
+      ClipBeat(
+        12,
+        "Residents board",
+        "“Slowly, one at a time.”",
+        "“Slowly, one at a time.”",
+      ),
+      ClipBeat(26, "Boat departs", "“Everyone aboard.”", "“Everyone aboard.”"),
+    ],
+    upload:
+        "Earliest copy: today, 8:10 AM; rescue log records the same scene in {city}.",
     audio: "Water and voices match the recording.",
     creator: "A community page reposting a volunteer video.",
     label: "The caption says this morning.",
@@ -558,17 +1017,35 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.support,
   ),
-  _Clip("date_rescue", true, "Weather", "Flood rescue", "Rescue operations in {city} this morning.", [
-    ClipBeat(0, "Boat approaches", "“Rescue team on site.”", "“Rescue team on site.”"),
-    ClipBeat(12, "Residents board", "“Slowly, one at a time.”", "“Slowly, one at a time.”"),
-    ClipBeat(26, "Boat departs", "“Everyone aboard.”", "“Everyone aboard.”"),
-  ],
-    upload: "Earliest copy: {y1}; the rescue log identifies the same scene in {city} during that year.",
+  _Clip(
+    "date_rescue",
+    true,
+    "Weather",
+    "Flood rescue",
+    "Rescue operations in {city} this morning.",
+    [
+      ClipBeat(
+        0,
+        "Boat approaches",
+        "“Rescue team on site.”",
+        "“Rescue team on site.”",
+      ),
+      ClipBeat(
+        12,
+        "Residents board",
+        "“Slowly, one at a time.”",
+        "“Slowly, one at a time.”",
+      ),
+      ClipBeat(26, "Boat departs", "“Everyone aboard.”", "“Everyone aboard.”"),
+    ],
+    upload:
+        "Earliest copy: {y1}; the rescue log identifies the same scene in {city} during that year.",
     audio: "Water and voices match the recording.",
     creator: "A community page reposting a volunteer video.",
     label: "The caption says this morning.",
     full: "The uncut recording shows the same rescue boat and street.",
-    lesson: "Old, genuine footage is misleading when described as a current event.",
+    lesson:
+        "Old, genuine footage is misleading when described as a current event.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decisive,
     rAudio: Relevance.decoy,
@@ -576,17 +1053,40 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.support,
   ),
-  _Clip("translation_pair", false, "Government", "Council interview", "Council member supports the new bus route, according to these subtitles.", [
-    ClipBeat(0, "Question", "Subtitle: “About the bus route?”", "Interviewer: “Tungkol po sa ruta?”"),
-    ClipBeat(12, "Response", "Subtitle: “We support the proposal.”", "Speaker: “Pabor kami sa panukala.”"),
-    ClipBeat(26, "Closing", "Subtitle: “We want a review.”", "Speaker: “Gusto namin ng pagsusuri.”"),
-  ],
+  _Clip(
+    "translation_pair",
+    false,
+    "Government",
+    "Council interview",
+    "Council member supports the new bus route, according to these subtitles.",
+    [
+      ClipBeat(
+        0,
+        "Question",
+        "Subtitle: “About the bus route?”",
+        "Interviewer: “Tungkol po sa ruta?”",
+      ),
+      ClipBeat(
+        12,
+        "Response",
+        "Subtitle: “We support the proposal.”",
+        "Speaker: “Pabor kami sa panukala.”",
+      ),
+      ClipBeat(
+        26,
+        "Closing",
+        "Subtitle: “We want a review.”",
+        "Speaker: “Gusto namin ng pagsusuri.”",
+      ),
+    ],
     upload: "Subtitled excerpt from a public meeting.",
     audio: "The speaker says “Pabor kami sa panukala.”",
     creator: "A local translation account.",
     label: "English subtitles added by the uploader.",
-    full: "The full recording discusses support for the proposal and a review of its implementation.",
-    lesson: "The translated subtitles preserve the meaning of the speaker’s words.",
+    full:
+        "The full recording discusses support for the proposal and a review of its implementation.",
+    lesson:
+        "The translated subtitles preserve the meaning of the speaker’s words.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
     rAudio: Relevance.decisive,
@@ -594,17 +1094,40 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.support,
   ),
-  _Clip("translation_pair", true, "Government", "Council interview", "Council member supports the new bus route, according to these subtitles.", [
-    ClipBeat(0, "Question", "Subtitle: “About the bus route?”", "Interviewer: “Tungkol po sa ruta?”"),
-    ClipBeat(12, "Response", "Subtitle: “We support the proposal.”", "Speaker: “Hindi pa kami pabor sa panukala.”"),
-    ClipBeat(26, "Closing", "Subtitle: “We want a review.”", "Speaker: “Gusto namin ng pagsusuri.”"),
-  ],
+  _Clip(
+    "translation_pair",
+    true,
+    "Government",
+    "Council interview",
+    "Council member supports the new bus route, according to these subtitles.",
+    [
+      ClipBeat(
+        0,
+        "Question",
+        "Subtitle: “About the bus route?”",
+        "Interviewer: “Tungkol po sa ruta?”",
+      ),
+      ClipBeat(
+        12,
+        "Response",
+        "Subtitle: “We support the proposal.”",
+        "Speaker: “Hindi pa kami pabor sa panukala.”",
+      ),
+      ClipBeat(
+        26,
+        "Closing",
+        "Subtitle: “We want a review.”",
+        "Speaker: “Gusto namin ng pagsusuri.”",
+      ),
+    ],
     upload: "Subtitled excerpt from a public meeting.",
     audio: "The speaker says “Hindi pa kami pabor sa panukala.”",
     creator: "A local translation account.",
     label: "English subtitles added by the uploader.",
-    full: "The full recording discusses withholding support until a review is completed.",
-    lesson: "The translation omits a negative qualification and reverses the speaker’s position.",
+    full:
+        "The full recording discusses withholding support until a review is completed.",
+    lesson:
+        "The translation omits a negative qualification and reverses the speaker’s position.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
     rAudio: Relevance.decisive,
@@ -612,16 +1135,38 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.support,
   ),
-  _Clip("funding_status", false, "Government", "Budget hearing", "The library repair has already been approved.", [
-    ClipBeat(0, "Document shown", "“The library repair is next.”", "“The library repair is next.”"),
-    ClipBeat(12, "Speaker points to figures", "“Two million pesos is allocated.”", "“Two million pesos is allocated.”"),
-    ClipBeat(26, "Meeting continues", "“We can proceed.”", "“We can proceed.”"),
-  ],
+  _Clip(
+    "funding_status",
+    false,
+    "Government",
+    "Budget hearing",
+    "The library repair has already been approved.",
+    [
+      ClipBeat(
+        0,
+        "Document shown",
+        "“The library repair is next.”",
+        "“The library repair is next.”",
+      ),
+      ClipBeat(
+        12,
+        "Speaker points to figures",
+        "“Two million pesos is allocated.”",
+        "“Two million pesos is allocated.”",
+      ),
+      ClipBeat(
+        26,
+        "Meeting continues",
+        "“We can proceed.”",
+        "“We can proceed.”",
+      ),
+    ],
     upload: "Reposted from the same-day public hearing.",
     audio: "Audio matches the source.",
     creator: "A local news digest.",
     label: "The caption claims final approval.",
-    full: "The recorded agenda and signed resolution show the final appropriation passed before this statement.",
+    full:
+        "The recorded agenda and signed resolution show the final appropriation passed before this statement.",
     lesson: "The approval claim is supported by the resolution and its timing.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
@@ -630,16 +1175,38 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.decisive,
   ),
-  _Clip("funding_status", true, "Government", "Budget hearing", "The library repair has already been approved.", [
-    ClipBeat(0, "Document shown", "“The library repair is next.”", "“The library repair is next.”"),
-    ClipBeat(12, "Speaker points to figures", "“Two million pesos is allocated.”", "“Two million pesos is allocated.”"),
-    ClipBeat(26, "Meeting continues", "“We can proceed.”", "“We can proceed.”"),
-  ],
+  _Clip(
+    "funding_status",
+    true,
+    "Government",
+    "Budget hearing",
+    "The library repair has already been approved.",
+    [
+      ClipBeat(
+        0,
+        "Document shown",
+        "“The library repair is next.”",
+        "“The library repair is next.”",
+      ),
+      ClipBeat(
+        12,
+        "Speaker points to figures",
+        "“Two million pesos is allocated.”",
+        "“Two million pesos is allocated.”",
+      ),
+      ClipBeat(
+        26,
+        "Meeting continues",
+        "“We can proceed.”",
+        "“We can proceed.”",
+      ),
+    ],
     upload: "Reposted from the same-day public hearing.",
     audio: "Audio matches the source.",
     creator: "A local news digest.",
     label: "The caption claims final approval.",
-    full: "The recorded agenda shows a draft allocation; the final vote is scheduled for next month.",
+    full:
+        "The recorded agenda shows a draft allocation; the final vote is scheduled for next month.",
     lesson: "A proposed allocation is not the same as final approval.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
@@ -648,17 +1215,40 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.decisive,
   ),
-  _Clip("sports_sequence", false, "Basketball memorial", "Game highlight", "Northridge wins the final with this last-second shot.", [
-    ClipBeat(0, "Inbound", "“Three seconds left.”", "Commentator: “Three seconds left.”"),
-    ClipBeat(12, "Shot", "“It goes in!”", "Commentator: “It goes in!”"),
-    ClipBeat(26, "Celebration", "“What a finish!”", "Commentator: “What a finish!”"),
-    ClipBeat(42, "Officials meet", "(cut)", "Officials review the play.", inViral: false),
-  ],
+  _Clip(
+    "sports_sequence",
+    false,
+    "Basketball memorial",
+    "Game highlight",
+    "Northridge wins the final with this last-second shot.",
+    [
+      ClipBeat(
+        0,
+        "Inbound",
+        "“Three seconds left.”",
+        "Commentator: “Three seconds left.”",
+      ),
+      ClipBeat(12, "Shot", "“It goes in!”", "Commentator: “It goes in!”"),
+      ClipBeat(
+        26,
+        "Celebration",
+        "“What a finish!”",
+        "Commentator: “What a finish!”",
+      ),
+      ClipBeat(
+        42,
+        "Officials meet",
+        "(cut)",
+        "Officials review the play.",
+        inViral: false,
+      ),
+    ],
     upload: "The highlight was posted after the final.",
     audio: "Crowd noise has been shortened.",
     creator: "An unofficial fan page.",
     label: "A short highlight with no added score graphic.",
-    full: "The official score sheet records Northridge 80–78; the final review confirmed the basket.",
+    full:
+        "The official score sheet records Northridge 80–78; the final review confirmed the basket.",
     lesson: "The edited highlight accurately represents the final result.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
@@ -667,17 +1257,40 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.decisive,
   ),
-  _Clip("sports_sequence", true, "Basketball memorial", "Game highlight", "Northridge wins the final with this last-second shot.", [
-    ClipBeat(0, "Inbound", "“Three seconds left.”", "Commentator: “Three seconds left.”"),
-    ClipBeat(12, "Shot", "“It goes in!”", "Commentator: “It goes in!”"),
-    ClipBeat(26, "Celebration", "“What a finish!”", "Commentator: “What a finish!”"),
-    ClipBeat(42, "Officials meet", "(cut)", "Officials review the play.", inViral: false),
-  ],
+  _Clip(
+    "sports_sequence",
+    true,
+    "Basketball memorial",
+    "Game highlight",
+    "Northridge wins the final with this last-second shot.",
+    [
+      ClipBeat(
+        0,
+        "Inbound",
+        "“Three seconds left.”",
+        "Commentator: “Three seconds left.”",
+      ),
+      ClipBeat(12, "Shot", "“It goes in!”", "Commentator: “It goes in!”"),
+      ClipBeat(
+        26,
+        "Celebration",
+        "“What a finish!”",
+        "Commentator: “What a finish!”",
+      ),
+      ClipBeat(
+        42,
+        "Officials meet",
+        "(cut)",
+        "Officials review the play.",
+        inViral: false,
+      ),
+    ],
     upload: "The highlight was posted after the final.",
     audio: "Crowd noise has been shortened.",
     creator: "An unofficial fan page.",
     label: "A short highlight with no added score graphic.",
-    full: "The official score sheet records Northridge 78–80; the final review ruled the basket late.",
+    full:
+        "The official score sheet records Northridge 78–80; the final review ruled the basket late.",
     lesson: "The highlight omits the review that changed the outcome.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
@@ -686,11 +1299,27 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.decisive,
   ),
-  _Clip("rain_duration", false, "Weather", "Drainage recording", "Water receded within 20 minutes after the crew arrived.", [
-    ClipBeat(0, "Crew arrives", "“Drainage crew at work.”", "“Drainage crew at work.”"),
-    ClipBeat(12, "Canal clears", "“Water is moving.”", "“Water is moving.”"),
-    ClipBeat(26, "Water level falls", "“The road is clearing.”", "“The road is clearing.”"),
-  ],
+  _Clip(
+    "rain_duration",
+    false,
+    "Weather",
+    "Drainage recording",
+    "Water receded within 20 minutes after the crew arrived.",
+    [
+      ClipBeat(
+        0,
+        "Crew arrives",
+        "“Drainage crew at work.”",
+        "“Drainage crew at work.”",
+      ),
+      ClipBeat(12, "Canal clears", "“Water is moving.”", "“Water is moving.”"),
+      ClipBeat(
+        26,
+        "Water level falls",
+        "“The road is clearing.”",
+        "“The road is clearing.”",
+      ),
+    ],
     upload: "Camera archive: first frame 2:00 PM; last frame 2:20 PM.",
     audio: "Audio is sped up; no speech is quoted.",
     creator: "A neighborhood updates page.",
@@ -704,17 +1333,34 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.support,
   ),
-  _Clip("rain_duration", true, "Weather", "Drainage recording", "Water receded within 20 minutes after the crew arrived.", [
-    ClipBeat(0, "Crew arrives", "“Drainage crew at work.”", "“Drainage crew at work.”"),
-    ClipBeat(12, "Canal clears", "“Water is moving.”", "“Water is moving.”"),
-    ClipBeat(26, "Water level falls", "“The road is clearing.”", "“The road is clearing.”"),
-  ],
+  _Clip(
+    "rain_duration",
+    true,
+    "Weather",
+    "Drainage recording",
+    "Water receded within 20 minutes after the crew arrived.",
+    [
+      ClipBeat(
+        0,
+        "Crew arrives",
+        "“Drainage crew at work.”",
+        "“Drainage crew at work.”",
+      ),
+      ClipBeat(12, "Canal clears", "“Water is moving.”", "“Water is moving.”"),
+      ClipBeat(
+        26,
+        "Water level falls",
+        "“The road is clearing.”",
+        "“The road is clearing.”",
+      ),
+    ],
     upload: "Camera archive: first frame 2:00 PM; last frame 5:20 PM.",
     audio: "Audio is sped up; no speech is quoted.",
     creator: "A neighborhood updates page.",
     label: "The post is described as a time-lapse.",
     full: "The source recording shows the crew arriving, then water receding.",
-    lesson: "The time-lapse is disclosed, but the stated real-world duration is false.",
+    lesson:
+        "The time-lapse is disclosed, but the stated real-world duration is false.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decisive,
     rAudio: Relevance.decoy,
@@ -722,13 +1368,25 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.support,
   ),
-  _Clip("concert_audio", false, "Music", "Concert moment", "{group} performs the chorus live at the concert.", [
-    ClipBeat(0, "Stage lights", "Crowd cheers.", "Crowd cheers."),
-    ClipBeat(12, "Chorus", "The chorus is audible.", "The chorus is audible."),
-    ClipBeat(26, "Crowd shot", "Fans sing along.", "Fans sing along."),
-  ],
+  _Clip(
+    "concert_audio",
+    false,
+    "Music",
+    "Concert moment",
+    "{group} performs the chorus live at the concert.",
+    [
+      ClipBeat(0, "Stage lights", "Crowd cheers.", "Crowd cheers."),
+      ClipBeat(
+        12,
+        "Chorus",
+        "The chorus is audible.",
+        "The chorus is audible.",
+      ),
+      ClipBeat(26, "Crowd shot", "Fans sing along.", "Fans sing along."),
+    ],
     upload: "A fan posted the clip after the concert.",
-    audio: "The chorus matches the source microphone track, including the singer’s ad-lib.",
+    audio:
+        "The chorus matches the source microphone track, including the singer’s ad-lib.",
     creator: "An unofficial fan account.",
     label: "Caption claims a live performance.",
     full: "The original concert recording shows the same stage and crowd.",
@@ -740,17 +1398,30 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.support,
   ),
-  _Clip("concert_audio", true, "Music", "Concert moment", "{group} performs the chorus live at the concert.", [
-    ClipBeat(0, "Stage lights", "Crowd cheers.", "Crowd cheers."),
-    ClipBeat(12, "Chorus", "The chorus is audible.", "The chorus is audible."),
-    ClipBeat(26, "Crowd shot", "Fans sing along.", "Fans sing along."),
-  ],
+  _Clip(
+    "concert_audio",
+    true,
+    "Music",
+    "Concert moment",
+    "{group} performs the chorus live at the concert.",
+    [
+      ClipBeat(0, "Stage lights", "Crowd cheers.", "Crowd cheers."),
+      ClipBeat(
+        12,
+        "Chorus",
+        "The chorus is audible.",
+        "The chorus is audible.",
+      ),
+      ClipBeat(26, "Crowd shot", "Fans sing along.", "Fans sing along."),
+    ],
     upload: "A fan posted the clip after the concert.",
-    audio: "The chorus matches the studio recording exactly; the source microphone track contains only an instrumental break.",
+    audio:
+        "The chorus matches the studio recording exactly; the source microphone track contains only an instrumental break.",
     creator: "An unofficial fan account.",
     label: "Caption claims a live performance.",
     full: "The original concert recording shows the same stage and crowd.",
-    lesson: "The uploader replaced the concert sound with a studio recording, misrepresenting what was performed.",
+    lesson:
+        "The uploader replaced the concert sound with a studio recording, misrepresenting what was performed.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
     rAudio: Relevance.decisive,
@@ -758,15 +1429,27 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.support,
   ),
-  _Clip("satire_repost", false, "Government", "Robot barangay announcement", "A robot barangay captain announces free pandesal.", [
-    ClipBeat(0, "Podium", "“Mga kababayan!”", "“Mga kababayan!”"),
-    ClipBeat(12, "Announcement", "“Libreng pandesal para sa lahat!”", "“Libreng pandesal para sa lahat!”"),
-    ClipBeat(26, "Crowd", "Applause.", "Applause."),
-  ],
+  _Clip(
+    "satire_repost",
+    false,
+    "Government",
+    "Robot barangay announcement",
+    "A robot barangay captain announces free pandesal.",
+    [
+      ClipBeat(0, "Podium", "“Mga kababayan!”", "“Mga kababayan!”"),
+      ClipBeat(
+        12,
+        "Announcement",
+        "“Libreng pandesal para sa lahat!”",
+        "“Libreng pandesal para sa lahat!”",
+      ),
+      ClipBeat(26, "Crowd", "Applause.", "Applause."),
+    ],
     upload: "The earliest upload is a fictional skit.",
     audio: "The voice was generated for the skit.",
     creator: "A community entertainment page.",
-    label: "The post is filed under Comedy and displays “fictional AI skit” next to the caption.",
+    label:
+        "The post is filed under Comedy and displays “fictional AI skit” next to the caption.",
     full: "The original recording is a fictional comedy production.",
     lesson: "The current post clearly presents synthetic content as fiction.",
     hint: "Compare the claim in the post with the source evidence.",
@@ -776,17 +1459,30 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.decisive,
     rFull: Relevance.support,
   ),
-  _Clip("satire_repost", true, "Government", "Robot barangay announcement", "A robot barangay captain announces free pandesal.", [
-    ClipBeat(0, "Podium", "“Mga kababayan!”", "“Mga kababayan!”"),
-    ClipBeat(12, "Announcement", "“Libreng pandesal para sa lahat!”", "“Libreng pandesal para sa lahat!”"),
-    ClipBeat(26, "Crowd", "Applause.", "Applause."),
-  ],
+  _Clip(
+    "satire_repost",
+    true,
+    "Government",
+    "Robot barangay announcement",
+    "A robot barangay captain announces free pandesal.",
+    [
+      ClipBeat(0, "Podium", "“Mga kababayan!”", "“Mga kababayan!”"),
+      ClipBeat(
+        12,
+        "Announcement",
+        "“Libreng pandesal para sa lahat!”",
+        "“Libreng pandesal para sa lahat!”",
+      ),
+      ClipBeat(26, "Crowd", "Applause.", "Applause."),
+    ],
     upload: "The earliest upload is a fictional skit.",
     audio: "The voice was generated for the skit.",
     creator: "A community entertainment page.",
-    label: "The post is filed under Official announcements and instructs residents to claim the free bread.",
+    label:
+        "The post is filed under Official announcements and instructs residents to claim the free bread.",
     full: "The original recording is a fictional comedy production.",
-    lesson: "The current post presents a fictional announcement as a real public service.",
+    lesson:
+        "The current post presents a fictional announcement as a real public service.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
     rAudio: Relevance.decoy,
@@ -794,16 +1490,29 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.decisive,
     rFull: Relevance.support,
   ),
-  _Clip("attribution_quote", false, "Government", "Public statement", "The city engineer confirms the bridge is ready to open.", [
-    ClipBeat(0, "Speaker enters", "“Good afternoon.”", "“Good afternoon.”"),
-    ClipBeat(12, "Statement", "“The bridge is ready to open.”", "“The bridge is ready to open.”"),
-    ClipBeat(26, "Closing", "“Thank you.”", "“Thank you.”"),
-  ],
+  _Clip(
+    "attribution_quote",
+    false,
+    "Government",
+    "Public statement",
+    "The city engineer confirms the bridge is ready to open.",
+    [
+      ClipBeat(0, "Speaker enters", "“Good afternoon.”", "“Good afternoon.”"),
+      ClipBeat(
+        12,
+        "Statement",
+        "“The bridge is ready to open.”",
+        "“The bridge is ready to open.”",
+      ),
+      ClipBeat(26, "Closing", "“Thank you.”", "“Thank you.”"),
+    ],
     upload: "Uploaded from a public infrastructure event.",
     audio: "No replacement audio.",
-    creator: "The event speaker register identifies this speaker as the city engineer.",
+    creator:
+        "The event speaker register identifies this speaker as the city engineer.",
     label: "Caption attributes the statement to the city engineer.",
-    full: "The full video shows the speaker at the podium, with no name displayed.",
+    full:
+        "The full video shows the speaker at the podium, with no name displayed.",
     lesson: "The speaker identity is confirmed by the event register.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
@@ -812,16 +1521,29 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.support,
   ),
-  _Clip("attribution_quote", true, "Government", "Public statement", "The city engineer confirms the bridge is ready to open.", [
-    ClipBeat(0, "Speaker enters", "“Good afternoon.”", "“Good afternoon.”"),
-    ClipBeat(12, "Statement", "“The bridge is ready to open.”", "“The bridge is ready to open.”"),
-    ClipBeat(26, "Closing", "“Thank you.”", "“Thank you.”"),
-  ],
+  _Clip(
+    "attribution_quote",
+    true,
+    "Government",
+    "Public statement",
+    "The city engineer confirms the bridge is ready to open.",
+    [
+      ClipBeat(0, "Speaker enters", "“Good afternoon.”", "“Good afternoon.”"),
+      ClipBeat(
+        12,
+        "Statement",
+        "“The bridge is ready to open.”",
+        "“The bridge is ready to open.”",
+      ),
+      ClipBeat(26, "Closing", "“Thank you.”", "“Thank you.”"),
+    ],
     upload: "Uploaded from a public infrastructure event.",
     audio: "No replacement audio.",
-    creator: "The event speaker register identifies this speaker as an actor rehearsing for a safety training video.",
+    creator:
+        "The event speaker register identifies this speaker as an actor rehearsing for a safety training video.",
     label: "Caption attributes the statement to the city engineer.",
-    full: "The full video shows the speaker at the podium, with no name displayed.",
+    full:
+        "The full video shows the speaker at the podium, with no name displayed.",
     lesson: "The genuine statement is falsely attributed to an official.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
@@ -830,16 +1552,34 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.support,
   ),
-  _Clip("survey_scope", false, "Government", "Survey results", "Eight in ten residents support the new park plan.", [
-    ClipBeat(0, "Chart appears", "“80% in favor.”", "Chart: 80% in favor."),
-    ClipBeat(12, "Presenter", "“A strong majority.”", "Presenter: “A strong majority.”"),
-    ClipBeat(26, "Next slide", "(cut)", "Presenter opens the methods slide.", inViral: false),
-  ],
+  _Clip(
+    "survey_scope",
+    false,
+    "Government",
+    "Survey results",
+    "Eight in ten residents support the new park plan.",
+    [
+      ClipBeat(0, "Chart appears", "“80% in favor.”", "Chart: 80% in favor."),
+      ClipBeat(
+        12,
+        "Presenter",
+        "“A strong majority.”",
+        "Presenter: “A strong majority.”",
+      ),
+      ClipBeat(
+        26,
+        "Next slide",
+        "(cut)",
+        "Presenter opens the methods slide.",
+        inViral: false,
+      ),
+    ],
     upload: "Excerpt from a local public consultation.",
     audio: "The narration is shortened between slides.",
     creator: "A community planning page.",
     label: "Caption refers to residents of the city.",
-    full: "Methods: randomly sampled residents across the city; responses weighted by district.",
+    full:
+        "Methods: randomly sampled residents across the city; responses weighted by district.",
     lesson: "The sample supports the stated citywide estimate.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
@@ -848,16 +1588,34 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.decisive,
   ),
-  _Clip("survey_scope", true, "Government", "Survey results", "Eight in ten residents support the new park plan.", [
-    ClipBeat(0, "Chart appears", "“80% in favor.”", "Chart: 80% in favor."),
-    ClipBeat(12, "Presenter", "“A strong majority.”", "Presenter: “A strong majority.”"),
-    ClipBeat(26, "Next slide", "(cut)", "Presenter opens the methods slide.", inViral: false),
-  ],
+  _Clip(
+    "survey_scope",
+    true,
+    "Government",
+    "Survey results",
+    "Eight in ten residents support the new park plan.",
+    [
+      ClipBeat(0, "Chart appears", "“80% in favor.”", "Chart: 80% in favor."),
+      ClipBeat(
+        12,
+        "Presenter",
+        "“A strong majority.”",
+        "Presenter: “A strong majority.”",
+      ),
+      ClipBeat(
+        26,
+        "Next slide",
+        "(cut)",
+        "Presenter opens the methods slide.",
+        inViral: false,
+      ),
+    ],
     upload: "Excerpt from a local public consultation.",
     audio: "The narration is shortened between slides.",
     creator: "A community planning page.",
     label: "Caption refers to residents of the city.",
-    full: "Methods: ten volunteers from the park campaign; other residents were not surveyed.",
+    full:
+        "Methods: ten volunteers from the park campaign; other residents were not surveyed.",
     lesson: "A small group of supporters cannot establish the citywide claim.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
@@ -866,12 +1624,29 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.decisive,
   ),
-  _Clip("road_location", false, "Weather", "Road obstruction", "The main highway in {city} is blocked this afternoon.", [
-    ClipBeat(0, "Vehicles stop", "“Traffic has stopped.”", "“Traffic has stopped.”"),
-    ClipBeat(12, "Wide shot", "“Crews are arriving.”", "“Crews are arriving.”"),
-    ClipBeat(26, "Cones placed", "“Please wait.”", "“Please wait.”"),
-  ],
-    upload: "The earliest upload was this afternoon; its location record is the main highway in {city}.",
+  _Clip(
+    "road_location",
+    false,
+    "Weather",
+    "Road obstruction",
+    "The main highway in {city} is blocked this afternoon.",
+    [
+      ClipBeat(
+        0,
+        "Vehicles stop",
+        "“Traffic has stopped.”",
+        "“Traffic has stopped.”",
+      ),
+      ClipBeat(
+        12,
+        "Wide shot",
+        "“Crews are arriving.”",
+        "“Crews are arriving.”",
+      ),
+      ClipBeat(26, "Cones placed", "“Please wait.”", "“Please wait.”"),
+    ],
+    upload:
+        "The earliest upload was this afternoon; its location record is the main highway in {city}.",
     audio: "Audio matches the scene.",
     creator: "A local commuter account.",
     label: "Caption names the main highway in {city}.",
@@ -884,17 +1659,35 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.support,
   ),
-  _Clip("road_location", true, "Weather", "Road obstruction", "The main highway in {city} is blocked this afternoon.", [
-    ClipBeat(0, "Vehicles stop", "“Traffic has stopped.”", "“Traffic has stopped.”"),
-    ClipBeat(12, "Wide shot", "“Crews are arriving.”", "“Crews are arriving.”"),
-    ClipBeat(26, "Cones placed", "“Please wait.”", "“Please wait.”"),
-  ],
-    upload: "The earliest upload was this afternoon; its location record is a closed training road outside {city}.",
+  _Clip(
+    "road_location",
+    true,
+    "Weather",
+    "Road obstruction",
+    "The main highway in {city} is blocked this afternoon.",
+    [
+      ClipBeat(
+        0,
+        "Vehicles stop",
+        "“Traffic has stopped.”",
+        "“Traffic has stopped.”",
+      ),
+      ClipBeat(
+        12,
+        "Wide shot",
+        "“Crews are arriving.”",
+        "“Crews are arriving.”",
+      ),
+      ClipBeat(26, "Cones placed", "“Please wait.”", "“Please wait.”"),
+    ],
+    upload:
+        "The earliest upload was this afternoon; its location record is a closed training road outside {city}.",
     audio: "Audio matches the scene.",
     creator: "A local commuter account.",
     label: "Caption names the main highway in {city}.",
     full: "The original recording shows the same vehicles and cones.",
-    lesson: "The clip shows a different road; authentic footage does not prove the stated location.",
+    lesson:
+        "The clip shows a different road; authentic footage does not prove the stated location.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decisive,
     rAudio: Relevance.decoy,
@@ -902,16 +1695,23 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.support,
   ),
-  _Clip("event_reorder", false, "Music", "Festival highlight", "The festival’s closing performance happened after the awards.", [
-    ClipBeat(0, "Awards stage", "“Congratulations!”", "Awards ceremony."),
-    ClipBeat(12, "Performance", "“One more song!”", "Band performance."),
-    ClipBeat(26, "Crowd", "“Thank you!”", "Audience applauds."),
-  ],
+  _Clip(
+    "event_reorder",
+    false,
+    "Music",
+    "Festival highlight",
+    "The festival’s closing performance happened after the awards.",
+    [
+      ClipBeat(0, "Awards stage", "“Congratulations!”", "Awards ceremony."),
+      ClipBeat(12, "Performance", "“One more song!”", "Band performance."),
+      ClipBeat(26, "Crowd", "“Thank you!”", "Audience applauds."),
+    ],
     upload: "A montage posted after the festival.",
     audio: "Transitions are mixed with background music.",
     creator: "A fan-made festival page.",
     label: "The caption asserts the performance happened after the awards.",
-    full: "The source schedule and recordings show awards at 8 PM and closing performance at 9 PM.",
+    full:
+        "The source schedule and recordings show awards at 8 PM and closing performance at 9 PM.",
     lesson: "The montage accurately conveys the sequence despite edits.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
@@ -920,16 +1720,23 @@ const _reasoningClips = <_Clip>[
     rLabel: Relevance.support,
     rFull: Relevance.decisive,
   ),
-  _Clip("event_reorder", true, "Music", "Festival highlight", "The festival’s closing performance happened after the awards.", [
-    ClipBeat(0, "Awards stage", "“Congratulations!”", "Awards ceremony."),
-    ClipBeat(12, "Performance", "“One more song!”", "Band performance."),
-    ClipBeat(26, "Crowd", "“Thank you!”", "Audience applauds."),
-  ],
+  _Clip(
+    "event_reorder",
+    true,
+    "Music",
+    "Festival highlight",
+    "The festival’s closing performance happened after the awards.",
+    [
+      ClipBeat(0, "Awards stage", "“Congratulations!”", "Awards ceremony."),
+      ClipBeat(12, "Performance", "“One more song!”", "Band performance."),
+      ClipBeat(26, "Crowd", "“Thank you!”", "Audience applauds."),
+    ],
     upload: "A montage posted after the festival.",
     audio: "Transitions are mixed with background music.",
     creator: "A fan-made festival page.",
     label: "The caption asserts the performance happened after the awards.",
-    full: "The source schedule and recordings show performance at 8 PM and awards at 9 PM.",
+    full:
+        "The source schedule and recordings show performance at 8 PM and awards at 9 PM.",
     lesson: "The montage reverses the original sequence of events.",
     hint: "Compare the claim in the post with the source evidence.",
     rUpload: Relevance.decoy,
@@ -944,38 +1751,87 @@ final _allClips = <_Clip>[..._clips, ..._reasoningClips];
 int clipScenarioCount() => _allClips.length;
 String clipScenarioId(int i) => _allClips[i].id;
 bool clipScenarioBad(int i) => _allClips[i].bad;
-bool clipScenarioAllowed(int i, ArcadeDifficulty d) =>
-    switch (d) {
-      ArcadeDifficulty.easy => i < _clips.length,
-      ArcadeDifficulty.medium => true,
-      ArcadeDifficulty.hard => i >= _clips.length,
-    };
+bool clipScenarioAllowed(int i, ArcadeDifficulty d) => switch (d) {
+  ArcadeDifficulty.easy => i < _clips.length,
+  ArcadeDifficulty.medium => true,
+  ArcadeDifficulty.hard => i >= _clips.length,
+};
 
 ArcadeCase buildClip(Gen g, ArcadeDifficulty d, int index) {
   final c = _allClips[index];
-  final hardEvacuation = d.profile.requiresCrossChecking && c.id == 'fake_evacuation_order';
+  final hardEvacuation =
+      d.profile.requiresCrossChecking && c.id == 'fake_evacuation_order';
   final group = g.pick(Pools.groups);
-  final slots = {'group': group, 'city': g.pick(Pools.cities), 'queen': g.pick(Pools.queens), 'y1': '${g.between(2019, 2023)}'};
+  final slots = {
+    'group': group,
+    'city': g.pick(Pools.cities),
+    'queen': g.pick(Pools.queens),
+    'y1': '${g.between(2019, 2023)}',
+  };
   String f(String s) => fillSlots(s, slots);
   final tools = <Finding>[
-    Finding('upload', 'UPLOAD INFO', '📅', hardEvacuation ? 'A local news page reposted the clip this morning and links to the city briefing archive.' : f(c.upload), c.rUpload),
-    Finding('audio', 'AUDIO', '🎧', hardEvacuation ? 'There is a brief jump in the audio before the evacuation area is stated.' : f(c.audio), c.rAudio),
-    Finding('creator', 'CREATOR', '👤', hardEvacuation ? 'An established neighborhood news page that often quotes city briefings.' : f(c.creator), c.rCreator),
-    Finding('label', 'LABEL', '🏷️', hardEvacuation ? 'The repost caption says the order covers all of ${slots['city']}; it does not quote the zone map.' : f(c.label), c.rLabel),
+    Finding(
+      'upload',
+      'UPLOAD INFO',
+      '📅',
+      hardEvacuation
+          ? 'A local news page reposted the clip this morning and links to the city briefing archive.'
+          : f(c.upload),
+      c.rUpload,
+    ),
+    Finding(
+      'audio',
+      'AUDIO',
+      '🎧',
+      hardEvacuation
+          ? 'There is a brief jump in the audio before the evacuation area is stated.'
+          : f(c.audio),
+      c.rAudio,
+    ),
+    Finding(
+      'creator',
+      'CREATOR',
+      '👤',
+      hardEvacuation
+          ? 'An established neighborhood news page that often quotes city briefings.'
+          : f(c.creator),
+      c.rCreator,
+    ),
+    Finding(
+      'label',
+      'LABEL',
+      '🏷️',
+      hardEvacuation
+          ? 'The repost caption says the order covers all of ${slots['city']}; it does not quote the zone map.'
+          : f(c.label),
+      c.rLabel,
+    ),
     Finding('full', 'FULL VIDEO', '🎬', f(c.full), c.rFull),
   ];
-  final beats = [for (final b in c.beats) ClipBeat(b.second, f(b.scene), f(b.viralLine), f(b.fullLine), inViral: b.inViral)];
+  final beats = [
+    for (final b in c.beats)
+      ClipBeat(
+        b.second,
+        f(b.scene),
+        f(b.viralLine),
+        f(b.fullLine),
+        inViral: b.inViral,
+      ),
+  ];
   final decisive = tools.firstWhere((t) => t.relevance == Relevance.decisive);
   return ArcadeCase(
     signature: 'clip:${c.id}',
-    scenario: index < _clips.length ? c.id :
-        "${c.id}__${c.bad ? 'remove' : 'keep'}",
+    scenario: index < _clips.length
+        ? c.id
+        : "${c.id}__${c.bad ? 'remove' : 'keep'}",
     mode: ArcadeMode.clip,
     title: c.title,
     author: 'Tambayan Reels',
     handle: '@reels${g.id()}',
     text: f(c.caption),
-    subtext: d == ArcadeDifficulty.easy ? 'Scrub the timeline and compare both cuts.' : 'Check whether the caption is supported. An edit is not proof of misinformation.',
+    subtext: d == ArcadeDifficulty.easy
+        ? 'Scrub the timeline and compare both cuts.'
+        : 'Check whether the caption is supported. An edit is not proof of misinformation.',
     imageTopic: c.topic,
     imageCaption: c.title,
     tools: tools,
@@ -984,6 +1840,8 @@ ArcadeCase buildClip(Gen g, ArcadeDifficulty d, int index) {
     correct: [c.bad ? 1 : 0],
     choices: const [ArcadeOption('KEEP'), ArcadeOption('REMOVE')],
     lesson: f(c.lesson),
-    hint: hardEvacuation ? 'Open ${decisive.emoji} ${decisive.label}. Compare its scope and conditions with the clip.' : 'Open ${decisive.emoji} ${decisive.label}. Ask: ${f(c.hint)}',
+    hint: hardEvacuation
+        ? 'Open ${decisive.emoji} ${decisive.label}. Compare its scope and conditions with the clip.'
+        : 'Open ${decisive.emoji} ${decisive.label}. Ask: ${f(c.hint)}',
   );
 }

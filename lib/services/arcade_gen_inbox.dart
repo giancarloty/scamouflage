@@ -8,7 +8,19 @@ class _E {
   final String family, fromName, from, subject, body, why;
   final String reply, linkLabel, link, attach;
   final bool spam;
-  const _E(this.family, this.spam, this.fromName, this.from, this.subject, this.body, this.why, {this.reply = '', this.linkLabel = '', this.link = '', this.attach = ''});
+  const _E(
+    this.family,
+    this.spam,
+    this.fromName,
+    this.from,
+    this.subject,
+    this.body,
+    this.why, {
+    this.reply = '',
+    this.linkLabel = '',
+    this.link = '',
+    this.attach = '',
+  });
 }
 
 const _legit = <_E>[
@@ -476,7 +488,11 @@ const _spam = <_E>[
 ];
 
 const _hardLegitFamilies = {'teacher_gmail', 'survey_vendor'};
-const _hardSpamFamilies = {'tuition_change', 'compromised_staff', 'polite_advance'};
+const _hardSpamFamilies = {
+  'tuition_change',
+  'compromised_staff',
+  'polite_advance',
+};
 
 int inboxScenarioCount() => _legit.length + _spam.length;
 
@@ -526,10 +542,14 @@ ArcadeCase buildInbox(Gen g, ArcadeDifficulty d, int index, {int? count}) {
   final mixedTutorial = count != null;
   final hard = d.profile.requiresCrossChecking && !mixedTutorial;
   final extremeChance = d == ArcadeDifficulty.easy ? .12 : .25;
-  final spamCount = !mixedTutorial && g.chance(extremeChance) ? g.pick([0, n]) : g.between(1, n - 1);
+  final spamCount = !mixedTutorial && g.chance(extremeChance)
+      ? g.pick([0, n])
+      : g.between(1, n - 1);
   List<_E> sample(List<_E> pool, int amount, Set<String> anchorFamilies) {
     if (!hard || amount == 0) return g.sample(pool, amount);
-    final anchors = pool.where((e) => anchorFamilies.contains(e.family)).toList();
+    final anchors = pool
+        .where((e) => anchorFamilies.contains(e.family))
+        .toList();
     final anchor = g.pick(anchors);
     final rest = pool.where((e) => e.family != anchor.family).toList();
     return [anchor, ...g.sample(rest, amount - 1)];
@@ -546,11 +566,15 @@ ArcadeCase buildInbox(Gen g, ArcadeDifficulty d, int index, {int? count}) {
     title: 'Inbox',
     author: 'Tambayan Mail',
     text: 'Swipe each email: left = SPAM, right = KEEP.',
-    subtext: d.profile.requiresCrossChecking ? 'Inspect the sender, reply-to, link destination and request before deciding.' : 'Tap an email to see who really sent it.',
+    subtext: d.profile.requiresCrossChecking
+        ? 'Inspect the sender, reply-to, link destination and request before deciding.'
+        : 'Tap an email to see who really sent it.',
     emails: emails,
     deceptive: spamCount > 0,
     correct: [for (final e in emails) e.spam ? 0 : 1],
-    lesson: 'Spam can look polished and real mail can look rushed. The sender address, where a link really goes, and what the email asks you for are what count.',
-    hint: 'Tap the card to flip it. Compare the sender and link with the real service, and ask what it wants from you.',
+    lesson:
+        'Spam can look polished and real mail can look rushed. The sender address, where a link really goes, and what the email asks you for are what count.',
+    hint:
+        'Tap the card to flip it. Compare the sender and link with the real service, and ask what it wants from you.',
   );
 }

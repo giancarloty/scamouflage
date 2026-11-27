@@ -59,7 +59,8 @@ class DailyChallenge {
   };
 
   factory DailyChallenge.fromJson(Map<String, dynamic> json) {
-    final typeName = json['type'] as String? ?? DailyChallengeType.completedRounds.name;
+    final typeName =
+        json['type'] as String? ?? DailyChallengeType.completedRounds.name;
     final type = DailyChallengeType.values.firstWhere(
       (value) => value.name == typeName,
       orElse: () => DailyChallengeType.completedRounds,

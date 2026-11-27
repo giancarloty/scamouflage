@@ -16,12 +16,14 @@ Future<void> main() async {
   if (!kIsWeb) {
     await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   }
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: midnight,
-    systemNavigationBarIconBrightness: Brightness.light,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: midnight,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -40,7 +42,8 @@ class ScamouflageApp extends StatefulWidget {
   State<ScamouflageApp> createState() => _ScamouflageAppState();
 }
 
-class _ScamouflageAppState extends State<ScamouflageApp> with WidgetsBindingObserver {
+class _ScamouflageAppState extends State<ScamouflageApp>
+    with WidgetsBindingObserver {
   late final GameEngine game;
 
   @override
@@ -65,21 +68,21 @@ class _ScamouflageAppState extends State<ScamouflageApp> with WidgetsBindingObse
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'Scamouflage: Trust or Bust',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: true,
-          brightness: Brightness.dark,
-          scaffoldBackgroundColor: midnight,
-          colorScheme: const ColorScheme.dark(
-            primary: mustard,
-            secondary: mint,
-            surface: deskBlue,
-            onPrimary: coal,
-            onSurface: parchment,
-          ),
-          textTheme: GoogleFonts.spaceGroteskTextTheme(ThemeData.dark().textTheme),
-        ),
-        home: GameScreens(game: game),
-      );
+    title: 'Scamouflage: Trust or Bust',
+    debugShowCheckedModeBanner: false,
+    theme: ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: midnight,
+      colorScheme: const ColorScheme.dark(
+        primary: mustard,
+        secondary: mint,
+        surface: deskBlue,
+        onPrimary: coal,
+        onSurface: parchment,
+      ),
+      textTheme: GoogleFonts.spaceGroteskTextTheme(ThemeData.dark().textTheme),
+    ),
+    home: GameScreens(game: game),
+  );
 }

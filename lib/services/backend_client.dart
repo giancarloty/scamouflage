@@ -56,8 +56,8 @@ class BackendClient {
 
     final decoded = _decode(res.body);
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      final msg =
-          (decoded['error'] ?? 'Request failed (${res.statusCode})').toString();
+      final msg = (decoded['error'] ?? 'Request failed (${res.statusCode})')
+          .toString();
       throw BackendException(res.statusCode, msg);
     }
     return decoded;
@@ -81,8 +81,8 @@ class BackendClient {
         .timeout(timeout);
     final decoded = _decode(res.body);
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      final msg =
-          (decoded['error'] ?? 'Request failed (${res.statusCode})').toString();
+      final msg = (decoded['error'] ?? 'Request failed (${res.statusCode})')
+          .toString();
       throw BackendException(res.statusCode, msg);
     }
     return decoded;

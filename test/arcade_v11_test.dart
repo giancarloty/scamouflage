@@ -320,10 +320,11 @@ void main() {
             final spamCount = c.emails.where((e) => e.spam).length;
             if (spamCount == 0) {
               allLegitimate++;
-            } else if (spamCount == c.emails.length)
+            } else if (spamCount == c.emails.length) {
               allSpam++;
-            else
+            } else {
               mixed++;
+            }
             expect(c.correct, [for (final e in c.emails) e.spam ? 0 : 1]);
           }
           expect(allLegitimate, greaterThan(0));
@@ -357,8 +358,16 @@ void main() {
             seed,
           ).generate(ArcadeMode.inbox, ArcadeDifficulty.easy);
           for (final email in c.emails.where((e) => !e.spam)) {
-            expect(email.body, isNot(matches(reassurance)), reason: email.subject);
-            expect(email.why, isNot(matches(reassurance)), reason: email.subject);
+            expect(
+              email.body,
+              isNot(matches(reassurance)),
+              reason: email.subject,
+            );
+            expect(
+              email.why,
+              isNot(matches(reassurance)),
+              reason: email.subject,
+            );
           }
         }
       },
@@ -388,11 +397,7 @@ void main() {
       final allowed = <String>{};
       final bad = <String>{};
       for (var seed = 0; seed < 2000; seed++) {
-        final c = buildThread(
-          Gen(Random(seed)),
-          ArcadeDifficulty.hard,
-          0,
-        );
+        final c = buildThread(Gen(Random(seed)), ArcadeDifficulty.hard, 0);
         for (final comment in c.comments) {
           (comment.violates ? bad : allowed).add(comment.body);
           expect(comment.body, isNot(contains(';')));
@@ -493,15 +498,25 @@ void main() {
       expect(allowedBodies.any((body) => body.contains('i agree')), isTrue);
       expect(allowedBodies.any((body) => body.contains("don't agree")), isTrue);
       expect(
-        badBodies.any((body) => body.contains('public library') && body.contains('one-star reviews')),
+        badBodies.any(
+          (body) =>
+              body.contains('public library') &&
+              body.contains('one-star reviews'),
+        ),
         isTrue,
       );
       expect(
-        badBodies.any((body) => body.contains('fan club') && body.contains('mass report')),
+        badBodies.any(
+          (body) => body.contains('fan club') && body.contains('mass report'),
+        ),
         isTrue,
       );
       expect(
-        badBodies.any((body) => body.contains('regret speaking up') || body.contains('pagsisihan niya')),
+        badBodies.any(
+          (body) =>
+              body.contains('regret speaking up') ||
+              body.contains('pagsisihan niya'),
+        ),
         isTrue,
       );
     });
@@ -660,10 +675,9 @@ void main() {
 
       for (var seed = 0; seed < 1200; seed++) {
         for (final entry in expected.entries) {
-          final c = ArcadeGenerator(seed * 31 + entry.key.index).generate(
-            entry.key,
-            ArcadeDifficulty.medium,
-          );
+          final c = ArcadeGenerator(
+            seed * 31 + entry.key.index,
+          ).generate(entry.key, ArcadeDifficulty.medium);
           if (entry.key == ArcadeMode.comments) {
             for (final comment in c.comments) {
               expect(
@@ -705,9 +719,7 @@ void main() {
               expect(official.handle, contains('.edu.official'));
               expect(impostor.handle, startsWith('@'));
               expect(impostor.handle, contains('.eduh.'));
-              expect(c.correct, [
-                identical(c.leftProfile, impostor) ? 0 : 1,
-              ]);
+              expect(c.correct, [identical(c.leftProfile, impostor) ? 0 : 1]);
               expect(impostor.name, official.name);
               expect(impostor.bio, official.bio);
               expect(impostor.link, official.link);
@@ -719,10 +731,9 @@ void main() {
             found[entry.key]!.add(c.scenario);
           }
         }
-        final inbox = ArcadeGenerator(seed).generate(
-          ArcadeMode.inbox,
-          ArcadeDifficulty.medium,
-        );
+        final inbox = ArcadeGenerator(
+          seed,
+        ).generate(ArcadeMode.inbox, ArcadeDifficulty.medium);
         for (final email in inbox.emails) {
           if (email.subject == 'Your reserved book is ready' ||
               email.subject == 'Notes from today') {
@@ -741,10 +752,9 @@ void main() {
       );
 
       for (var seed = 0; seed < 2400; seed++) {
-        final c = ArcadeGenerator(seed).generate(
-          ArcadeMode.rumor,
-          ArcadeDifficulty.medium,
-        );
+        final c = ArcadeGenerator(
+          seed,
+        ).generate(ArcadeMode.rumor, ArcadeDifficulty.medium);
         rumorEvidence.addAll([
           c.signature,
           c.title,
@@ -763,23 +773,24 @@ void main() {
         isTrue,
       );
       expect(
-        rumorEvidence.any((text) => text.contains('Community legal-aid clinic')),
+        rumorEvidence.any(
+          (text) => text.contains('Community legal-aid clinic'),
+        ),
         isTrue,
       );
 
       // Outdated-information scenario variety
       expect(
-        rumorEvidence.any((text) => text.contains('Scholarship application deadline')),
+        rumorEvidence.any(
+          (text) => text.contains('Scholarship application deadline'),
+        ),
         isTrue,
       );
       expect(
         rumorEvidence.any((text) => text.contains('medical mission')),
         isTrue,
       );
-      expect(
-        rumorEvidence.any((text) => text.contains('vaccination')),
-        isTrue,
-      );
+      expect(rumorEvidence.any((text) => text.contains('vaccination')), isTrue);
       expect(
         rumorEvidence.any((text) => text.contains('Road advisory')),
         isTrue,
@@ -1000,28 +1011,39 @@ void main() {
       expect(seen, containsAll(ArcadeMode.values));
     });
 
-
     test('Rumor Radar stale-information puzzles use varied stale reasons', () {
       final reasons = <String>{};
       for (var seed = 0; seed < 300; seed++) {
-        final c = ArcadeGenerator(seed).generate(ArcadeMode.rumor, ArcadeDifficulty.hard);
+        final c = ArcadeGenerator(
+          seed,
+        ).generate(ArcadeMode.rumor, ArcadeDifficulty.hard);
         if (c.rumorTask == RumorTask.outdated) {
           reasons.add(c.signature.split(':')[2]);
-          expect(c.cards.map((card) => card.body).toSet().length, c.cards.length);
+          expect(
+            c.cards.map((card) => card.body).toSet().length,
+            c.cards.length,
+          );
         }
       }
       expect(reasons.length, greaterThanOrEqualTo(4));
     });
 
-    test('Hard mode can continue dealing cases without generation retry stalls', () {
-      final s = start(d: ArcadeDifficulty.hard, mode: ArcadeMode.rumor, seed: 1234);
-      for (var i = 0; i < 30; i++) {
-        expect(s.finished, isFalse);
-        s.submit(s.current.correct);
-        s.next();
-      }
-      expect(s.round, 30);
-    });
+    test(
+      'Hard mode can continue dealing cases without generation retry stalls',
+      () {
+        final s = start(
+          d: ArcadeDifficulty.hard,
+          mode: ArcadeMode.rumor,
+          seed: 1234,
+        );
+        for (var i = 0; i < 30; i++) {
+          expect(s.finished, isFalse);
+          s.submit(s.current.correct);
+          s.next();
+        }
+        expect(s.round, 30);
+      },
+    );
 
     test('XP thresholds are unchanged', () {
       expect(ArcadeMode.trust.unlockXp, 0);

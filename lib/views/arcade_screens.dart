@@ -650,7 +650,9 @@ class _ArcadeHubState extends State<ArcadeHub> {
     if (s == null || s.waitingForNext) return;
     final xpBefore = widget.game.careerXp;
     final submittedCase = s.current;
-    setState(() => s.submit(answer, usedDecisive: usedDecisive, opened: opened));
+    setState(
+      () => s.submit(answer, usedDecisive: usedDecisive, opened: opened),
+    );
     final correct = s.lastCorrect == true;
     if (!s.firstDay) {
       dailyChallenges.onAnswer(

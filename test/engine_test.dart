@@ -33,7 +33,10 @@ void main() {
   });
 
   test('Updated walkthrough runs once for users upgrading from v4', () async {
-    SharedPreferences.setMockInitialValues({'tutorial_v4': true, 'level_v4': 3});
+    SharedPreferences.setMockInitialValues({
+      'tutorial_v4': true,
+      'level_v4': 3,
+    });
     final engine = GameEngine();
     await engine.load();
     expect(engine.tutorialFinished, isFalse);
@@ -69,7 +72,9 @@ void main() {
     engine.startShift(1);
     final oldCareerXp = engine.careerXp;
     final caseFile = engine.currentCase;
-    engine.decide(caseFile.correct == Verdict.approve ? Verdict.reject : Verdict.approve);
+    engine.decide(
+      caseFile.correct == Verdict.approve ? Verdict.reject : Verdict.approve,
+    );
     expect(engine.careerXp, oldCareerXp);
     expect(engine.shiftXp, lessThan(0));
     expect(engine.safety < 80 || engine.fairness < 80, isTrue);

@@ -20,7 +20,10 @@ class DailyChallengeService {
   /// Deterministic mission selection: same local date produces same missions.
   List<DailyChallenge> generateForDate([DateTime? date]) {
     final stamp = dateStamp(date);
-    final seed = stamp.codeUnits.fold<int>(0, (value, unit) => value * 31 + unit);
+    final seed = stamp.codeUnits.fold<int>(
+      0,
+      (value, unit) => value * 31 + unit,
+    );
     final random = Random(seed);
 
     final pool = <DailyChallenge Function()>[
@@ -75,7 +78,8 @@ class DailyChallengeService {
     ];
 
     // Select three distinct challenges with deterministic daily ordering.
-    final shuffled = List<DailyChallenge Function()>.from(pool)..shuffle(random);
+    final shuffled = List<DailyChallenge Function()>.from(pool)
+      ..shuffle(random);
     return shuffled.take(3).map((make) => make()).toList();
   }
 
@@ -89,9 +93,11 @@ class DailyChallengeService {
         try {
           final decoded = jsonDecode(raw) as List<dynamic>;
           return decoded
-              .map((entry) => DailyChallenge.fromJson(
-                    Map<String, dynamic>.from(entry as Map),
-                  ))
+              .map(
+                (entry) => DailyChallenge.fromJson(
+                  Map<String, dynamic>.from(entry as Map),
+                ),
+              )
               .toList();
         } catch (_) {
           // Corrupt or incompatible save: create today's clean set.
@@ -109,7 +115,11 @@ class DailyChallengeService {
     return prefs.getInt(_streakKey) ?? 0;
   }
 
-  Future<void> save(List<DailyChallenge> challenges, {String? date, int streak = 0}) async {
+  Future<void> save(
+    List<DailyChallenge> challenges, {
+    String? date,
+    int streak = 0,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_dateKey, date ?? dateStamp());
     await prefs.setInt(_streakKey, streak);

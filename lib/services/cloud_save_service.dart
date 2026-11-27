@@ -35,8 +35,9 @@ class CloudSaveService {
       _signInSyncedUid = null;
       _debounce?.cancel();
       if (wasSignedIn) {
-        SharedPreferences.getInstance()
-            .then((prefs) => prefs.remove(_linkedUidKey));
+        SharedPreferences.getInstance().then(
+          (prefs) => prefs.remove(_linkedUidKey),
+        );
         _engine?.resetLocalProgress();
       }
       return;
@@ -54,7 +55,10 @@ class CloudSaveService {
   void _scheduleSync() {
     if (AuthService.instance.username == null) return;
     _debounce?.cancel();
-    _debounce = Timer(const Duration(seconds: 6), () => sync(modeOverride: 'merge'));
+    _debounce = Timer(
+      const Duration(seconds: 6),
+      () => sync(modeOverride: 'merge'),
+    );
   }
 
   /// Pushes any unsaved XP or cosmetics to the cloud right before signing out.
@@ -89,7 +93,8 @@ class CloudSaveService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final linked = prefs.getString(_linkedUidKey);
-      final mode = modeOverride ??
+      final mode =
+          modeOverride ??
           ((linked != null && linked != user.uid) ? 'adopt' : 'merge');
       final sentXp = engine.careerXp;
 
@@ -106,9 +111,7 @@ class CloudSaveService {
         _scheduleSync();
         return;
       }
-      await engine.applyCloud(
-        profile.map((k, v) => MapEntry(k.toString(), v)),
-      );
+      await engine.applyCloud(profile.map((k, v) => MapEntry(k.toString(), v)));
       await prefs.setString(_linkedUidKey, user.uid);
     } catch (e) {
       debugPrint('Cloud save skipped: $e');

@@ -20,8 +20,10 @@ class DailyChallengeController extends ChangeNotifier {
 
   int get completedCount => challenges.where((c) => c.completed).length;
   int get claimedCount => challenges.where((c) => c.claimed).length;
-  int get totalRewardXp => challenges.fold<int>(0, (sum, c) => sum + c.rewardXp);
-  bool get allCompleted => challenges.isNotEmpty && completedCount == challenges.length;
+  int get totalRewardXp =>
+      challenges.fold<int>(0, (sum, c) => sum + c.rewardXp);
+  bool get allCompleted =>
+      challenges.isNotEmpty && completedCount == challenges.length;
 
   Future<void> initialize() async {
     challenges = await service.loadOrCreateToday();
@@ -80,7 +82,10 @@ class DailyChallengeController extends ChangeNotifier {
     if (!ready) return false;
     DailyChallenge? challenge;
     for (final item in challenges) {
-      if (item.id == challengeId) { challenge = item; break; }
+      if (item.id == challengeId) {
+        challenge = item;
+        break;
+      }
     }
     if (challenge == null || !challenge.canClaim) return false;
 

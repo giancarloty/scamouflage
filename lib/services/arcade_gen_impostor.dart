@@ -27,16 +27,56 @@ const _orgs = <_Org>[
 ];
 
 const _benign = <String, List<String>>{
-  'shop': ['New stocks tomorrow, order in the app!', 'Salamat sa lahat ng 5-star reviews!', 'Shipping update: orders ship Mon-Sat.'],
-  'school': ['Enrollment extended until Friday.', 'Reminder: ID validation sa Room 12.', 'Foundation week schedule is out.'],
-  'barangay': ['Clean-up drive sa Sabado, 7AM.', 'Schedule ng bakuna: Martes sa health center.', 'Paalala: ihanda ang ID para sa payout.'],
-  'politician': ['Nag-inspect kami ng drainage project ngayong umaga.', 'Salamat sa mga volunteer ng clean-up drive.', 'Public hearing sa Huwebes, bukas sa lahat.'],
-  'group': ['Comeback teaser drops tonight!', 'Salamat sa 1M views, mga fans!', 'Fan meeting details sa official website.'],
-  'wallet': ['Reminder: never share your OTP with anyone.', 'App update available, download from the store.', 'Our hotline is listed in the app only.'],
-  'courier': ['Tracking tip: use the app, not links from texts.', 'Holiday delivery schedule posted.', 'Hubs are closed this Sunday.'],
-  'sports': ['Game day Sabado, 3PM!', 'Practice moved to 5PM.', 'Ticket info is on the school page.'],
-  'news': ['Weather update, 5PM bulletin.', 'City council session recap.', 'Correction: earlier post misspelled a name.'],
-  'person': ['Happy birthday sa ate ko! 🎂', 'Miss ko na ang barkada', 'Exam week na naman 😭'],
+  'shop': [
+    'New stocks tomorrow, order in the app!',
+    'Salamat sa lahat ng 5-star reviews!',
+    'Shipping update: orders ship Mon-Sat.',
+  ],
+  'school': [
+    'Enrollment extended until Friday.',
+    'Reminder: ID validation sa Room 12.',
+    'Foundation week schedule is out.',
+  ],
+  'barangay': [
+    'Clean-up drive sa Sabado, 7AM.',
+    'Schedule ng bakuna: Martes sa health center.',
+    'Paalala: ihanda ang ID para sa payout.',
+  ],
+  'politician': [
+    'Nag-inspect kami ng drainage project ngayong umaga.',
+    'Salamat sa mga volunteer ng clean-up drive.',
+    'Public hearing sa Huwebes, bukas sa lahat.',
+  ],
+  'group': [
+    'Comeback teaser drops tonight!',
+    'Salamat sa 1M views, mga fans!',
+    'Fan meeting details sa official website.',
+  ],
+  'wallet': [
+    'Reminder: never share your OTP with anyone.',
+    'App update available, download from the store.',
+    'Our hotline is listed in the app only.',
+  ],
+  'courier': [
+    'Tracking tip: use the app, not links from texts.',
+    'Holiday delivery schedule posted.',
+    'Hubs are closed this Sunday.',
+  ],
+  'sports': [
+    'Game day Sabado, 3PM!',
+    'Practice moved to 5PM.',
+    'Ticket info is on the school page.',
+  ],
+  'news': [
+    'Weather update, 5PM bulletin.',
+    'City council session recap.',
+    'Correction: earlier post misspelled a name.',
+  ],
+  'person': [
+    'Happy birthday sa ate ko! 🎂',
+    'Miss ko na ang barkada',
+    'Exam week na naman 😭',
+  ],
 };
 
 const _scams = <String>[
@@ -87,7 +127,22 @@ int impostorScenarioCount() => _stories.length;
 String impostorScenarioId(int i) => _stories[i];
 
 /// Stories where exactly one account must be flagged.
-const _flaggedStories = {'lookalike', 'hijacked', 'parody_hidden', 'fake_support', 'renamed', 'paid_badge', 'fake_reseller', 'expired_partner', 'misinfo_page', 'edited_notice', 'troll_account', 'school_email_lookalike', 'cloned_friend', 'fake_scholarship'};
+const _flaggedStories = {
+  'lookalike',
+  'hijacked',
+  'parody_hidden',
+  'fake_support',
+  'renamed',
+  'paid_badge',
+  'fake_reseller',
+  'expired_partner',
+  'misinfo_page',
+  'edited_notice',
+  'troll_account',
+  'school_email_lookalike',
+  'cloned_friend',
+  'fake_scholarship',
+};
 bool impostorScenarioFlagged(int i) => _flaggedStories.contains(_stories[i]);
 
 String _lookalike(Gen g, String base) {
@@ -101,9 +156,12 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
   final hard = d.profile.requiresCrossChecking;
   final easy = d == ArcadeDifficulty.easy;
 
-  List<_Org> fit(List<String> kinds) => _orgs.where((o) => kinds.contains(o.kind)).toList();
+  List<_Org> fit(List<String> kinds) =>
+      _orgs.where((o) => kinds.contains(o.kind)).toList();
   final org = switch (story) {
-    'fake_reseller' || 'real_reseller' || 'expired_partner' => g.pick(fit(['shop'])),
+    'fake_reseller' ||
+    'real_reseller' ||
+    'expired_partner' => g.pick(fit(['shop'])),
     'fake_scholarship' => g.pick(fit(['school'])),
     'listed_branch' => g.pick(fit(['school', 'sports'])),
     'misinfo_page' => g.pick(fit(['news', 'barangay'])),
@@ -114,7 +172,9 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
     'flagship_pair' => g.pick(fit(['school', 'sports'])),
     'archive_page' => g.pick(fit(['news'])),
     'cloned_friend' => const _Org('Joy Villanueva', 'joyvillanueva', 'person'),
-    'parody_label' || 'parody_hidden' || 'supporters' => g.pick(fit(['politician'])),
+    'parody_label' ||
+    'parody_hidden' ||
+    'supporters' => g.pick(fit(['politician'])),
     'fan_label' || 'paid_badge' => g.pick(fit(['group'])),
     'fake_support' => g.pick(fit(['wallet', 'courier', 'shop'])),
     'two_branches' => g.pick(fit(['school', 'sports'])),
@@ -129,7 +189,15 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
   String scam() => fillSlots(g.pick(_scams), {'amt': amt, 'dom': dom});
 
   ProfileView real({int? age, String? bio, List<String>? recent}) =>
-      ProfileView(name: org.name, handle: '@${org.base}', bio: bio ?? 'Official page of ${org.name}.', link: '$dom.example', ageDays: age ?? oldAge(), followers: followers(), recent: recent ?? g.sample(benign, 2));
+      ProfileView(
+        name: org.name,
+        handle: '@${org.base}',
+        bio: bio ?? 'Official page of ${org.name}.',
+        link: '$dom.example',
+        ageDays: age ?? oldAge(),
+        followers: followers(),
+        recent: recent ?? g.sample(benign, 2),
+      );
 
   final _Spec spec = switch (story) {
     'lookalike' => (() {
@@ -141,7 +209,9 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         ageDays: g.chance(.5) ? newAge() : oldAge(),
         followers: followers(),
         badge: g.chance(.5),
-        recent: easy || g.chance(.5) ? [scam(), benign.first] : [benign.last, benign.first],
+        recent: easy || g.chance(.5)
+            ? [scam(), benign.first]
+            : [benign.last, benign.first],
       );
       return _Spec(
         ['${org.name} website lists its only account as @${org.base}.'],
@@ -170,10 +240,15 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         link: '$dom.example',
         ageDays: g.between(30, 900),
         followers: g.between(200, 4000),
-        recent: ['Our main page was hacked. Ignore links it posts this week.', benign.first],
+        recent: [
+          'Our main page was hacked. Ignore links it posts this week.',
+          benign.first,
+        ],
       );
       return _Spec(
-        ['${org.name} website lists @${org.base} as its main page and @${org.base}_backup as its backup.'],
+        [
+          '${org.name} website lists @${org.base} as its main page and @${org.base}_backup as its backup.',
+        ],
         hacked,
         backup,
         0,
@@ -189,7 +264,10 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         link: '$dom.example',
         ageDays: oldAge(),
         followers: followers(),
-        recent: ['Pinned: "Lumipat na kami sa @${org.base}ph. Same team, same page!"', benign.first],
+        recent: [
+          'Pinned: "Lumipat na kami sa @${org.base}ph. Same team, same page!"',
+          benign.first,
+        ],
       );
       final fresh = ProfileView(
         name: org.name,
@@ -221,7 +299,9 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         recent: ['Fancam compilation 🎥', 'Ranking our favorite MV looks!'],
       );
       return _Spec(
-        ['${org.name} agency page lists @${org.base} as its only official account.'],
+        [
+          '${org.name} agency page lists @${org.base} as its only official account.',
+        ],
         real(),
         fan,
         -1,
@@ -237,7 +317,10 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         bio: 'Parody account. Hindi totoong alkalde. Joke lang po.',
         ageDays: g.between(60, 1400),
         followers: g.between(1000, 30000),
-        recent: ['Utos ko: libreng kape tuwing Lunes ☕ (joke)', 'Mga dalubhasa sa traffic: mga pusa.'],
+        recent: [
+          'Utos ko: libreng kape tuwing Lunes ☕ (joke)',
+          'Mga dalubhasa sa traffic: mga pusa.',
+        ],
       );
       return _Spec(
         ['The city website lists @${org.base} as the mayor\'s office account.'],
@@ -255,7 +338,10 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         bio: 'Opisyal na page ng alkalde. Para sa mga balita at anunsyo.',
         ageDays: newAge(),
         followers: g.between(300, 9000),
-        recent: ['Wala akong pakialam kung mamatay kayo sa baha.', 'Libreng ayuda sa mga mag-share ng post na ito!'],
+        recent: [
+          'Wala akong pakialam kung mamatay kayo sa baha.',
+          'Libreng ayuda sa mga mag-share ng post na ito!',
+        ],
       );
       return _Spec(
         ['The city website lists @${org.base} as the mayor\'s office account.'],
@@ -285,10 +371,15 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         link: 'no link',
         ageDays: oldAge(),
         followers: followers(),
-        recent: ['New flavor: ube cheese pandesal.', 'Bukas kami kahit holiday.'],
+        recent: [
+          'New flavor: ube cheese pandesal.',
+          'Bukas kami kahit holiday.',
+        ],
       );
       return _Spec(
-        ['Local shop listings: Kapitbahay Bakery ($cityA) @${a.handle.substring(1)}; Kapitbahay Bakery ($cityB) @${b.handle.substring(1)}.'],
+        [
+          'Local shop listings: Kapitbahay Bakery ($cityA) @${a.handle.substring(1)}; Kapitbahay Bakery ($cityB) @${b.handle.substring(1)}.',
+        ],
         a,
         b,
         -1,
@@ -303,10 +394,15 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         bio: '24/7 support. DM us for account fix!',
         ageDays: hard ? oldAge() : newAge(),
         followers: hard ? g.between(2000, 40000) : g.between(40, 900),
-        recent: ['Replying to a complaint: "Send your OTP in DM so we can fix it."', scam()],
+        recent: [
+          'Replying to a complaint: "Send your OTP in DM so we can fix it."',
+          scam(),
+        ],
       );
       return _Spec(
-        ['${org.name} says support is handled only inside its app and by @${org.base}.'],
+        [
+          '${org.name} says support is handled only inside its app and by @${org.base}.',
+        ],
         real(recent: [benign.first, 'We never ask for your OTP.']),
         fake,
         1,
@@ -315,7 +411,15 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
       );
     })(),
     'two_branches' => (() {
-      final main = ProfileView(name: '${org.name} (Main)', handle: '@${org.base}_main', bio: 'Main campus announcements.', link: '$dom.example', ageDays: oldAge(), followers: followers(), recent: g.sample(benign, 2));
+      final main = ProfileView(
+        name: '${org.name} (Main)',
+        handle: '@${org.base}_main',
+        bio: 'Main campus announcements.',
+        link: '$dom.example',
+        ageDays: oldAge(),
+        followers: followers(),
+        recent: g.sample(benign, 2),
+      );
       final south = ProfileView(
         name: '${org.name} (Southfield)',
         handle: '@${org.base}_south',
@@ -326,7 +430,9 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         recent: g.sample(benign, 2),
       );
       return _Spec(
-        ['${org.name} website lists two official pages: @${org.base}_main and @${org.base}_south.'],
+        [
+          '${org.name} website lists two official pages: @${org.base}_main and @${org.base}_south.',
+        ],
         main,
         south,
         -1,
@@ -345,7 +451,9 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         recent: ['Name changed 3 days ago from "Mura Gadgets Resell".', scam()],
       );
       return _Spec(
-        ['${org.name} website lists @${org.base} as its page. No other page is mentioned.'],
+        [
+          '${org.name} website lists @${org.base} as its page. No other page is mentioned.',
+        ],
         reused,
         real(),
         0,
@@ -362,10 +470,15 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         badge: true,
         ageDays: newAge(),
         followers: followers(),
-        recent: ['VIP raffle! Send P500 to reserve your slot.', 'Giveaway ends tonight.'],
+        recent: [
+          'VIP raffle! Send P500 to reserve your slot.',
+          'Giveaway ends tonight.',
+        ],
       );
       return _Spec(
-        ['${org.name} agency page lists @${org.base} as its official account. Badges can be bought by anyone.'],
+        [
+          '${org.name} agency page lists @${org.base} as its official account. Badges can be bought by anyone.',
+        ],
         badged,
         real(),
         0,
@@ -381,10 +494,15 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         link: 'no link',
         ageDays: g.between(10, 200),
         followers: followers(),
-        recent: ['Slots open! Send P500 deposit to reserve.', 'Walang refund, final sale.'],
+        recent: [
+          'Slots open! Send P500 deposit to reserve.',
+          'Walang refund, final sale.',
+        ],
       );
       return _Spec(
-        ['${org.name} website lists its authorized dealers by name. @${org.base}_dealer_ph is not on the list.'],
+        [
+          '${org.name} website lists its authorized dealers by name. @${org.base}_dealer_ph is not on the list.',
+        ],
         real(),
         fake,
         1,
@@ -396,14 +514,20 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
       final partner = ProfileView(
         name: '${org.name} Partner Store (Cavite)',
         handle: '@${org.base}_cavite',
-        bio: 'Authorized reseller of ${org.name}. See the dealer list on their website.',
+        bio:
+            'Authorized reseller of ${org.name}. See the dealer list on their website.',
         link: '$dom.example/dealers',
         ageDays: g.between(90, 1500),
         followers: followers(),
-        recent: ['New stocks arrived, order in the ${org.name} app!', 'Pickup hours: Mon-Sat.'],
+        recent: [
+          'New stocks arrived, order in the ${org.name} app!',
+          'Pickup hours: Mon-Sat.',
+        ],
       );
       return _Spec(
-        ['${org.name} website lists @${org.base} as its main page and @${org.base}_cavite as an authorized partner store.'],
+        [
+          '${org.name} website lists @${org.base} as its main page and @${org.base}_cavite as an authorized partner store.',
+        ],
         real(),
         partner,
         -1,
@@ -415,14 +539,17 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
       final branch = ProfileView(
         name: '${org.name} — East Campus',
         handle: '@${org.base}_east',
-        bio: 'Official East Campus notices. Contact details are on the school site.',
+        bio:
+            'Official East Campus notices. Contact details are on the school site.',
         link: '$dom.example/east',
         ageDays: newAge(),
         followers: g.between(80, 3200),
         recent: [benign.first, 'Room changes are posted on the campus portal.'],
       );
       return _Spec(
-        ['${org.name} website lists @${org.base} for the main campus and @${org.base}_east for East Campus.'],
+        [
+          '${org.name} website lists @${org.base} for the main campus and @${org.base}_east for East Campus.',
+        ],
         real(),
         branch,
         -1,
@@ -438,10 +565,15 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         link: '$dom-partner.example',
         ageDays: oldAge(),
         followers: followers(),
-        recent: ['Our old dealer certificate is still valid, send a deposit to hold your unit.', scam()],
+        recent: [
+          'Our old dealer certificate is still valid, send a deposit to hold your unit.',
+          scam(),
+        ],
       );
       return _Spec(
-        ['${org.name} dealer directory lists @${org.base}_partner as a former reseller; its authorization ended last month.'],
+        [
+          '${org.name} dealer directory lists @${org.base}_partner as a former reseller; its authorization ended last month.',
+        ],
         real(),
         former,
         1,
@@ -464,7 +596,9 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         ],
       );
       return _Spec(
-        ['${org.name} links only @${org.base} for official updates; the city notice board confirms no class cancellation.'],
+        [
+          '${org.name} links only @${org.base} for official updates; the city notice board confirms no class cancellation.',
+        ],
         real(),
         fake,
         1,
@@ -487,8 +621,15 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         ],
       );
       return _Spec(
-        ['${org.name} links its official announcements to @${org.base}. The registrar archive keeps the original post and date.'],
-        real(recent: ['Enrollment ends Friday.', 'The same date appears in the registrar archive.']),
+        [
+          '${org.name} links its official announcements to @${org.base}. The registrar archive keeps the original post and date.',
+        ],
+        real(
+          recent: [
+            'Enrollment ends Friday.',
+            'The same date appears in the registrar archive.',
+          ],
+        ),
         fake,
         1,
         "The screenshot began as a real notice, but its date was changed and the account sharing it is not the listed registrar page. A real logo or copied wording doesn't authenticate an edit.",
@@ -510,8 +651,14 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         ],
       );
       return _Spec(
-        ['The organization lists @${org.base} as its only official account and has no parody or troll account. Its meeting record shows the park sale was never proposed.'],
-        real(recent: ['Public meeting on Thursday; agenda and minutes are linked on our site.']),
+        [
+          'The organization lists @${org.base} as its only official account and has no parody or troll account. Its meeting record shows the park sale was never proposed.',
+        ],
+        real(
+          recent: [
+            'Public meeting on Thursday; agenda and minutes are linked on our site.',
+          ],
+        ),
         troll,
         1,
         "This isn't merely an unofficial critic: the account claims to be the organization's official voice, but is not listed and spreads a claim contradicted by the meeting record. Its troll-style posts do not make it authentic.",
@@ -520,11 +667,15 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
     })(),
     'school_email_lookalike' => (() {
       final officialAddress = '@${org.base}.edu.official';
-      final fakeAddress = '@${org.base}.eduh.${g.pick(['campus', 'helpdesk', 'notify'])}${g.id()}';
+      final fakeAddress =
+          '@${org.base}.eduh.${g.pick(['campus', 'helpdesk', 'notify'])}${g.id()}';
       final age = oldAge();
       final audience = followers();
       final badge = g.chance(.5);
-      const recent = ['Enrollment notice: check the student portal.', 'We never ask for your password by message.'];
+      const recent = [
+        'Enrollment notice: check the student portal.',
+        'We never ask for your password by message.',
+      ];
       ProfileView account(String address) => ProfileView(
         name: org.name,
         handle: address,
@@ -536,7 +687,9 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         recent: recent,
       );
       return _Spec(
-        ['The school directory lists $officialAddress as the official account. No other account address is authorized.'],
+        [
+          'The school directory lists $officialAddress as the official account. No other account address is authorized.',
+        ],
         account(officialAddress),
         account(fakeAddress),
         1,
@@ -548,15 +701,21 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
       final fan = ProfileView(
         name: '${org.name} Fans PH',
         handle: '@${org.base}_fansph',
-        bio: 'Independent fan-run page. Not owned by or speaking for ${org.name}.',
+        bio:
+            'Independent fan-run page. Not owned by or speaking for ${org.name}.',
         label: 'Fan account',
         link: 'no link',
         ageDays: oldAge(),
         followers: followers(),
-        recent: ['Fan art and set-list discussion.', 'We do not sell tickets or claim inside information.'],
+        recent: [
+          'Fan art and set-list discussion.',
+          'We do not sell tickets or claim inside information.',
+        ],
       );
       return _Spec(
-        ['${org.name} links @${org.base} as its official page. The second account labels itself an independent fan page and makes no official claims.'],
+        [
+          '${org.name} links @${org.base} as its official page. The second account labels itself an independent fan page and makes no official claims.',
+        ],
         real(),
         fan,
         -1,
@@ -565,7 +724,9 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
       );
     })(),
     'flagship_pair' => (() {
-      final flagship = real(bio: 'Flagship account for ${org.name}; organization-wide notices.');
+      final flagship = real(
+        bio: 'Flagship account for ${org.name}; organization-wide notices.',
+      );
       final department = ProfileView(
         name: '${org.name} Athletics',
         handle: '@${org.base}_athletics',
@@ -574,10 +735,15 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         label: 'Official department account',
         ageDays: newAge(),
         followers: followers(),
-        recent: ['Practice schedule updated on the athletics page.', 'Tickets are sold through the school site.'],
+        recent: [
+          'Practice schedule updated on the athletics page.',
+          'Tickets are sold through the school site.',
+        ],
       );
       return _Spec(
-        ['${org.name} website lists @${org.base} as its flagship and @${org.base}_athletics for official sports updates.'],
+        [
+          '${org.name} website lists @${org.base} as its flagship and @${org.base}_athletics for official sports updates.',
+        ],
         flagship,
         department,
         -1,
@@ -589,15 +755,21 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
       final dump = ProfileView(
         name: '${org.name} member photo dump',
         handle: '@${org.base}_member_dump',
-        bio: 'Personal photo dump by a group member; not an official group account.',
+        bio:
+            'Personal photo dump by a group member; not an official group account.',
         label: 'Personal / dump account',
         link: 'no link',
         ageDays: g.between(30, 1800),
         followers: followers(),
-        recent: ['Rehearsal photos from my own camera roll.', 'Personal posts only; event details are on the official page.'],
+        recent: [
+          'Rehearsal photos from my own camera roll.',
+          'Personal posts only; event details are on the official page.',
+        ],
       );
       return _Spec(
-        ['The official ${org.name} page links @${org.base}_member_dump as a member\'s personal photo account and says announcements come only from @${org.base}.'],
+        [
+          'The official ${org.name} page links @${org.base}_member_dump as a member\'s personal photo account and says announcements come only from @${org.base}.',
+        ],
         real(),
         dump,
         -1,
@@ -623,11 +795,19 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         ageDays: hard ? g.between(500, 2500) : newAge(),
         followers: hard ? g.between(600, 30000) : g.between(20, 120),
         recent: hard
-            ? ['Joy Villanueva posted a photo from last month.', 'Can you lend me P$amt until Friday?']
-            : ['Emergency! Pa-send muna ng P$amt sa wallet ko, ibabalik ko bukas.', 'Huwag mo munang tawagan ako, ang ingay dito.'],
+            ? [
+                'Joy Villanueva posted a photo from last month.',
+                'Can you lend me P$amt until Friday?',
+              ]
+            : [
+                'Emergency! Pa-send muna ng P$amt sa wallet ko, ibabalik ko bukas.',
+                'Huwag mo munang tawagan ako, ang ingay dito.',
+              ],
       );
       return _Spec(
-        ['Your contacts: Joy Villanueva is saved as @joy.villanueva (your friend for 3 years).'],
+        [
+          'Your contacts: Joy Villanueva is saved as @joy.villanueva (your friend for 3 years).',
+        ],
         friend,
         clone,
         1,
@@ -644,7 +824,10 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         link: 'no link',
         ageDays: g.between(200, 2000),
         followers: g.between(500, 15000),
-        recent: ['Throwback: our favorite old weather bulletin.', 'Archive note: this is an old post, not today\'s news.'],
+        recent: [
+          'Throwback: our favorite old weather bulletin.',
+          'Archive note: this is an old post, not today\'s news.',
+        ],
       );
       return _Spec(
         ['${org.name} lists @${org.base} as its only official account.'],
@@ -659,15 +842,23 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
       final fake = ProfileView(
         name: '${org.name} Scholarship Desk',
         handle: '@${org.base}_scholarships',
-        bio: 'Official scholarship assistance. Pay a processing fee to reserve your grant.',
+        bio:
+            'Official scholarship assistance. Pay a processing fee to reserve your grant.',
         link: '$dom-grants.example',
         ageDays: newAge(),
         followers: g.between(30, 1200),
         recent: ['Applications close tonight.', 'Send ?500 to hold your slot.'],
       );
       return _Spec(
-        ['${org.name} says all scholarship applications go through its student portal.'],
-        real(recent: ['Scholarship applications are open on our portal.', 'We never charge a fee to apply.']),
+        [
+          '${org.name} says all scholarship applications go through its student portal.',
+        ],
+        real(
+          recent: [
+            'Scholarship applications are open on our portal.',
+            'We never charge a fee to apply.',
+          ],
+        ),
         fake,
         1,
         "The account is not listed by the school and asks students to pay to reserve a grant. The school's own portal is the only application route.",
@@ -682,7 +873,10 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
         label: 'Supporters page',
         ageDays: g.between(30, 900),
         followers: g.between(500, 20000),
-        recent: ['Salamat sa lahat ng dumalo sa clean-up drive!', 'Memes tungkol sa traffic 😂'],
+        recent: [
+          'Salamat sa lahat ng dumalo sa clean-up drive!',
+          'Memes tungkol sa traffic 😂',
+        ],
       );
       return _Spec(
         ['The barangay site lists @${org.base} as the official page.'],
@@ -698,7 +892,9 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
   final flip = g.chance(.5);
   final left = flip ? spec.b : spec.a;
   final right = flip ? spec.a : spec.b;
-  final flagged = spec.flagged == -1 ? -1 : (flip ? 1 - spec.flagged : spec.flagged);
+  final flagged = spec.flagged == -1
+      ? -1
+      : (flip ? 1 - spec.flagged : spec.flagged);
   return ArcadeCase(
     signature: 'impostor:$story:${org.base}',
     scenario: story,
@@ -707,14 +903,22 @@ ArcadeCase buildImpostor(Gen g, ArcadeDifficulty d, int index) {
     author: 'Tambayan Identity Desk',
     handle: '@identitychecks',
     text: 'Two accounts use a similar name. Does either one fake an identity?',
-    subtext: hard ? 'Cross-check the directory, links, account history and recent behavior.' : 'Open both profiles, then compare.',
+    subtext: hard
+        ? 'Cross-check the directory, links, account history and recent behavior.'
+        : 'Open both profiles, then compare.',
     directory: spec.dir,
     leftProfile: left,
     rightProfile: right,
     deceptive: flagged != -1,
     correct: [flagged == -1 ? 2 : flagged],
-    choices: const [ArcadeOption('FLAG A'), ArcadeOption('FLAG B'), ArcadeOption('BOTH OK')],
+    choices: const [
+      ArcadeOption('FLAG A'),
+      ArcadeOption('FLAG B'),
+      ArcadeOption('BOTH OK'),
+    ],
     lesson: spec.lesson,
-    hint: hard ? 'Check which identity claims the directory actually supports; appearance alone is not proof.' : spec.hint,
+    hint: hard
+        ? 'Check which identity claims the directory actually supports; appearance alone is not proof.'
+        : spec.hint,
   );
 }

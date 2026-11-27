@@ -53,7 +53,10 @@ class LeaderboardService {
   }
 
   static String boardId(
-      BoardPeriod period, String mode, ArcadeDifficulty difficulty) {
+    BoardPeriod period,
+    String mode,
+    ArcadeDifficulty difficulty,
+  ) {
     if (mode == 'overall') return 'overall_xp';
     return period == BoardPeriod.weekly
         ? 'week_${weekKey()}_${mode}_${difficulty.name}'
@@ -112,26 +115,33 @@ class LeaderboardService {
   }
 
   Future<List<LeaderboardEntry>> fetchTop(
-      BoardPeriod period, String mode, ArcadeDifficulty difficulty) async {
-    final snap = await _entries(boardId(period, mode, difficulty))
-        .orderBy('score', descending: true)
-        .limit(topN)
-        .get();
+    BoardPeriod period,
+    String mode,
+    ArcadeDifficulty difficulty,
+  ) async {
+    final snap = await _entries(
+      boardId(period, mode, difficulty),
+    ).orderBy('score', descending: true).limit(topN).get();
     final result = <LeaderboardEntry>[];
     for (final doc in snap.docs) {
       final data = doc.data();
-      result.add(LeaderboardEntry(
-        rank: result.length + 1,
-        uid: doc.id,
-        username: (data['username'] ?? 'Player').toString(),
-        score: (data['score'] as num?)?.toInt() ?? 0,
-      ));
+      result.add(
+        LeaderboardEntry(
+          rank: result.length + 1,
+          uid: doc.id,
+          username: (data['username'] ?? 'Player').toString(),
+          score: (data['score'] as num?)?.toInt() ?? 0,
+        ),
+      );
     }
     return result;
   }
 
   Future<MyStanding?> fetchStanding(
-      BoardPeriod period, String mode, ArcadeDifficulty difficulty) async {
+    BoardPeriod period,
+    String mode,
+    ArcadeDifficulty difficulty,
+  ) async {
     final user = AuthService.instance.user;
     if (user == null) return null;
     final col = _entries(boardId(period, mode, difficulty));

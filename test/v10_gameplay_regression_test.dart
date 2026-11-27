@@ -19,7 +19,8 @@ void main() {
     expect(game.shiftNumber, 1);
     for (var i = 0; game.inShift && i < 20; i++) {
       final wrong = game.currentCase.correct == Verdict.approve
-        ? Verdict.reject : Verdict.approve;
+          ? Verdict.reject
+          : Verdict.approve;
       game.decide(wrong);
       game.next();
     }
@@ -48,7 +49,11 @@ void main() {
     expect(check, isNotNull);
     expect(game.shiftXp, 0);
     final result = game.decide(caseFile.correct);
-    final base = caseFile.tier == 1 ? 20 : caseFile.tier == 2 ? 30 : 45;
+    final base = caseFile.tier == 1
+        ? 20
+        : caseFile.tier == 2
+        ? 30
+        : 45;
     expect(result?.xp, base);
     expect(game.careerXp, base);
     game.dispose();

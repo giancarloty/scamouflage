@@ -281,8 +281,9 @@ class _GameScreensState extends State<GameScreens> {
                             onBack: () => _selectTab(GameView.home),
                             onOpenProfile: _openIdentity,
                             onPlayingChanged: (active) {
-                              if (mounted)
+                              if (mounted) {
                                 setState(() => arcadePlaying = active);
+                              }
                             },
                           ),
                           GameView.career => _careerHub(),
@@ -503,9 +504,7 @@ class _GameScreensState extends State<GameScreens> {
                     ),
                     MascotAvatar(
                       game: g,
-                      size: MediaQuery.sizeOf(context).width < 430
-                          ? 110
-                          : 142,
+                      size: MediaQuery.sizeOf(context).width < 430 ? 110 : 142,
                     ),
                   ],
                 ),
@@ -1144,8 +1143,9 @@ class _GameScreensState extends State<GameScreens> {
         !g.isTraining ||
         g.currentIndex != 0 ||
         g.tutorialStep != 0 ||
-        showingResult)
+        showingResult) {
       return;
+    }
     showDialog<void>(
       context: context,
       barrierDismissible: true,

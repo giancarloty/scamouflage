@@ -81,7 +81,8 @@ class AuthService extends ChangeNotifier {
     final name = raw.trim();
     if (!usernamePattern.hasMatch(name)) {
       throw const AuthException(
-          'Username must be 3–16 characters: letters, numbers or underscore.');
+        'Username must be 3–16 characters: letters, numbers or underscore.',
+      );
     }
     return name;
   }
@@ -90,8 +91,10 @@ class AuthService extends ChangeNotifier {
   Future<bool> isUsernameAvailable(String name) async {
     final trimmed = name.trim();
     if (!usernamePattern.hasMatch(trimmed)) return false;
-    final snap =
-        await _db.collection('usernames').doc(trimmed.toLowerCase()).get();
+    final snap = await _db
+        .collection('usernames')
+        .doc(trimmed.toLowerCase())
+        .get();
     return !snap.exists;
   }
 
@@ -136,7 +139,9 @@ class AuthService extends ChangeNotifier {
         throw const AuthException('That username is already taken.');
       }
       final cred = await _auth.createUserWithEmailAndPassword(
-          email: email.trim(), password: password);
+        email: email.trim(),
+        password: password,
+      );
       try {
         await _claim(cred.user!, name);
         justRegistered = true;
@@ -148,17 +153,16 @@ class AuthService extends ChangeNotifier {
   }
 
   /// Accepts either an email address or a username, plus password.
-  Future<void> signIn({
-    required String identifier,
-    required String password,
-  }) =>
+  Future<void> signIn({required String identifier, required String password}) =>
       _run(() async {
         justRegistered = false;
         var email = identifier.trim();
         if (!email.contains('@')) {
           try {
-            final res = await BackendClient.instance
-                .postPublic('/api/resolveLogin', {'identifier': email});
+            final res = await BackendClient.instance.postPublic(
+              '/api/resolveLogin',
+              {'identifier': email},
+            );
             email = (res['email'] ?? '').toString().trim();
             if (email.isEmpty) {
               throw const AuthException('Wrong username or password.');
@@ -168,7 +172,9 @@ class AuthService extends ChangeNotifier {
           }
         }
         await _auth.signInWithEmailAndPassword(
-            email: email, password: password);
+          email: email,
+          password: password,
+        );
       });
 
   /// For players who signed in with Google and have no username yet.
@@ -190,8 +196,9 @@ class AuthService extends ChangeNotifier {
     if (user == null) throw const AuthException('Please sign in first.');
     await _run(() async {
       try {
-        final res = await BackendClient.instance
-            .post('/api/changeUsername', {'newUsername': name});
+        final res = await BackendClient.instance.post('/api/changeUsername', {
+          'newUsername': name,
+        });
         username = (res['username'] ?? name).toString();
       } on BackendException catch (e) {
         throw AuthException(e.message);
@@ -222,8 +229,10 @@ class AuthService extends ChangeNotifier {
 
   // ----------------------------------------------------------------- plumbing
 
-  Future<void> _run(Future<void> Function() action,
-      {bool registering = false}) async {
+  Future<void> _run(
+    Future<void> Function() action, {
+    bool registering = false,
+  }) async {
     if (!available) {
       throw const AuthException('Online features are not available right now.');
     }
@@ -238,9 +247,11 @@ class AuthService extends ChangeNotifier {
       throw AuthException(_authMessage(e.code));
     } on FirebaseException catch (e) {
       debugPrint('Firebase error: ${e.code} ${e.message}');
-      throw AuthException(e.code == 'unavailable'
-          ? 'No connection. Check your internet and try again.'
-          : 'Something went wrong (${e.code}). Please try again.');
+      throw AuthException(
+        e.code == 'unavailable'
+            ? 'No connection. Check your internet and try again.'
+            : 'Something went wrong (${e.code}). Please try again.',
+      );
     } finally {
       busy = false;
       _registering = false;
@@ -249,26 +260,24 @@ class AuthService extends ChangeNotifier {
   }
 
   String _authMessage(String code) => switch (code) {
-        'invalid-email' => 'That email address does not look right.',
-        'user-disabled' => 'This account has been disabled.',
-        'user-not-found' ||
-        'wrong-password' ||
-        'invalid-credential' =>
-          'Wrong email or password.',
-        'email-already-in-use' =>
-          'An account with that email already exists. Try signing in.',
-        'weak-password' => 'Password is too weak. Use at least 6 characters.',
-        'network-request-failed' =>
-          'No connection. Check your internet and try again.',
-        'too-many-requests' =>
-          'Too many attempts. Please wait a moment and try again.',
-        'operation-not-allowed' =>
-          'This sign-in method is not enabled in the Firebase console.',
-        'popup-closed-by-user' ||
-        'cancelled-popup-request' ||
-        'canceled' ||
-        'web-context-canceled' =>
-          'Sign-in was cancelled.',
-        _ => 'Sign-in failed ($code). Please try again.',
-      };
+    'invalid-email' => 'That email address does not look right.',
+    'user-disabled' => 'This account has been disabled.',
+    'user-not-found' ||
+    'wrong-password' ||
+    'invalid-credential' => 'Wrong email or password.',
+    'email-already-in-use' =>
+      'An account with that email already exists. Try signing in.',
+    'weak-password' => 'Password is too weak. Use at least 6 characters.',
+    'network-request-failed' =>
+      'No connection. Check your internet and try again.',
+    'too-many-requests' =>
+      'Too many attempts. Please wait a moment and try again.',
+    'operation-not-allowed' =>
+      'This sign-in method is not enabled in the Firebase console.',
+    'popup-closed-by-user' ||
+    'cancelled-popup-request' ||
+    'canceled' ||
+    'web-context-canceled' => 'Sign-in was cancelled.',
+    _ => 'Sign-in failed ($code). Please try again.',
+  };
 }

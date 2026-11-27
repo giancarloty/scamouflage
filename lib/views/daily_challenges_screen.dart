@@ -93,8 +93,10 @@ class DailyChallengesScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text('$count / $total completed',
-                style: const TextStyle(color: Colors.white70)),
+            Text(
+              '$count / $total completed',
+              style: const TextStyle(color: Colors.white70),
+            ),
             const SizedBox(height: 8),
             LinearProgressIndicator(
               value: total == 0 ? 0 : count / total,
@@ -120,8 +122,8 @@ class DailyChallengesScreen extends StatelessWidget {
     final status = challenge.claimed
         ? 'REWARD CLAIMED'
         : challenge.completed
-            ? 'COMPLETED — CLAIM XP'
-            : '${challenge.progress} / ${challenge.target}';
+        ? 'COMPLETED — CLAIM XP'
+        : '${challenge.progress} / ${challenge.target}';
 
     return Card(
       color: const Color(0xFF102B40),
@@ -152,8 +154,10 @@ class DailyChallengesScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
-            Text(challenge.description,
-                style: const TextStyle(color: Colors.white70)),
+            Text(
+              challenge.description,
+              style: const TextStyle(color: Colors.white70),
+            ),
             const SizedBox(height: 12),
             LinearProgressIndicator(
               value: fraction.clamp(0.0, 1.0).toDouble(),

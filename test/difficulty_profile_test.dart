@@ -25,15 +25,18 @@ void main() {
       expect(p.emailSeconds, 15);
     });
 
-    test('Hard combines evidence cross-checking with a shorter inbox timer', () {
-      final p = ArcadeDifficulty.hard.profile;
-      expect(p.reasoningLevel, 3);
-      expect(p.decoyClues, 2);
-      expect(p.conflictingEvidence, 2);
-      expect(p.requiresCrossChecking, true);
-      expect(p.startingHearts, 3);
-      expect(p.scanBudget, 4);
-      expect(p.emailSeconds, 8);
-    });
+    test(
+      'Hard combines evidence cross-checking with a shorter inbox timer',
+      () {
+        final p = ArcadeDifficulty.hard.profile;
+        expect(p.reasoningLevel, 3);
+        expect(p.decoyClues, 2);
+        expect(p.conflictingEvidence, 2);
+        expect(p.requiresCrossChecking, true);
+        expect(p.startingHearts, 3);
+        expect(p.scanBudget, 4);
+        expect(p.emailSeconds, 8);
+      },
+    );
   });
 }

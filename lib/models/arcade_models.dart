@@ -13,16 +13,30 @@ enum Relevance { decisive, support, decoy }
 
 enum Concept {
   officialSource('Checking whether a source is official or credible'),
-  recycledMedia('Checking whether a photo or video is reused from an older event'),
+  recycledMedia(
+    'Checking whether a photo or video is reused from an older event',
+  ),
   editedScreenshot('Checking whether a screenshot has been edited or doctored'),
-  lookalikeHandle('Checking whether a social media handle is a lookalike or impersonation'),
-  urgencyPressure('Checking whether a post pressures the reader to act quickly'),
-  otpRequest('Checking whether anyone is asking for an OTP or login credentials'),
+  lookalikeHandle(
+    'Checking whether a social media handle is a lookalike or impersonation',
+  ),
+  urgencyPressure(
+    'Checking whether a post pressures the reader to act quickly',
+  ),
+  otpRequest(
+    'Checking whether anyone is asking for an OTP or login credentials',
+  ),
   linkMismatch('Checking whether a link leads to the official source'),
   payToReceive('Checking whether money or a fee is requested'),
-  satireLabel('Checking whether content is satire or parody, and honestly labeled'),
-  opinionVsHarassment('Checking whether a post is opinion or criticism, or harassment'),
-  missingContext('Checking for missing context or information that changes the meaning'),
+  satireLabel(
+    'Checking whether content is satire or parody, and honestly labeled',
+  ),
+  opinionVsHarassment(
+    'Checking whether a post is opinion or criticism, or harassment',
+  ),
+  missingContext(
+    'Checking for missing context or information that changes the meaning',
+  ),
   aiGenerated('Checking whether content is AI-generated and honestly labeled'),
   fakeQuote('Checking whether a quote is fabricated or misattributed'),
   oldValid('Checking whether an older post is still valid or really outdated');
@@ -112,9 +126,33 @@ extension ArcadeDifficultyInfo on ArcadeDifficulty {
   };
 
   DifficultyProfile get profile => switch (this) {
-    ArcadeDifficulty.easy => const DifficultyProfile(startingHearts: 5, scanBudget: 5, emailSeconds: null, reasoningLevel: 1, decoyClues: 0, conflictingEvidence: 0, requiresCrossChecking: false),
-    ArcadeDifficulty.medium => const DifficultyProfile(startingHearts: 4, scanBudget: 4, emailSeconds: 15, reasoningLevel: 2, decoyClues: 1, conflictingEvidence: 1, requiresCrossChecking: false),
-    ArcadeDifficulty.hard => const DifficultyProfile(startingHearts: 3, scanBudget: 4, emailSeconds: 8, reasoningLevel: 3, decoyClues: 2, conflictingEvidence: 2, requiresCrossChecking: true),
+    ArcadeDifficulty.easy => const DifficultyProfile(
+      startingHearts: 5,
+      scanBudget: 5,
+      emailSeconds: null,
+      reasoningLevel: 1,
+      decoyClues: 0,
+      conflictingEvidence: 0,
+      requiresCrossChecking: false,
+    ),
+    ArcadeDifficulty.medium => const DifficultyProfile(
+      startingHearts: 4,
+      scanBudget: 4,
+      emailSeconds: 15,
+      reasoningLevel: 2,
+      decoyClues: 1,
+      conflictingEvidence: 1,
+      requiresCrossChecking: false,
+    ),
+    ArcadeDifficulty.hard => const DifficultyProfile(
+      startingHearts: 3,
+      scanBudget: 4,
+      emailSeconds: 8,
+      reasoningLevel: 3,
+      decoyClues: 2,
+      conflictingEvidence: 2,
+      requiresCrossChecking: true,
+    ),
   };
 
   int get startingHearts => profile.startingHearts;
@@ -145,7 +183,17 @@ class ProfileView {
   final bool badge;
   final List<String> recent;
   final int ageDays, followers;
-  const ProfileView({required this.name, required this.handle, required this.bio, required this.ageDays, required this.followers, this.link = 'no link', this.label, this.badge = false, this.recent = const []});
+  const ProfileView({
+    required this.name,
+    required this.handle,
+    required this.bio,
+    required this.ageDays,
+    required this.followers,
+    this.link = 'no link',
+    this.label,
+    this.badge = false,
+    this.recent = const [],
+  });
   String get ageLabel => ageDays < 7
       ? '$ageDays days old'
       : ageDays < 365
@@ -179,7 +227,13 @@ class CommentView {
 
   /// True when this comment really breaks the community rules.
   final bool violates;
-  const CommentView(this.handle, this.body, {this.context = '', this.violates = false, this.reason = ''});
+  const CommentView(
+    this.handle,
+    this.body, {
+    this.context = '',
+    this.violates = false,
+    this.reason = '',
+  });
 }
 
 class RumorCard {
@@ -192,7 +246,13 @@ class ClipBeat {
   final int second;
   final String scene, viralLine, fullLine;
   final bool inViral;
-  const ClipBeat(this.second, this.scene, this.viralLine, this.fullLine, {this.inViral = true});
+  const ClipBeat(
+    this.second,
+    this.scene,
+    this.viralLine,
+    this.fullLine, {
+    this.inViral = true,
+  });
 }
 
 /// A complete scenario. Truth is generated first (see [deceptive] and
@@ -319,7 +379,9 @@ class ArcadeCase {
 
   bool get isBatch => mode == ArcadeMode.inbox;
 
-  bool get _sortsAnswer => mode == ArcadeMode.comments || (mode == ArcadeMode.rumor && rumorTask == RumorTask.wordEdit);
+  bool get _sortsAnswer =>
+      mode == ArcadeMode.comments ||
+      (mode == ArcadeMode.rumor && rumorTask == RumorTask.wordEdit);
 
   /// Number of sub-answers that match the truth (Inbox Sprint is partial).
   int matches(List<int> answer) {
@@ -350,7 +412,9 @@ class ArcadeCase {
     final right = isBatch ? matches(answer) == totalParts : isCorrect(answer);
     if (right) return ErrorKind.none;
     // Inbox Sprint records a timeout as 2 (swipes use 0 and 1).
-    if (mode == ArcadeMode.inbox && answer.contains(2)) return ErrorKind.timeout;
+    if (mode == ArcadeMode.inbox && answer.contains(2)) {
+      return ErrorKind.timeout;
+    }
     if (mode == ArcadeMode.trust || mode == ArcadeMode.clip) {
       return deceptive ? ErrorKind.trustedBad : ErrorKind.flaggedGood;
     }
@@ -358,5 +422,8 @@ class ArcadeCase {
   }
 
   /// The tool ids that actually settle the question.
-  List<String> get decisiveIds => tools.where((t) => t.relevance == Relevance.decisive).map((t) => t.id).toList();
+  List<String> get decisiveIds => tools
+      .where((t) => t.relevance == Relevance.decisive)
+      .map((t) => t.id)
+      .toList();
 }
