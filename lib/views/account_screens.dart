@@ -3,6 +3,7 @@ import '../models/arcade_models.dart';
 import '../services/auth_service.dart';
 import '../services/leaderboard_service.dart';
 import 'theme.dart';
+import 'package:flutter/gestures.dart';
 
 /// Replaces the old "Online features – coming soon" preview card on the
 /// Profile screen. Sign-in stays optional; the game works fully offline.
@@ -365,14 +366,23 @@ class LeaderboardScreen extends StatefulWidget {
 
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
   static final List<(String, String)> _modes = [
+    ('overall', 'OVERALL XP'),
     ('mix', 'ENDLESS MIX'),
     for (final m in ArcadeMode.values) (m.name, m.title),
   ];
 
   BoardPeriod _period = BoardPeriod.weekly;
-  String _mode = 'mix';
+  String _mode = 'overall';
   ArcadeDifficulty _difficulty = ArcadeDifficulty.easy;
   late Future<_BoardData> _future;
+
+  final ScrollController _modeScroll = ScrollController();
+
+  @override
+  void dispose() {
+    _modeScroll.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -421,56 +431,130 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         ]),
       );
 
-  Widget _filters() => Padding(
+Widget _filters() => Padding(
         padding: const EdgeInsets.fromLTRB(14, 4, 14, 8),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          SizedBox(
-            width: double.infinity,
-            child: SegmentedButton<BoardPeriod>(
-              segments: const [
-                ButtonSegment<BoardPeriod>(
-                    value: BoardPeriod.weekly, label: Text('THIS WEEK')),
-                ButtonSegment<BoardPeriod>(
-                    value: BoardPeriod.allTime, label: Text('ALL-TIME')),
-              ],
-              selected: {_period},
-              onSelectionChanged: (s) => _change(() => _period = s.first),
-            ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: SegmentedButton<ArcadeDifficulty>(
-              segments: [
-                for (final d in ArcadeDifficulty.values)
-                  ButtonSegment<ArcadeDifficulty>(
-                      value: d, label: Text(d.title)),
-              ],
-              selected: {_difficulty},
-              onSelectionChanged: (s) => _change(() => _difficulty = s.first),
-            ),
-          ),
-          const SizedBox(height: 8),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(children: [
-              for (final (key, label) in _modes)
-                Padding(
-                  padding: const EdgeInsets.only(right: 6),
-                  child: ChoiceChip(
-                    label: Text(label,
-                        style: typewriter(11,
-                            color: _mode == key ? coal : parchment)),
-                    selected: _mode == key,
-                    selectedColor: mustard,
-                    backgroundColor: deskBlue,
-                    onSelected: (_) => _change(() => _mode = key),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final stretch = constraints.maxWidth >= 920;
+                  if (stretch) {
+                    return Row(
+                      children: [
+                        for (var i = 0; i < _modes.length; i++) ...[
+                          if (i > 0) const SizedBox(width: 6),
+                          Expanded(child: _modeTab(_modes[i].$1, _modes[i].$2)),
+                        ],
+                      ],
+                    );
+                  }
+                  return ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context).copyWith(
+                      dragDevices: {
+                        PointerDeviceKind.touch,
+                        PointerDeviceKind.mouse,
+                        PointerDeviceKind.trackpad,
+                      },
+                    ),
+                    child: Scrollbar(
+                      controller: _modeScroll,
+                      thumbVisibility: true,
+                      interactive: true,
+                      child: SingleChildScrollView(
+                        controller: _modeScroll,
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          children: [
+                            for (var i = 0; i < _modes.length; i++) ...[
+                              if (i > 0) const SizedBox(width: 6),
+                              _modeTab(_modes[i].$1, _modes[i].$2),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              if (_mode != 'overall') ...[
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: SegmentedButton<BoardPeriod>(
+                    segments: const [
+                      ButtonSegment<BoardPeriod>(
+                          value: BoardPeriod.weekly, label: Text('THIS WEEK')),
+                      ButtonSegment<BoardPeriod>(
+                          value: BoardPeriod.allTime, label: Text('ALL-TIME')),
+                    ],
+                    selected: {_period},
+                    onSelectionChanged: (s) =>
+                        _change(() => _period = s.first),
                   ),
                 ),
-            ]),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: SegmentedButton<ArcadeDifficulty>(
+                    segments: [
+                      for (final d in ArcadeDifficulty.values)
+                        ButtonSegment<ArcadeDifficulty>(
+                            value: d, label: Text(d.title)),
+                    ],
+                    selected: {_difficulty},
+                    onSelectionChanged: (s) =>
+                        _change(() => _difficulty = s.first),
+                  ),
+                ),
+              ],
+            ],
           ),
-        ]),
+        ),
       );
+
+  Widget _modeTab(String key, String label) {
+    final selected = _mode == key;
+    return Material(
+      color: selected ? mustard : deskBlue,
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        onTap: () => _change(() => _mode = key),
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: selected ? mustard : parchment.withValues(alpha: .5),
+              width: 1.2,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (selected) ...[
+                const Icon(Icons.check_rounded, size: 14, color: coal),
+                const SizedBox(width: 4),
+              ],
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: typewriter(11, color: selected ? coal : parchment),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _results() {
     if (!AuthService.instance.available) {
@@ -489,9 +573,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         }
         final top = snap.data!.top;
         if (top.isEmpty) {
-          return _message(_period == BoardPeriod.weekly
-              ? 'No scores yet this week. Be the first!'
-              : 'No scores yet. Be the first!');
+          return _message(_mode == 'overall'
+              ? 'No overall XP scores synced yet. Play and sign in to be first!'
+              : _period == BoardPeriod.weekly
+                  ? 'No scores yet this week. Be the first!'
+                  : 'No scores yet. Be the first!');
         }
         final me = AuthService.instance.user?.uid;
         return ListView.builder(
@@ -564,8 +650,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   final mine = snap.data?.mine;
                   return Text(
                     mine == null
-                        ? 'YOUR RANK: play a run on this board to get ranked.'
-                        : 'YOUR RANK: #${mine.rank} • best ${mine.score} XP',
+                        ? (_mode == 'overall'
+                            ? 'YOUR RANK: earn XP and sync to get ranked.'
+                            : 'YOUR RANK: play a run on this board to get ranked.')
+                        : (_mode == 'overall'
+                            ? 'YOUR RANK: #${mine.rank} • ${mine.score} total XP'
+                            : 'YOUR RANK: #${mine.rank} • best ${mine.score} XP'),
                     style: captionText(14,
                         color: mustard, weight: FontWeight.w700),
                   );
