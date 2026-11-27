@@ -889,9 +889,44 @@ class _GameScreensState extends State<GameScreens> {
                   },
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'Progress stays on this device. No account or internet connection.',
-                  style: captionText(12, color: parchment),
+                const Divider(color: deskLight, height: 24),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      showDialog<void>(
+                        context: context,
+                        builder: (dialogContext) => AlertDialog(
+                          backgroundColor: deskBlue,
+                          title: Text(
+                            'Developed by',
+                            style: titleText(22, color: mustard),
+                            textAlign: TextAlign.center,
+                          ),
+                          content: Text(
+                            'Alcantara, Alessandra Lei T.\n'
+                            'Alegria, Mickaela Grace N.\n'
+                            'Elento, Arjianna Rane T.\n'
+                            'Orellano, Rolando M.\n'
+                            'Sy Lato, Aldrin Vincent W.\n'
+                            'Ty, Giancarlo Favian Y.\n\n'
+                            'ICS 26011 · 3CSD · Group 6',
+                            style: captionText(13, color: paperWhite),
+                            textAlign: TextAlign.center,
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(dialogContext),
+                              child: const Text('Close'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Credits',
+                      style: captionText(12, color: parchment),
+                    ),
+                  ),
                 ),
               ],
             ),
