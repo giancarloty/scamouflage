@@ -215,6 +215,27 @@ app.post(['/api/syncProfile', '/syncProfile'], requireUser, async (req, res) => 
       }
       return result.profile;
     });
+    try {
+      const totalXp = Number(out?.careerXp) || 0;
+      if (totalXp > 0) {
+        const userSnap = await db.collection('users').doc(uid).get();
+        const username = userSnap.get('username');
+        if (username) {
+          await db
+            .collection('leaderboards')
+            .doc('overall_xp')
+            .collection('entries')
+            .doc(uid)
+            .set({
+              uid,
+              username,
+              mode: 'overall',
+              score: totalXp,
+              updatedAt: FieldValue.serverTimestamp(),
+            });
+        }
+      }
+    } catch (_) {}
 
     return res.json({ profile: out });
   } catch (err) {
@@ -337,6 +358,45 @@ app.post(['/api/deleteAccount', '/deleteAccount'], requireUser, async (req, res)
     return res.status(500).json({ error: err.message || 'Could not delete account.' });
   }
 });
+
+// One-time sync of existing players' Career XP into the Overall XP leaderboard
+async function backfillOverallXp() {
+  try {
+    const [playersSnap, usersSnap] = await Promise.all([
+      db.collection('players').get(),
+      db.collection('users').get(),
+    ]);
+    const usernames = {};
+    usersSnap.forEach((doc) => {
+      const name = doc.get('username');
+      if (name) usernames[doc.id] = name;
+    });
+
+    const batch = db.batch();
+    let count = 0;
+    playersSnap.forEach((doc) => {
+      const totalXp = Number(doc.get('careerXp')) || 0;
+      const username = usernames[doc.id];
+      if (totalXp > 0 && username) {
+        const ref = db
+          .collection('leaderboards')
+          .doc('overall_xp')
+          .collection('entries')
+          .doc(doc.id);
+        batch.set(ref, {
+          uid: doc.id,
+          username,
+          mode: 'overall',
+          score: totalXp,
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+        count++;
+      }
+    });
+    if (count > 0) await batch.commit();
+  } catch (_) {}
+}
+backfillOverallXp();
 
 if (require.main === module) {
   const port = process.env.PORT || 3000;

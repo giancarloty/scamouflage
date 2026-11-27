@@ -54,6 +54,7 @@ class LeaderboardService {
 
   static String boardId(
       BoardPeriod period, String mode, ArcadeDifficulty difficulty) {
+    if (mode == 'overall') return 'overall_xp';
     return period == BoardPeriod.weekly
         ? 'week_${weekKey()}_${mode}_${difficulty.name}'
         : 'all_${mode}_${difficulty.name}';
